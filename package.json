@@ -1,0 +1,13 @@
+{
+  "name": "make-it-stretch",
+  "version": "1.0.0",
+  "description": "What Can I Afford To Eat — Get Dealt In",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  }
+}

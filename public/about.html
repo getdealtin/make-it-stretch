@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About & Data Sources — Make It Stretch · Get Dealt In</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --soil:#2c1a0e;--bark:#4a2c1a;--wheat:#c8963c;--harvest:#e8b455;
+  --grain:#f5dfa0;--cream:#fdf6e8;--sage:#5a7a4a;--leaf:#7a9a5a;
+  --leaflight:#a8c484;--rust:#b84a2a;--warm:#f0e8d8;
+  --muted:#8a7a6a;--border:#ddd0b8;--trust:#3a6a4a;--white:#ffffff;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--soil);font-family:'Space Mono',monospace;min-height:100vh}
+
+nav{background:var(--soil);padding:12px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--wheat)}
+.nav-logo{font-family:'Playfair Display',serif;font-weight:900;font-size:17px;color:var(--harvest);text-decoration:none}
+.nav-logo em{color:var(--grain);font-style:italic}
+.nav-links{display:flex;gap:20px;list-style:none}
+.nav-links a{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--grain);text-decoration:none;opacity:.6;transition:opacity .2s}
+.nav-links a:hover,.nav-links a.active{opacity:1;color:var(--harvest)}
+
+/* HERO */
+.hero{background:var(--soil);padding:56px 32px 48px;text-align:center;position:relative;overflow:hidden;border-bottom:3px solid var(--wheat)}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 30% 50%,rgba(200,150,60,.1) 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--leaf);margin-bottom:14px}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:900;color:var(--grain);line-height:1.08;margin-bottom:14px}
+.hero h1 em{color:var(--harvest);font-style:italic}
+.hero-sub{font-size:12px;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.9}
+
+/* PAGE */
+.page{max-width:760px;margin:0 auto;padding:56px 24px 100px}
+
+/* SECTION */
+.about-section{margin-bottom:56px}
+.section-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--wheat);margin-bottom:8px;font-weight:700}
+.about-section h2{font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,30px);font-weight:900;color:var(--soil);margin-bottom:20px;line-height:1.2}
+.about-section h2 em{color:var(--wheat);font-style:italic}
+
+/* HERE'S HOW CARDS */
+.how-card{background:var(--white);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.how-card-hdr{background:var(--soil);padding:14px 20px;display:flex;align-items:center;gap:10px}
+.how-card-hdr .icon{font-size:18px;flex-shrink:0}
+.how-card-hdr h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--grain)}
+.how-card-body{padding:18px 20px}
+.how-card-body p{font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:10px}
+.how-card-body p:last-child{margin-bottom:0}
+.how-card-body strong{color:var(--soil)}
+.how-card-body a{color:var(--wheat);text-decoration:none}
+.how-card-body a:hover{text-decoration:underline}
+.how-card-footer{background:var(--warm);padding:12px 20px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);line-height:1.7}
+.how-card-footer strong{color:var(--trust)}
+
+/* SOURCE PILL */
+.source-pill{display:inline-flex;align-items:center;gap:6px;background:var(--warm);border:1px solid var(--border);border-radius:2px;padding:4px 10px;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--sage);margin-top:8px;margin-right:6px}
+.source-pill a{color:var(--sage);text-decoration:none}
+.source-pill a:hover{color:var(--wheat)}
+
+/* TRADEOFF BOX */
+.tradeoff{background:var(--warm);border:1px solid var(--border);border-left:4px solid var(--rust);border-radius:2px;padding:16px 20px;margin-bottom:16px}
+.tradeoff-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--rust);font-weight:700;margin-bottom:8px}
+.tradeoff p{font-size:11px;color:var(--muted);line-height:1.85}
+.tradeoff strong{color:var(--soil)}
+
+/* PROMISE BOX */
+.promise{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--trust);border-radius:2px;padding:16px 20px;margin-bottom:16px}
+.promise-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--trust);font-weight:700;margin-bottom:8px}
+.promise ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.promise li{font-size:11px;color:var(--muted);line-height:1.6;display:flex;gap:8px}
+.promise li::before{content:'✓';color:var(--trust);font-weight:700;flex-shrink:0}
+.promise li strong{color:var(--soil)}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:48px 0}
+
+/* MISSION BLOCK */
+.mission{background:var(--soil);border-radius:4px;padding:32px;margin-bottom:56px;text-align:center}
+.mission h2{font-family:'Playfair Display',serif;font-size:clamp(20px,3vw,28px);font-weight:900;color:var(--grain);margin-bottom:14px;line-height:1.2}
+.mission h2 em{color:var(--harvest)}
+.mission p{font-size:12px;color:var(--muted);line-height:1.9;max-width:540px;margin:0 auto}
+
+footer{background:var(--soil);padding:20px 24px;text-align:center}
+footer p{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);line-height:2}
+footer a{color:var(--wheat);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Get <em>Dealt</em> In</a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/">Make It Stretch</a></li>
+    <li><a href="/about" class="active">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Get Dealt In · Make It Stretch</p>
+  <h1>About This Tool —<br><em>And Why We Built It</em></h1>
+  <p class="hero-sub">
+    Every number on this site comes from somewhere real. Every design decision was made with someone in mind.
+    Here's how it all works — no fine print, no spin.
+  </p>
+</div>
+
+<div class="page">
+
+  <!-- MISSION -->
+  <div class="mission">
+    <h2>We built this because<br><em>nobody else did.</em></h2>
+    <p>
+      Plenty of tools will tell you what to eat. None of them tell you what you can actually afford to buy
+      right now — in your region, on your budget, with real prices.
+      And none of them connect that grocery bill to the people who vote on the policies making it harder every year.
+      That's the gap this fills.
+    </p>
+  </div>
+
+  <!-- DATA SOURCES -->
+  <div class="about-section">
+    <p class="section-label">Data Sources</p>
+    <h2>Here's how we get<br><em>the numbers you see</em></h2>
+
+    <div class="how-card">
+      <div class="how-card-hdr">
+        <span class="icon">📊</span>
+        <h3>Here's how food prices work in this tool</h3>
+      </div>
+      <div class="how-card-body">
+        <p>
+          Every price you see comes from the <strong>U.S. Bureau of Labor Statistics (BLS) Average Price Data</strong> —
+          the same source the federal government uses to measure what Americans pay for groceries.
+          The BLS sends data collectors into stores across the country every month to record actual shelf prices.
+          Those prices are averaged by region and published publicly.
+        </p>
+        <p>
+          When you enter your zip code, we map it to one of four BLS geographic regions —
+          Northeast, Midwest, South, or West — and pull the prices for that region.
+          This gets you closer to your local reality than a national average would.
+        </p>
+        <div>
+          <span class="source-pill">📍 <a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank">BLS Average Price Data</a></span>
+          <span class="source-pill">🔄 Updated monthly</span>
+          <span class="source-pill">🆓 Free public data</span>
+        </div>
+      </div>
+      <div class="how-card-footer">
+        <strong>The honest tradeoff:</strong> BLS prices are regional averages — not your specific store.
+        Your store brand may cost less. A sale could stretch this further.
+        We chose BLS because it's free, verified, and never disappears behind a paywall.
+        Major grocery chains don't share live pricing through open public data.
+      </div>
+    </div>
+
+    <div class="how-card">
+      <div class="how-card-hdr">
+        <span class="icon">🥦</span>
+        <h3>Here's how we calculate calories per dollar</h3>
+      </div>
+      <div class="how-card-body">
+        <p>
+          For each staple food, we calculate <strong>calories per dollar</strong> — how many calories you get
+          for every dollar spent. This ranks your shopping list by the most food for your money first,
+          not by what's trendy or what a nutritionist would ideally recommend.
+        </p>
+        <p>
+          Calorie data comes from the <strong>USDA FoodData Central</strong> database —
+          the government's official nutritional reference. We use standard serving sizes and
+          package weights consistent with what you'd actually buy at a store.
+        </p>
+        <div>
+          <span class="source-pill">📍 <a href="https://fdc.nal.usda.gov/" target="_blank">USDA FoodData Central</a></span>
+          <span class="source-pill">🆓 Free public data</span>
+        </div>
+      </div>
+      <div class="how-card-footer">
+        <strong>Why calories?</strong> When a budget is very tight, calories are survival math.
+        We also show estimated calories per person per day so you can see whether your plan
+        meets basic nutritional needs — and where to seek additional resources if it doesn't.
+      </div>
+    </div>
+
+    <div class="how-card">
+      <div class="how-card-hdr">
+        <span class="icon">🏛</span>
+        <h3>Here's how we find your federal representatives</h3>
+      </div>
+      <div class="how-card-body">
+        <p>
+          Your zip code maps to a US state. We use that state to look up your two
+          <strong>US Senators</strong> from a curated dataset sourced from
+          <strong>Congress.gov</strong> — the official database of the US Legislature,
+          maintained by the Library of Congress.
+        </p>
+        <p>
+          For <strong>US House Representatives</strong>, congressional districts are drawn
+          at a level more granular than zip codes allow us to resolve accurately.
+          We link directly to the official House.gov lookup tool so you can find your
+          exact representative in one click.
+        </p>
+        <div>
+          <span class="source-pill">📍 <a href="https://www.congress.gov/members" target="_blank">Congress.gov Members</a></span>
+          <span class="source-pill">📍 <a href="https://www.house.gov/representatives/find-your-representative" target="_blank">House.gov Lookup</a></span>
+        </div>
+      </div>
+      <div class="how-card-footer">
+        <strong>On voting records:</strong> Federal vote records shown are roll-call votes from the 119th Congress (2025),
+        specifically bills with direct impact on SNAP, food assistance, and the Farm Bill.
+        Roll-call votes are the only votes tracked in official congressional data —
+        voice votes and procedural votes are not recorded by member.
+      </div>
+    </div>
+
+    <div class="how-card">
+      <div class="how-card-hdr">
+        <span class="icon">🏟</span>
+        <h3>Here's how we find your state representatives</h3>
+      </div>
+      <div class="how-card-body">
+        <p>
+          State legislative data comes from <strong>OpenStates (Plural Policy)</strong> —
+          an open civic data project that aggregates legislative information from all 50 states,
+          Washington D.C., and Puerto Rico. It standardizes state legislature data that would
+          otherwise require visiting 50 different state websites.
+        </p>
+        <p>
+          When you enter your zip code, we query OpenStates for your state legislators
+          and search for recent bills related to food costs, grocery taxes, SNAP state funding,
+          and nutrition assistance. Results show how your state legislators voted on those bills.
+        </p>
+        <div>
+          <span class="source-pill">📍 <a href="https://openstates.org" target="_blank">OpenStates / Plural Policy</a></span>
+          <span class="source-pill">🔄 Updated continuously</span>
+          <span class="source-pill">🆓 Free public API</span>
+        </div>
+      </div>
+      <div class="how-card-footer">
+        <strong>Coverage note:</strong> OpenStates coverage varies by state. Some states provide
+        more complete voting records than others. Where data is incomplete,
+        we link directly to your state legislature's official website.
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- TRADEOFFS -->
+  <div class="about-section">
+    <p class="section-label">Honest Tradeoffs</p>
+    <h2>Here's what this tool<br><em>can't do — and why</em></h2>
+
+    <div class="tradeoff">
+      <p class="tradeoff-title">⚠ Why we don't show live store prices</p>
+      <p>
+        Major grocery chains — Walmart, Kroger, Aldi, Target — don't share live pricing
+        through open public APIs. Their pricing data is commercially sensitive.
+        Third-party scrapers exist but operate in legal gray areas and can break without warning.
+        <strong>We chose BLS government data</strong> because it's stable, verified, and free —
+        even if it means regional averages instead of aisle-level prices.
+      </p>
+    </div>
+
+    <div class="tradeoff">
+      <p class="tradeoff-title">⚠ Why voting records show party patterns, not always individual votes</p>
+      <p>
+        Some votes — especially state-level — don't have complete individual member records
+        in public databases. Where individual records aren't available,
+        we show the majority position of each party on that vote and link to the official record.
+        <strong>We never invent or assume a vote.</strong> If we don't know, we say so and link out.
+      </p>
+    </div>
+
+    <div class="tradeoff">
+      <p class="tradeoff-title">⚠ Why we can't identify your exact House district from a zip code</p>
+      <p>
+        Congressional districts don't align neatly with zip codes. A single zip code can span
+        multiple districts, and a single district can contain parts of many zip codes.
+        Accurate district lookup requires geocoding (converting your address to coordinates)
+        which requires either a paid API or your precise address — more than we ask for.
+        <strong>We link to the official House.gov lookup</strong> rather than guess.
+      </p>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- YOUR DATA -->
+  <div class="about-section">
+    <p class="section-label">Your Privacy</p>
+    <h2>Here's exactly what happens<br><em>with your information</em></h2>
+
+    <div class="promise">
+      <p class="promise-title">✓ What we promise</p>
+      <ul>
+        <li><strong>Nothing is stored by default.</strong> Everything you enter runs in your browser. When you close the page, it's gone.</li>
+        <li><strong>No account required.</strong> You get your full results without creating anything or logging in.</li>
+        <li><strong>No ads.</strong> We don't run ads. We don't let advertisers target you based on what you search here.</li>
+        <li><strong>No data selling.</strong> We will never sell your information to anyone. Ever.</li>
+        <li><strong>If you choose to save your data</strong> — using Google or Apple sign-in — we keep only what's listed below. You can delete it anytime, instantly.</li>
+      </ul>
+    </div>
+
+    <div class="how-card">
+      <div class="how-card-hdr">
+        <span class="icon">🔒</span>
+        <h3>Here's exactly what we keep — and what we never keep</h3>
+      </div>
+      <div class="how-card-body">
+        <p><strong>If you choose to save (opt-in only):</strong></p>
+        <p>
+          ✓ Your zip code<br>
+          ✓ How many people in your household<br>
+          ✓ Your budget range (not the exact dollar amount)<br>
+          ✓ How many times you've used the tool
+        </p>
+        <p><strong>What we never keep, no matter what:</strong></p>
+        <p>
+          ✕ Your name<br>
+          ✕ Your exact dollar amount<br>
+          ✕ What specific items you looked at<br>
+          ✕ Any information that could identify you personally
+        </p>
+        <p>
+          <strong>What saved data is used for:</strong> Anonymized and aggregated only.
+          We combine data from all users to show patterns — like
+          <em>"In zip codes 38103–38115, the average household budget for two weeks of groceries is $31."</em>
+          That aggregate data is shared with policymakers and researchers to show what
+          the affordability crisis actually looks like for real people.
+          Your data is never linked back to you individually.
+        </p>
+      </div>
+      <div class="how-card-footer">
+        <strong>Authentication:</strong> If you sign in with Google or Apple,
+        we receive only a secure token — never your password, never your email unless you explicitly share it.
+        You can revoke access at any time from your Google or Apple account settings.
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider" />
+
+  <!-- WHO BUILT IT -->
+  <div class="about-section">
+    <p class="section-label">Who Built This</p>
+    <h2>Here's where<br><em>this comes from</em></h2>
+
+    <div class="how-card">
+      <div class="how-card-hdr">
+        <span class="icon">🌊</span>
+        <h3>Here's the philosophy behind Get Dealt In</h3>
+      </div>
+      <div class="how-card-body">
+        <p>
+          Get Dealt In is built on a simple belief: <strong>individual economic decisions,
+          made collectively, create waves that shape the larger economy.</strong>
+          Most people don't have access to the information that would help them make
+          better decisions — not because the information doesn't exist,
+          but because it's scattered, technical, or buried in bureaucracy.
+        </p>
+        <p>
+          Make It Stretch is the first section of Get Dealt In.
+          Its job is to meet people at moments of real financial pressure —
+          not with lectures or generic advice, but with specific, honest,
+          actionable information they didn't have before.
+        </p>
+        <p>
+          <strong>Situational awareness first. Better decisions second. Collective impact third.</strong>
+        </p>
+      </div>
+      <div class="how-card-footer">
+        Built with open public data. No venture capital. No advertising. No agenda except yours.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <p>Part of <a href="/">getdealtin.com</a> · <a href="/">Make It Stretch</a> · No ads. No data selling. Ever.</p>
+</footer>
+
+</body>
+</html>
