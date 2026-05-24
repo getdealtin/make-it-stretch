@@ -21,7 +21,10 @@ nav{background:var(--soil);padding:12px 28px;display:flex;align-items:center;jus
 .nav-links{display:flex;gap:20px;list-style:none}
 .nav-links a{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--grain);text-decoration:none;opacity:.6;transition:opacity .2s}
 .nav-links a:hover,.nav-links a.active{opacity:1;color:var(--harvest)}
-.page{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+.page{max-width:680px;margin:0 auto;padding:40px 24px 80px}
+
+/* HERO */
+.hero{margin-bottom:32px}
 .eyebrow{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--sage);margin-bottom:10px}
 h1{font-family:'Playfair Display',serif;font-size:clamp(30px,6vw,50px);font-weight:900;color:var(--soil);line-height:1.08;margin-bottom:10px}
 h1 em{color:var(--wheat);font-style:italic}
@@ -29,33 +32,66 @@ h1 em{color:var(--wheat);font-style:italic}
 .quiet-trust{font-size:10px;color:var(--trust);margin-top:8px;opacity:.85}
 
 /* TRANSPARENCY */
-.transparency{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--wheat);border-radius:2px;padding:18px 20px;margin:20px 0}
-.t-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--wheat);font-weight:700;margin-bottom:10px}
-.transparency p{font-size:11px;color:var(--muted);line-height:1.85;margin-bottom:6px}
+.transparency{background:var(--white);border:1px solid var(--border);border-left:4px solid var(--wheat);border-radius:2px;padding:16px 18px;margin-bottom:28px}
+.t-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--wheat);font-weight:700;margin-bottom:8px}
+.transparency p{font-size:11px;color:var(--muted);line-height:1.85;margin-bottom:4px}
 .transparency p:last-child{margin-bottom:0}
 .transparency strong{color:var(--soil)}
 .transparency a{color:var(--wheat);text-decoration:none}
 
-/* FORM */
-.form-card{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:26px;margin:20px 0}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.row.full{grid-template-columns:1fr}
-.fg{display:flex;flex-direction:column;gap:4px}
-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--bark);font-weight:700}
-.helper{font-size:10px;color:var(--muted);font-style:italic}
-input{font-family:'Space Mono',monospace;font-size:13px;color:var(--soil);background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:9px 12px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s}
-input:focus{border-color:var(--wheat);box-shadow:0 0 0 3px rgba(200,150,60,.1)}
-.zip-hint{font-size:10px;color:var(--trust);margin-top:4px;display:none}
-.error-box{display:none;background:#fff5f3;border:1px solid #f0c0b0;border-left:4px solid var(--rust);border-radius:2px;padding:12px 16px;margin-bottom:14px;font-size:11px;color:var(--rust);line-height:1.7}
-.btn{width:100%;background:var(--soil);color:var(--grain);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border:none;padding:15px;border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px;transition:background .2s}
-.btn:hover:not(:disabled){background:var(--bark)}
-.btn:disabled{opacity:.55;cursor:not-allowed}
-.spinner{width:13px;height:13px;border:2px solid rgba(245,223,160,.3);border-top-color:var(--grain);border-radius:50%;animation:spin .8s linear infinite;display:none;flex-shrink:0}
+/* WALKTHROUGH */
+.walkthrough{position:relative}
+.step{display:none;animation:fadeUp .35s ease}
+.step.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.step-card{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:28px;margin-bottom:16px}
+.step-progress{display:flex;gap:6px;margin-bottom:20px}
+.step-dot{height:4px;flex:1;border-radius:2px;background:var(--border);transition:background .3s}
+.step-dot.done{background:var(--leaf)}
+.step-dot.active{background:var(--wheat)}
+
+.step-q{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--soil);margin-bottom:6px;line-height:1.3}
+.step-hint{font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.step-context{font-size:10px;color:var(--trust);margin-bottom:16px;font-style:italic}
+
+/* INPUTS */
+.step-input{font-family:'Space Mono',monospace;font-size:16px;color:var(--soil);background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:12px 16px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;margin-bottom:16px}
+.step-input:focus{border-color:var(--wheat);box-shadow:0 0 0 3px rgba(200,150,60,.1)}
+.step-input-sm{font-size:13px;padding:10px 14px;margin-bottom:0}
+
+/* OPTION BUTTONS */
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.option-btn{font-family:'Space Mono',monospace;font-size:11px;padding:12px 14px;background:var(--cream);border:1px solid var(--border);border-radius:3px;cursor:pointer;text-align:left;line-height:1.4;transition:all .15s;color:var(--soil)}
+.option-btn:hover{border-color:var(--wheat);background:var(--warm)}
+.option-btn.selected{border-color:var(--leaf);background:#f0fdf4;color:var(--trust)}
+.option-btn .opt-icon{font-size:16px;display:block;margin-bottom:4px}
+.option-btn .opt-label{font-weight:700;display:block}
+.option-btn .opt-sub{font-size:9px;color:var(--muted);display:block;margin-top:2px}
+
+/* MULTI SELECT */
+.multi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.multi-btn{font-family:'Space Mono',monospace;font-size:10px;padding:10px 10px;background:var(--cream);border:1px solid var(--border);border-radius:3px;cursor:pointer;text-align:center;transition:all .15s;color:var(--muted)}
+.multi-btn:hover{border-color:var(--wheat);color:var(--soil)}
+.multi-btn.selected{border-color:var(--leaf);background:#f0fdf4;color:var(--trust);font-weight:700}
+
+/* NAV BUTTONS */
+.step-nav{display:flex;gap:10px;align-items:center}
+.btn-next{background:var(--soil);color:var(--grain);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:none;padding:13px 24px;border-radius:2px;cursor:pointer;transition:background .2s;flex:1}
+.btn-next:hover{background:var(--bark)}
+.btn-next:disabled{opacity:.4;cursor:not-allowed}
+.btn-back{background:none;border:none;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;padding:8px;text-decoration:underline;text-underline-offset:3px}
+.error-inline{font-size:11px;color:var(--rust);margin-bottom:12px;display:none}
+
+/* CALCULATING */
+.calculating{text-align:center;padding:40px 20px}
+.calc-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--wheat);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
+.calc-label{font-size:12px;color:var(--muted);line-height:2}
+.calc-step-txt{font-family:'Playfair Display',serif;font-size:16px;color:var(--soil);margin-top:4px}
 
 /* RESULTS */
-.results{display:none;margin-top:24px;animation:fadeUp .4s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.results{display:none;animation:fadeUp .4s ease}
 .results-hdr{background:var(--soil);color:var(--grain);padding:18px 26px;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .results-hdr h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
 .results-meta{font-size:10px;color:var(--harvest);letter-spacing:1px}
@@ -63,6 +99,8 @@ input:focus{border-color:var(--wheat);box-shadow:0 0 0 3px rgba(200,150,60,.1)}
 .r-sec{padding:20px 26px;border-bottom:1px solid var(--border)}
 .r-sec:last-child{border-bottom:none}
 .r-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--wheat);font-weight:700;margin-bottom:12px}
+.restart-btn{margin-top:16px;background:none;border:1px solid var(--border);color:var(--muted);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border-radius:2px;cursor:pointer}
+.restart-btn:hover{border-color:var(--wheat);color:var(--soil)}
 
 /* SHOPPING TABLE */
 .shop-table{width:100%;border-collapse:collapse;font-size:11px}
@@ -102,23 +140,22 @@ input:focus{border-color:var(--wheat);box-shadow:0 0 0 3px rgba(200,150,60,.1)}
 .resource-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .resource-card{background:var(--warm);border:1px solid var(--border);border-radius:3px;padding:14px 16px}
 .resource-card h4{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--soil);margin-bottom:5px}
-.resource-card p{font-size:10px;color:var(--muted);line-height:1.6;margin-bottom:8px}
-.resource-card .note{font-size:9px;color:var(--trust);font-style:italic;margin-bottom:8px;line-height:1.5}
-.resource-link{display:inline-block;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--wheat);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px}
-.resource-link:hover{color:var(--rust)}
+.resource-card p{font-size:10px;color:var(--muted);line-height:1.6;margin-bottom:6px}
+.resource-card .rnote{font-size:9px;color:var(--trust);font-style:italic;margin-bottom:8px;line-height:1.5}
+.resource-link{display:inline-block;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--wheat);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;margin-right:8px}
 
-/* REPS */
+/* PANELS */
 .panel{margin-top:24px;animation:fadeUp .4s ease}
-.panel-hdr{padding:16px 24px;border-radius:4px 4px 0 0;display:flex;align-items:center;gap:10px}
-.panel-hdr h2{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--grain)}
-.panel-hdr .icon{font-size:20px}
+.panel-hdr{padding:14px 22px;border-radius:4px 4px 0 0;display:flex;align-items:center;gap:10px}
+.panel-hdr h2{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--grain)}
+.panel-hdr .icon{font-size:18px}
 .panel-body{background:var(--white);border:1px solid var(--border);border-top:none;border-radius:0 0 4px 4px}
-.panel-intro{padding:14px 22px;font-size:11px;color:var(--muted);line-height:1.8;border-bottom:1px solid var(--border);background:var(--warm)}
+.panel-intro{padding:12px 20px;font-size:11px;color:var(--muted);line-height:1.8;border-bottom:1px solid var(--border);background:var(--warm)}
 .panel-intro strong{color:var(--soil)}
-.rep-card{padding:18px 22px;border-bottom:1px solid var(--border)}
+.rep-card{padding:16px 20px;border-bottom:1px solid var(--border)}
 .rep-card:last-child{border-bottom:none}
 .rep-role{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.rep-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--soil);margin-bottom:4px}
+.rep-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--soil);margin-bottom:4px}
 .rep-party{display:inline-block;font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:2px;margin-bottom:8px;font-weight:700}
 .party-D{background:#dbeafe;color:#1d4ed8}
 .party-R{background:#fee2e2;color:#b91c1c}
@@ -132,20 +169,20 @@ input:focus{border-color:var(--wheat);box-shadow:0 0 0 3px rgba(200,150,60,.1)}
 .vote-NV{background:#f3f4f6;color:#6b7280}
 .vote-bill{flex:1;color:var(--soil);line-height:1.5}
 .vote-bill span{font-size:10px;color:var(--muted);display:block;margin-top:2px}
-.vote-link{font-size:9px;color:var(--wheat);text-decoration:none;letter-spacing:1px;flex-shrink:0}
+.vote-link{font-size:9px;color:var(--wheat);text-decoration:none;flex-shrink:0}
 .rep-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .rep-btn{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;padding:7px 12px;border-radius:2px;text-decoration:none;border:1px solid var(--border);color:var(--soil);background:var(--white);cursor:pointer}
 .rep-btn:hover{background:var(--warm)}
 .rep-btn.primary{background:var(--soil);color:var(--grain);border-color:var(--soil)}
 .rep-btn.primary:hover{background:var(--bark)}
-.panel-note{padding:12px 22px;font-size:10px;color:var(--muted);line-height:1.7;background:var(--warm);border-top:1px solid var(--border)}
+.panel-note{padding:10px 20px;font-size:10px;color:var(--muted);line-height:1.7;background:var(--warm);border-top:1px solid var(--border)}
 .panel-note a{color:var(--wheat)}
-.loading-msg{padding:20px 22px;font-size:11px;color:var(--muted);text-align:center}
+.loading-msg{padding:18px 20px;font-size:11px;color:var(--muted);text-align:center}
 
 footer{background:var(--soil);padding:20px 24px;text-align:center;margin-top:40px}
 footer p{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);line-height:2}
 footer a{color:var(--wheat);text-decoration:none}
-@media(max-width:560px){.row{grid-template-columns:1fr}.resource-grid{grid-template-columns:1fr}.rep-actions{flex-direction:column}}
+@media(max-width:560px){.options-grid{grid-template-columns:1fr}.multi-grid{grid-template-columns:1fr 1fr}.resource-grid{grid-template-columns:1fr}.rep-actions{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -160,52 +197,213 @@ footer a{color:var(--wheat);text-decoration:none}
 
 <div class="page">
 
-  <div style="margin-bottom:20px">
+  <div class="hero">
     <p class="eyebrow">Make It Stretch › Food Tool</p>
     <h1>What Can I<br><em>Afford To Eat?</em></h1>
-    <p class="sub">Real food prices. Real math. A shopping list built around your budget — not someone else's idea of what you can afford.</p>
-    <p class="quiet-trust">🔒 Nothing you enter is stored. This runs entirely in your browser.</p>
+    <p class="sub">Answer a few quick questions. We'll build a real shopping list around your budget, your situation, and your family.</p>
+    <p class="quiet-trust">🔒 Nothing you enter is stored. No account needed.</p>
   </div>
 
-  <!-- TRANSPARENCY -->
   <div class="transparency">
-    <p class="t-title">📊 Where this data comes from — and what it can't do</p>
-    <p>Prices come from the <strong><a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank">U.S. Bureau of Labor Statistics</a></strong> — the same source the federal government uses to track what Americans pay for food. Nutritional data from <strong><a href="https://fdc.nal.usda.gov" target="_blank">USDA FoodData Central</a></strong>. Updated regularly.</p>
-    <p><strong>The honest tradeoff:</strong> Major grocery chains don't share live pricing through open public data. BLS regional averages are close — but your store brand may cost less and a sale could stretch this further. Use this as a strong starting point, then adjust in the aisle.</p>
+    <p class="t-title">📊 Where this data comes from</p>
+    <p>Prices from <strong><a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank">U.S. Bureau of Labor Statistics</a></strong>. Nutrition from <strong><a href="https://fdc.nal.usda.gov" target="_blank">USDA FoodData Central</a></strong>. Regional averages — your store may vary. <a href="/about">Full data explanation →</a></p>
   </div>
 
-  <!-- FORM -->
-  <div class="form-card">
-    <div class="row">
-      <div class="fg">
-        <label>My total budget</label>
-        <span class="helper">How much do you have to spend?</span>
-        <input type="number" id="budget" placeholder="e.g. 25" min="1" max="9999" />
-      </div>
-      <div class="fg">
-        <label>For how many days?</label>
-        <span class="helper">How long must this last?</span>
-        <input type="number" id="days" placeholder="e.g. 14" min="1" max="30" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="fg">
-        <label>Number of people</label>
-        <span class="helper">Adults and kids both count</span>
-        <input type="number" id="people" placeholder="e.g. 4" min="1" max="20" />
-      </div>
-      <div class="fg">
-        <label>Zip code</label>
-        <span class="helper">Maps to your BLS price region</span>
-        <input type="text" id="zip" placeholder="e.g. 38103" maxlength="5" oninput="onZipInput()" />
-        <span class="zip-hint" id="zipHint"></span>
+  <!-- WALKTHROUGH -->
+  <div class="walkthrough" id="walkthrough">
+
+    <!-- STEP 1: Budget -->
+    <div class="step active" id="step-1">
+      <div class="step-card">
+        <div class="step-progress">
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <p class="step-q">How much money do you have for food?</p>
+        <p class="step-hint">Enter your total grocery budget — whatever you have available right now.</p>
+        <input class="step-input" type="number" id="inp-budget" placeholder="e.g. 25" min="1" max="9999" />
+        <p class="error-inline" id="err-1">Please enter a budget amount.</p>
+        <div class="step-nav">
+          <button class="btn-next" onclick="nextStep(1)">Next →</button>
+        </div>
       </div>
     </div>
-    <div class="error-box" id="errorBox"></div>
-    <button class="btn" id="submitBtn" onclick="calculate()">
-      <div class="spinner" id="spinner"></div>
-      <span id="btnText">Show Me What I Can Afford →</span>
-    </button>
+
+    <!-- STEP 2: Days + People -->
+    <div class="step" id="step-2">
+      <div class="step-card">
+        <div class="step-progress">
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <p class="step-q">How many people and for how many days?</p>
+        <p class="step-hint">This tells us how far each dollar needs to stretch.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+          <div>
+            <label style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--bark);font-weight:700;display:block;margin-bottom:6px">Number of people</label>
+            <input class="step-input step-input-sm" type="number" id="inp-people" placeholder="e.g. 4" min="1" max="20" />
+          </div>
+          <div>
+            <label style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--bark);font-weight:700;display:block;margin-bottom:6px">For how many days?</label>
+            <input class="step-input step-input-sm" type="number" id="inp-days" placeholder="e.g. 14" min="1" max="30" />
+          </div>
+        </div>
+        <p class="error-inline" id="err-2">Please fill in both fields.</p>
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep(2)">← Back</button>
+          <button class="btn-next" onclick="nextStep(2)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Zip -->
+    <div class="step" id="step-3">
+      <div class="step-card">
+        <div class="step-progress">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <p class="step-q">What's your zip code?</p>
+        <p class="step-hint">We use this to find your regional food prices, your representatives, and local food resources. We don't store it.</p>
+        <input class="step-input" type="text" id="inp-zip" placeholder="e.g. 38103" maxlength="5" />
+        <p class="step-context" id="zip-context"></p>
+        <p class="error-inline" id="err-3">Please enter a 5-digit zip code.</p>
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep(3)">← Back</button>
+          <button class="btn-next" onclick="nextStep(3)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: Store access -->
+    <div class="step" id="step-4">
+      <div class="step-card">
+        <div class="step-progress">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+          <div class="step-dot"></div>
+        </div>
+        <p class="step-q">What kind of store do you have access to?</p>
+        <p class="step-hint">This changes what we recommend — prices and selection vary a lot.</p>
+        <div class="options-grid">
+          <button class="option-btn" onclick="selectOption('store','full')" id="store-full">
+            <span class="opt-icon">🏪</span>
+            <span class="opt-label">Full grocery store</span>
+            <span class="opt-sub">Kroger, Walmart, Publix, etc.</span>
+          </button>
+          <button class="option-btn" onclick="selectOption('store','dollar')" id="store-dollar">
+            <span class="opt-icon">💲</span>
+            <span class="opt-label">Dollar store</span>
+            <span class="opt-sub">Dollar General, Family Dollar</span>
+          </button>
+          <button class="option-btn" onclick="selectOption('store','warehouse')" id="store-warehouse">
+            <span class="opt-icon">🏢</span>
+            <span class="opt-label">Warehouse club</span>
+            <span class="opt-sub">Costco, Sam's Club</span>
+          </button>
+          <button class="option-btn" onclick="selectOption('store','corner')" id="store-corner">
+            <span class="opt-icon">🏬</span>
+            <span class="opt-label">Corner store / bodega</span>
+            <span class="opt-sub">Limited selection</span>
+          </button>
+        </div>
+        <p class="error-inline" id="err-4">Please select a store type.</p>
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep(4)">← Back</button>
+          <button class="btn-next" onclick="nextStep(4)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5: Dietary needs -->
+    <div class="step" id="step-5">
+      <div class="step-card">
+        <div class="step-progress">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+          <div class="step-dot"></div>
+        </div>
+        <p class="step-q">Any foods to avoid?</p>
+        <p class="step-hint">Select all that apply. We'll leave these out of your list.</p>
+        <div class="multi-grid">
+          <button class="multi-btn" onclick="toggleMulti('avoid','peanuts')" id="avoid-peanuts">🥜 Peanuts</button>
+          <button class="multi-btn" onclick="toggleMulti('avoid','pork')" id="avoid-pork">🐷 Pork</button>
+          <button class="multi-btn" onclick="toggleMulti('avoid','dairy')" id="avoid-dairy">🥛 Dairy</button>
+          <button class="multi-btn" onclick="toggleMulti('avoid','eggs')" id="avoid-eggs">🥚 Eggs</button>
+          <button class="multi-btn" onclick="toggleMulti('avoid','gluten')" id="avoid-gluten">🌾 Gluten</button>
+          <button class="multi-btn" onclick="toggleMulti('avoid','fish')" id="avoid-fish">🐟 Fish/Tuna</button>
+          <button class="multi-btn" onclick="toggleMulti('avoid','meat')" id="avoid-meat">🥩 All meat</button>
+          <button class="multi-btn" onclick="toggleMulti('avoid','none')" id="avoid-none">✓ No restrictions</button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep(5)">← Back</button>
+          <button class="btn-next" onclick="nextStep(5)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6: What they have -->
+    <div class="step" id="step-6">
+      <div class="step-card">
+        <div class="step-progress">
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot done"></div>
+          <div class="step-dot active"></div>
+        </div>
+        <p class="step-q">What do you already have at home?</p>
+        <p class="step-hint">Select what's in your pantry. We won't buy these — we'll redirect that budget to what you're missing.</p>
+        <div class="multi-grid">
+          <button class="multi-btn" onclick="toggleMulti('have','rice')" id="have-rice">🍚 Rice</button>
+          <button class="multi-btn" onclick="toggleMulti('have','beans')" id="have-beans">🫘 Beans</button>
+          <button class="multi-btn" onclick="toggleMulti('have','oats')" id="have-oats">🌾 Oats</button>
+          <button class="multi-btn" onclick="toggleMulti('have','oil')" id="have-oil">🫙 Oil</button>
+          <button class="multi-btn" onclick="toggleMulti('have','eggs')" id="have-eggs">🥚 Eggs</button>
+          <button class="multi-btn" onclick="toggleMulti('have','bread')" id="have-bread">🍞 Bread</button>
+          <button class="multi-btn" onclick="toggleMulti('have','potatoes')" id="have-potatoes">🥔 Potatoes</button>
+          <button class="multi-btn" onclick="toggleMulti('have','pasta')" id="have-pasta">🍝 Pasta</button>
+          <button class="multi-btn" onclick="toggleMulti('have','none')" id="have-none">✗ Nothing</button>
+        </div>
+        <div style="margin-top:12px;margin-bottom:16px">
+          <label style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--bark);font-weight:700;display:block;margin-bottom:6px">Anything else? (optional)</label>
+          <input class="step-input step-input-sm" type="text" id="inp-other-have" placeholder="e.g. canned corn, hot sauce, spices" />
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="prevStep(6)">← Back</button>
+          <button class="btn-next" onclick="runCalculation()">Build My Plan →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALCULATING -->
+    <div class="step" id="step-calc">
+      <div class="calculating">
+        <div class="calc-spinner"></div>
+        <div class="calc-label">One moment —</div>
+        <div class="calc-step-txt" id="calc-msg">Finding your regional prices...</div>
+      </div>
+    </div>
+
   </div>
 
   <!-- RESULTS -->
@@ -219,7 +417,7 @@ footer a{color:var(--wheat);text-decoration:none}
       <div class="r-sec">
         <p class="r-title">🛒 What To Buy — Ranked By Value</p>
         <p style="font-size:10px;color:var(--muted);margin-bottom:14px;line-height:1.6">
-          Ranked by calories per dollar. <span class="tier-badge tier-1">Essential</span> items first, then <span class="tier-badge tier-2">Stretch</span> and <span class="tier-badge tier-3">Quality</span> items as budget allows.
+          Ranked by calories per dollar. <span class="tier-badge tier-1">Essential</span> items first, then <span class="tier-badge tier-2">Stretch</span> and <span class="tier-badge tier-3">Quality</span> as budget allows. Items you already have are skipped.
         </p>
         <table class="shop-table" id="shopTable"></table>
       </div>
@@ -234,12 +432,13 @@ footer a{color:var(--wheat);text-decoration:none}
       <div class="r-sec" style="background:var(--warm)">
         <p class="r-title">📊 About These Prices</p>
         <p style="font-size:10px;color:var(--muted);line-height:1.8">
-          Prices are <strong style="color:var(--soil)">BLS averages for <span id="regionLabel"></span></strong>, updated May 2025.
+          Prices are <strong style="color:var(--soil)">BLS averages for <span id="regionLabel"></span></strong>, May 2025.
           Your local store may vary. Check store brands and weekly sales to stretch further.
           <a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank" style="color:var(--wheat)">Learn about BLS price data →</a>
         </p>
       </div>
     </div>
+    <button class="restart-btn" onclick="restart()">← Start over with different answers</button>
   </div>
 
   <!-- FOOD RESOURCES -->
@@ -249,17 +448,9 @@ footer a{color:var(--wheat);text-decoration:none}
       <h2>Know Your Resources</h2>
     </div>
     <div class="panel-body">
-      <div class="panel-intro">
-        These programs exist specifically for moments like this. <strong>Most families qualify faster than they expect.</strong>
-        No judgment. No shame. These are tools — use them.
-      </div>
-      <div class="r-sec">
-        <div class="resource-grid" id="resourceGrid"></div>
-      </div>
-      <div class="panel-note">
-        Resources sourced from USDA, Feeding America, and benefits.gov. All free. All public.
-        <a href="/about">Learn more about our data sources →</a>
-      </div>
+      <div class="panel-intro"><strong>Most families qualify faster than they expect.</strong> No judgment. No shame. These are tools — use them.</div>
+      <div class="r-sec"><div class="resource-grid" id="resourceGrid"></div></div>
+      <div class="panel-note">Resources from USDA, Feeding America, and benefits.gov. All free. <a href="/about">About our data →</a></div>
     </div>
   </div>
 
@@ -267,19 +458,15 @@ footer a{color:var(--wheat);text-decoration:none}
   <div class="panel" id="federalPanel" style="display:none">
     <div class="panel-hdr" style="background:var(--soil)">
       <span class="icon">🏛</span>
-      <h2>Your Federal Representatives — And How They Voted</h2>
+      <h2>Your Federal Representatives</h2>
     </div>
     <div class="panel-body">
       <div class="panel-intro">
         Your <strong>$<span id="repsbudget"></span></strong> has to stretch <strong><span id="repsdays"></span> days</strong>.
-        These are the people in Congress who vote on SNAP, food assistance, and the farm bill —
-        the policies that directly shape what you can afford at the grocery store.
+        These are the people who vote on SNAP, food assistance, and the farm bill.
       </div>
-      <div id="federalCards"><div class="loading-msg">Loading your representatives...</div></div>
-      <div class="panel-note">
-        Vote records from <a href="https://congress.gov" target="_blank">Congress.gov</a> official roll call data.
-        <a href="https://www.congress.gov/roll-call-votes" target="_blank">See all roll call votes →</a>
-      </div>
+      <div id="federalCards"><div class="loading-msg">Loading...</div></div>
+      <div class="panel-note">Vote records from <a href="https://congress.gov" target="_blank">Congress.gov</a>. <a href="https://www.congress.gov/roll-call-votes" target="_blank">See all roll call votes →</a></div>
     </div>
   </div>
 
@@ -287,137 +474,282 @@ footer a{color:var(--wheat);text-decoration:none}
   <div class="panel" id="statePanel" style="display:none">
     <div class="panel-hdr" style="background:var(--sage)">
       <span class="icon">🏟</span>
-      <h2>Your State Legislature — And How They Voted</h2>
+      <h2>Your State Legislature</h2>
     </div>
     <div class="panel-body">
-      <div class="panel-intro">
-        State legislators control grocery taxes, SNAP matching funds, WIC administration, and local food bank funding.
-        <strong>These votes hit your wallet just as hard as federal ones.</strong>
-      </div>
-      <div id="stateCards"><div class="loading-msg">Loading state bills...</div></div>
-      <div class="panel-note">
-        State data from <a href="https://openstates.org" target="_blank">OpenStates</a>.
-        <a href="https://openstates.org/find_your_legislator/" target="_blank">Find your state legislators →</a>
-      </div>
+      <div class="panel-intro"><strong>State legislators control grocery taxes, SNAP matching, WIC, and food bank funding.</strong> These votes hit your wallet just as hard.</div>
+      <div id="stateCards"><div class="loading-msg">Loading...</div></div>
+      <div class="panel-note">State data from <a href="https://openstates.org" target="_blank">OpenStates</a>. <a href="https://openstates.org/find_your_legislator/" target="_blank">Find your state legislators →</a></div>
     </div>
   </div>
 
 </div>
 
 <footer>
-  <p>Part of <a href="/">getdealtin.com</a> · <a href="/">Make It Stretch</a> · <a href="/about">About & Data Sources</a> · No ads. No data selling. Ever.</p>
+  <p>Part of <a href="/">getdealtin.com</a> · <a href="/">Make It Stretch</a> · <a href="/about">About & Data</a> · No ads. No data selling. Ever.</p>
 </footer>
 
 <script>
+// ── STATE
+const answers = { budget:null, people:null, days:null, zip:null, state:null, region:null, store:null, avoid:[], have:[] };
+const selections = { store:null };
+const multiSelections = { avoid:[], have:[] };
+
 // ── ZIP → STATE + REGION
-const ZIP_STATE = {
-  "0":"CT|northeast","005":"VT|northeast","010":"MA|northeast","020":"MA|northeast",
-  "028":"RI|northeast","029":"RI|northeast","030":"NH|northeast","040":"ME|northeast",
-  "050":"VT|northeast","060":"CT|northeast","070":"NJ|northeast","080":"NJ|northeast",
-  "090":"NY|northeast","100":"NY|northeast","110":"NY|northeast","120":"NY|northeast",
-  "130":"NY|northeast","140":"NY|northeast","150":"PA|northeast","160":"PA|northeast",
-  "170":"PA|northeast","180":"PA|northeast","190":"PA|northeast","197":"DE|south",
-  "200":"DC|south","206":"MD|south","210":"MD|south","220":"VA|south","230":"VA|south",
-  "240":"VA|south","247":"WV|south","250":"WV|south","260":"WV|south","270":"NC|south",
-  "280":"NC|south","290":"SC|south","300":"GA|south","310":"GA|south","320":"FL|south",
-  "330":"FL|south","340":"FL|south","350":"AL|south","360":"AL|south","370":"TN|south",
-  "380":"TN|south","386":"MS|south","390":"MS|south","400":"KY|south","410":"KY|south",
-  "420":"KY|south","430":"OH|midwest","440":"OH|midwest","450":"OH|midwest","460":"IN|midwest",
-  "470":"IN|midwest","480":"MI|midwest","490":"MI|midwest","500":"IA|midwest","510":"IA|midwest",
-  "520":"IA|midwest","530":"WI|midwest","540":"WI|midwest","550":"MN|midwest","560":"MN|midwest",
-  "570":"SD|midwest","580":"ND|midwest","590":"MT|west","600":"IL|midwest","610":"IL|midwest",
-  "620":"IL|midwest","630":"MO|midwest","640":"MO|midwest","650":"MO|midwest","660":"KS|midwest",
-  "670":"KS|midwest","680":"NE|midwest","690":"NE|midwest","700":"LA|south","710":"LA|south",
-  "716":"AR|south","720":"AR|south","730":"OK|south","740":"OK|south","750":"TX|south",
-  "760":"TX|south","770":"TX|south","780":"TX|south","790":"TX|south","800":"CO|west",
-  "810":"CO|west","820":"WY|west","830":"WY|west","832":"ID|west","840":"UT|west",
-  "850":"AZ|west","856":"AZ|west","870":"NM|west","880":"NM|west","889":"NV|west",
-  "890":"NV|west","900":"CA|west","910":"CA|west","920":"CA|west","930":"CA|west",
-  "940":"CA|west","950":"CA|west","960":"CA|west","962":"HI|west","970":"OR|west",
-  "980":"WA|west","990":"WA|west","995":"AK|west"
+// Maps first 3 digits of zip to state|region
+// Falls back to first 2 digits if 3-digit match not found
+const ZIP_MAP = {
+  // Northeast
+  "005":"VT|northeast","006":"PR|south","009":"PR|south",
+  "010":"MA|northeast","011":"MA|northeast","012":"MA|northeast","013":"MA|northeast","014":"MA|northeast","015":"MA|northeast","016":"MA|northeast","017":"MA|northeast","018":"MA|northeast","019":"MA|northeast",
+  "020":"MA|northeast","021":"MA|northeast","022":"MA|northeast","023":"MA|northeast","024":"MA|northeast","025":"MA|northeast","026":"MA|northeast","027":"MA|northeast",
+  "028":"RI|northeast","029":"RI|northeast",
+  "030":"NH|northeast","031":"NH|northeast","032":"NH|northeast","033":"NH|northeast","034":"NH|northeast","035":"NH|northeast","036":"NH|northeast","037":"NH|northeast","038":"NH|northeast",
+  "039":"NH|northeast","040":"ME|northeast","041":"ME|northeast","042":"ME|northeast","043":"ME|northeast","044":"ME|northeast","045":"ME|northeast","046":"ME|northeast","047":"ME|northeast","048":"ME|northeast","049":"ME|northeast",
+  "050":"VT|northeast","051":"VT|northeast","052":"VT|northeast","053":"VT|northeast","054":"VT|northeast","055":"VT|northeast","056":"VT|northeast","057":"VT|northeast","058":"VT|northeast","059":"VT|northeast",
+  "060":"CT|northeast","061":"CT|northeast","062":"CT|northeast","063":"CT|northeast","064":"CT|northeast","065":"CT|northeast","066":"CT|northeast","067":"CT|northeast","068":"CT|northeast","069":"CT|northeast",
+  "070":"NJ|northeast","071":"NJ|northeast","072":"NJ|northeast","073":"NJ|northeast","074":"NJ|northeast","075":"NJ|northeast","076":"NJ|northeast","077":"NJ|northeast","078":"NJ|northeast","079":"NJ|northeast",
+  "080":"NJ|northeast","081":"NJ|northeast","082":"NJ|northeast","083":"NJ|northeast","084":"NJ|northeast","085":"NJ|northeast","086":"NJ|northeast","087":"NJ|northeast","088":"NJ|northeast","089":"NJ|northeast",
+  "090":"NY|northeast","091":"NY|northeast","092":"NY|northeast","093":"NY|northeast","094":"NY|northeast","095":"NY|northeast","096":"NY|northeast","097":"NY|northeast","098":"NY|northeast","099":"NY|northeast",
+  "100":"NY|northeast","101":"NY|northeast","102":"NY|northeast","103":"NY|northeast","104":"NY|northeast","105":"NY|northeast","106":"NY|northeast","107":"NY|northeast","108":"NY|northeast","109":"NY|northeast",
+  "110":"NY|northeast","111":"NY|northeast","112":"NY|northeast","113":"NY|northeast","114":"NY|northeast","115":"NY|northeast","116":"NY|northeast","117":"NY|northeast","118":"NY|northeast","119":"NY|northeast",
+  "120":"NY|northeast","121":"NY|northeast","122":"NY|northeast","123":"NY|northeast","124":"NY|northeast","125":"NY|northeast","126":"NY|northeast","127":"NY|northeast","128":"NY|northeast","129":"NY|northeast",
+  "130":"NY|northeast","131":"NY|northeast","132":"NY|northeast","133":"NY|northeast","134":"NY|northeast","135":"NY|northeast","136":"NY|northeast","137":"NY|northeast","138":"NY|northeast","139":"NY|northeast",
+  "140":"NY|northeast","141":"NY|northeast","142":"NY|northeast","143":"NY|northeast","144":"NY|northeast","145":"NY|northeast","146":"NY|northeast","147":"NY|northeast","148":"NY|northeast","149":"NY|northeast",
+  "150":"PA|northeast","151":"PA|northeast","152":"PA|northeast","153":"PA|northeast","154":"PA|northeast","155":"PA|northeast","156":"PA|northeast","157":"PA|northeast","158":"PA|northeast","159":"PA|northeast",
+  "160":"PA|northeast","161":"PA|northeast","162":"PA|northeast","163":"PA|northeast","164":"PA|northeast","165":"PA|northeast","166":"PA|northeast","167":"PA|northeast","168":"PA|northeast","169":"PA|northeast",
+  "170":"PA|northeast","171":"PA|northeast","172":"PA|northeast","173":"PA|northeast","174":"PA|northeast","175":"PA|northeast","176":"PA|northeast","177":"PA|northeast","178":"PA|northeast","179":"PA|northeast",
+  "180":"PA|northeast","181":"PA|northeast","182":"PA|northeast","183":"PA|northeast","184":"PA|northeast","185":"PA|northeast","186":"PA|northeast","187":"PA|northeast","188":"PA|northeast","189":"PA|northeast",
+  "190":"PA|northeast","191":"PA|northeast","192":"PA|northeast","193":"PA|northeast","194":"PA|northeast","195":"PA|northeast","196":"PA|northeast",
+  "197":"DE|south","198":"DE|south","199":"DE|south",
+  // South
+  "200":"DC|south","201":"VA|south","202":"DC|south","203":"DC|south","204":"DC|south","205":"DC|south",
+  "206":"MD|south","207":"MD|south","208":"MD|south","209":"MD|south","210":"MD|south","211":"MD|south","212":"MD|south","214":"MD|south","215":"MD|south","216":"MD|south","217":"MD|south","218":"MD|south","219":"MD|south",
+  "220":"VA|south","221":"VA|south","222":"VA|south","223":"VA|south","224":"VA|south","225":"VA|south","226":"VA|south","227":"VA|south","228":"VA|south","229":"VA|south",
+  "230":"VA|south","231":"VA|south","232":"VA|south","233":"VA|south","234":"VA|south","235":"VA|south","236":"VA|south","237":"VA|south","238":"VA|south","239":"VA|south",
+  "240":"VA|south","241":"VA|south","242":"VA|south","243":"VA|south","244":"VA|south","245":"VA|south","246":"VA|south",
+  "247":"WV|south","248":"WV|south","249":"WV|south","250":"WV|south","251":"WV|south","252":"WV|south","253":"WV|south","254":"WV|south","255":"WV|south","256":"WV|south","257":"WV|south","258":"WV|south","259":"WV|south",
+  "260":"WV|south","261":"WV|south","262":"WV|south","263":"WV|south","264":"WV|south","265":"WV|south","266":"WV|south","267":"WV|south","268":"WV|south",
+  "270":"NC|south","271":"NC|south","272":"NC|south","273":"NC|south","274":"NC|south","275":"NC|south","276":"NC|south","277":"NC|south","278":"NC|south","279":"NC|south",
+  "280":"NC|south","281":"NC|south","282":"NC|south","283":"NC|south","284":"NC|south","285":"NC|south","286":"NC|south","287":"NC|south","288":"NC|south","289":"NC|south",
+  "290":"SC|south","291":"SC|south","292":"SC|south","293":"SC|south","294":"SC|south","295":"SC|south","296":"SC|south","297":"SC|south","298":"SC|south","299":"SC|south",
+  "300":"GA|south","301":"GA|south","302":"GA|south","303":"GA|south","304":"GA|south","305":"GA|south","306":"GA|south","307":"GA|south","308":"GA|south","309":"GA|south",
+  "310":"GA|south","311":"GA|south","312":"GA|south","313":"GA|south","314":"GA|south","315":"GA|south","316":"GA|south","317":"GA|south","318":"GA|south","319":"GA|south",
+  "320":"FL|south","321":"FL|south","322":"FL|south","323":"FL|south","324":"FL|south","325":"FL|south","326":"FL|south","327":"FL|south","328":"FL|south","329":"FL|south",
+  "330":"FL|south","331":"FL|south","332":"FL|south","333":"FL|south","334":"FL|south","335":"FL|south","336":"FL|south","337":"FL|south","338":"FL|south","339":"FL|south",
+  "340":"FL|south","341":"FL|south","342":"FL|south","344":"FL|south","346":"FL|south","347":"FL|south","349":"FL|south",
+  "350":"AL|south","351":"AL|south","352":"AL|south","354":"AL|south","355":"AL|south","356":"AL|south","357":"AL|south","358":"AL|south","359":"AL|south",
+  "360":"AL|south","361":"AL|south","362":"AL|south","363":"AL|south","364":"AL|south","365":"AL|south","366":"AL|south","367":"AL|south","368":"AL|south","369":"AL|south",
+  "370":"TN|south","371":"TN|south","372":"TN|south","373":"TN|south","374":"TN|south","375":"TN|south","376":"TN|south","377":"TN|south","378":"TN|south","379":"TN|south",
+  "380":"TN|south","381":"TN|south","382":"TN|south","383":"TN|south","384":"TN|south","385":"TN|south",
+  "386":"MS|south","387":"MS|south","388":"MS|south","389":"MS|south","390":"MS|south","391":"MS|south","392":"MS|south","393":"MS|south","394":"MS|south","395":"MS|south","396":"MS|south","397":"MS|south",
+  "400":"KY|south","401":"KY|south","402":"KY|south","403":"KY|south","404":"KY|south","405":"KY|south","406":"KY|south","407":"KY|south","408":"KY|south","409":"KY|south",
+  "410":"KY|south","411":"KY|south","412":"KY|south","413":"KY|south","414":"KY|south","415":"KY|south","416":"KY|south","417":"KY|south","418":"KY|south",
+  "420":"KY|south","421":"KY|south","422":"KY|south","423":"KY|south","424":"KY|south","425":"KY|south","426":"KY|south","427":"KY|south",
+  "700":"LA|south","701":"LA|south","703":"LA|south","704":"LA|south","705":"LA|south","706":"LA|south","707":"LA|south","708":"LA|south","710":"LA|south","711":"LA|south","712":"LA|south","713":"LA|south","714":"LA|south",
+  "716":"AR|south","717":"AR|south","718":"AR|south","719":"AR|south","720":"AR|south","721":"AR|south","722":"AR|south","723":"AR|south","724":"AR|south","725":"AR|south","726":"AR|south","727":"AR|south","728":"AR|south","729":"AR|south",
+  "730":"OK|south","731":"OK|south","733":"OK|south","734":"OK|south","735":"OK|south","736":"OK|south","737":"OK|south","738":"OK|south","739":"OK|south",
+  "740":"OK|south","741":"OK|south","743":"OK|south","744":"OK|south","745":"OK|south","746":"OK|south","747":"OK|south","748":"OK|south","749":"OK|south",
+  "750":"TX|south","751":"TX|south","752":"TX|south","753":"TX|south","754":"TX|south","755":"TX|south","756":"TX|south","757":"TX|south","758":"TX|south","759":"TX|south",
+  "760":"TX|south","761":"TX|south","762":"TX|south","763":"TX|south","764":"TX|south","765":"TX|south","766":"TX|south","767":"TX|south","768":"TX|south","769":"TX|south",
+  "770":"TX|south","771":"TX|south","772":"TX|south","773":"TX|south","774":"TX|south","775":"TX|south","776":"TX|south","777":"TX|south","778":"TX|south","779":"TX|south",
+  "780":"TX|south","781":"TX|south","782":"TX|south","783":"TX|south","784":"TX|south","785":"TX|south","786":"TX|south","787":"TX|south","788":"TX|south","789":"TX|south",
+  "790":"TX|south","791":"TX|south","792":"TX|south","793":"TX|south","794":"TX|south","795":"TX|south","796":"TX|south","797":"TX|south","798":"TX|south","799":"TX|south",
+  // Midwest
+  "430":"OH|midwest","431":"OH|midwest","432":"OH|midwest","433":"OH|midwest","434":"OH|midwest","435":"OH|midwest","436":"OH|midwest","437":"OH|midwest","438":"OH|midwest","439":"OH|midwest",
+  "440":"OH|midwest","441":"OH|midwest","442":"OH|midwest","443":"OH|midwest","444":"OH|midwest","445":"OH|midwest","446":"OH|midwest","447":"OH|midwest","448":"OH|midwest","449":"OH|midwest",
+  "450":"OH|midwest","451":"OH|midwest","452":"OH|midwest","453":"OH|midwest","454":"OH|midwest","455":"OH|midwest","456":"OH|midwest","457":"OH|midwest","458":"OH|midwest",
+  "460":"IN|midwest","461":"IN|midwest","462":"IN|midwest","463":"IN|midwest","464":"IN|midwest","465":"IN|midwest","466":"IN|midwest","467":"IN|midwest","468":"IN|midwest","469":"IN|midwest",
+  "470":"IN|midwest","471":"IN|midwest","472":"IN|midwest","473":"IN|midwest","474":"IN|midwest","475":"IN|midwest","476":"IN|midwest","477":"IN|midwest","478":"IN|midwest","479":"IN|midwest",
+  "480":"MI|midwest","481":"MI|midwest","482":"MI|midwest","483":"MI|midwest","484":"MI|midwest","485":"MI|midwest","486":"MI|midwest","487":"MI|midwest","488":"MI|midwest","489":"MI|midwest",
+  "490":"MI|midwest","491":"MI|midwest","492":"MI|midwest","493":"MI|midwest","494":"MI|midwest","495":"MI|midwest","496":"MI|midwest","497":"MI|midwest","498":"MI|midwest","499":"MI|midwest",
+  "500":"IA|midwest","501":"IA|midwest","502":"IA|midwest","503":"IA|midwest","504":"IA|midwest","505":"IA|midwest","506":"IA|midwest","507":"IA|midwest","508":"IA|midwest",
+  "510":"IA|midwest","511":"IA|midwest","512":"IA|midwest","513":"IA|midwest","514":"IA|midwest","515":"IA|midwest","516":"IA|midwest",
+  "520":"IA|midwest","521":"IA|midwest","522":"IA|midwest","523":"IA|midwest","524":"IA|midwest","525":"IA|midwest","526":"IA|midwest","527":"IA|midwest","528":"IA|midwest",
+  "530":"WI|midwest","531":"WI|midwest","532":"WI|midwest","534":"WI|midwest","535":"WI|midwest","537":"WI|midwest","538":"WI|midwest","539":"WI|midwest",
+  "540":"WI|midwest","541":"WI|midwest","542":"WI|midwest","543":"WI|midwest","544":"WI|midwest","545":"WI|midwest","546":"WI|midwest","547":"WI|midwest","548":"WI|midwest","549":"WI|midwest",
+  "550":"MN|midwest","551":"MN|midwest","553":"MN|midwest","554":"MN|midwest","555":"MN|midwest","556":"MN|midwest","557":"MN|midwest","558":"MN|midwest","559":"MN|midwest",
+  "560":"MN|midwest","561":"MN|midwest","562":"MN|midwest","563":"MN|midwest","564":"MN|midwest","565":"MN|midwest","566":"MN|midwest","567":"MN|midwest",
+  "570":"SD|midwest","571":"SD|midwest","572":"SD|midwest","573":"SD|midwest","574":"SD|midwest","575":"SD|midwest","576":"SD|midwest","577":"SD|midwest",
+  "580":"ND|midwest","581":"ND|midwest","582":"ND|midwest","583":"ND|midwest","584":"ND|midwest","585":"ND|midwest","586":"ND|midwest","587":"ND|midwest","588":"ND|midwest",
+  "600":"IL|midwest","601":"IL|midwest","602":"IL|midwest","603":"IL|midwest","604":"IL|midwest","605":"IL|midwest","606":"IL|midwest","607":"IL|midwest","608":"IL|midwest","609":"IL|midwest",
+  "610":"IL|midwest","611":"IL|midwest","612":"IL|midwest","613":"IL|midwest","614":"IL|midwest","615":"IL|midwest","616":"IL|midwest","617":"IL|midwest","618":"IL|midwest","619":"IL|midwest",
+  "620":"IL|midwest","622":"IL|midwest","623":"IL|midwest","624":"IL|midwest","625":"IL|midwest","626":"IL|midwest","627":"IL|midwest","628":"IL|midwest","629":"IL|midwest",
+  "630":"MO|midwest","631":"MO|midwest","633":"MO|midwest","634":"MO|midwest","635":"MO|midwest","636":"MO|midwest","637":"MO|midwest","638":"MO|midwest","639":"MO|midwest",
+  "640":"MO|midwest","641":"MO|midwest","644":"MO|midwest","645":"MO|midwest","646":"MO|midwest","647":"MO|midwest","648":"MO|midwest","649":"MO|midwest",
+  "650":"MO|midwest","651":"MO|midwest","652":"MO|midwest","653":"MO|midwest","654":"MO|midwest","655":"MO|midwest","656":"MO|midwest","657":"MO|midwest","658":"MO|midwest",
+  "660":"KS|midwest","661":"KS|midwest","662":"KS|midwest","664":"KS|midwest","665":"KS|midwest","666":"KS|midwest","667":"KS|midwest","668":"KS|midwest","669":"KS|midwest",
+  "670":"KS|midwest","671":"KS|midwest","672":"KS|midwest","673":"KS|midwest","674":"KS|midwest","675":"KS|midwest","676":"KS|midwest","677":"KS|midwest","678":"KS|midwest","679":"KS|midwest",
+  "680":"NE|midwest","681":"NE|midwest","683":"NE|midwest","684":"NE|midwest","685":"NE|midwest","686":"NE|midwest","687":"NE|midwest","688":"NE|midwest","689":"NE|midwest",
+  "690":"NE|midwest","691":"NE|midwest","692":"NE|midwest","693":"NE|midwest",
+  // West
+  "590":"MT|west","591":"MT|west","592":"MT|west","593":"MT|west","594":"MT|west","595":"MT|west","596":"MT|west","597":"MT|west","598":"MT|west","599":"MT|west",
+  "800":"CO|west","801":"CO|west","802":"CO|west","803":"CO|west","804":"CO|west","805":"CO|west","806":"CO|west","807":"CO|west","808":"CO|west","809":"CO|west",
+  "810":"CO|west","811":"CO|west","812":"CO|west","813":"CO|west","814":"CO|west","815":"CO|west","816":"CO|west",
+  "820":"WY|west","821":"WY|west","822":"WY|west","823":"WY|west","824":"WY|west","825":"WY|west","826":"WY|west","827":"WY|west","828":"WY|west","829":"WY|west","830":"WY|west","831":"WY|west",
+  "832":"ID|west","833":"ID|west","834":"ID|west","835":"ID|west","836":"ID|west","837":"ID|west","838":"ID|west",
+  "840":"UT|west","841":"UT|west","842":"UT|west","843":"UT|west","844":"UT|west","845":"UT|west","846":"UT|west","847":"UT|west",
+  "850":"AZ|west","851":"AZ|west","852":"AZ|west","853":"AZ|west","855":"AZ|west","856":"AZ|west","857":"AZ|west","859":"AZ|west","860":"AZ|west","863":"AZ|west","864":"AZ|west","865":"AZ|west",
+  "870":"NM|west","871":"NM|west","872":"NM|west","873":"NM|west","874":"NM|west","875":"NM|west","876":"NM|west","877":"NM|west","878":"NM|west","879":"NM|west",
+  "880":"NM|west","881":"NM|west","882":"NM|west","883":"NM|west","884":"NM|west",
+  "889":"NV|west","890":"NV|west","891":"NV|west","893":"NV|west","894":"NV|west","895":"NV|west","896":"NV|west","897":"NV|west","898":"NV|west",
+  "900":"CA|west","901":"CA|west","902":"CA|west","903":"CA|west","904":"CA|west","905":"CA|west","906":"CA|west","907":"CA|west","908":"CA|west","909":"CA|west",
+  "910":"CA|west","911":"CA|west","912":"CA|west","913":"CA|west","914":"CA|west","915":"CA|west","916":"CA|west","917":"CA|west","918":"CA|west","919":"CA|west",
+  "920":"CA|west","921":"CA|west","922":"CA|west","923":"CA|west","924":"CA|west","925":"CA|west","926":"CA|west","927":"CA|west","928":"CA|west",
+  "930":"CA|west","931":"CA|west","932":"CA|west","933":"CA|west","934":"CA|west","935":"CA|west","936":"CA|west","937":"CA|west","938":"CA|west","939":"CA|west",
+  "940":"CA|west","941":"CA|west","942":"CA|west","943":"CA|west","944":"CA|west","945":"CA|west","946":"CA|west","947":"CA|west","948":"CA|west","949":"CA|west",
+  "950":"CA|west","951":"CA|west","952":"CA|west","953":"CA|west","954":"CA|west","955":"CA|west","956":"CA|west","957":"CA|west","958":"CA|west","959":"CA|west",
+  "960":"CA|west","961":"CA|west",
+  "962":"HI|west","963":"HI|west","964":"HI|west","965":"HI|west","966":"HI|west","967":"HI|west","968":"HI|west",
+  "970":"OR|west","971":"OR|west","972":"OR|west","973":"OR|west","974":"OR|west","975":"OR|west","976":"OR|west","977":"OR|west","978":"OR|west","979":"OR|west",
+  "980":"WA|west","981":"WA|west","982":"WA|west","983":"WA|west","984":"WA|west","985":"WA|west","986":"WA|west","987":"WA|west","988":"WA|west","989":"WA|west",
+  "990":"WA|west","991":"WA|west","992":"WA|west","993":"WA|west","994":"WA|west",
+  "995":"AK|west","996":"AK|west","997":"AK|west","998":"AK|west","999":"AK|west"
 };
 
 function zipToInfo(zip) {
   if (!zip || zip.length < 3) return null;
-  const prefixes = [zip.substring(0,3), zip.substring(0,2), zip.substring(0,1)];
-  for (const p of prefixes) {
-    if (ZIP_STATE[p]) {
-      const [state, region] = ZIP_STATE[p].split('|');
-      return { state, region };
-    }
-  }
+  const p3 = zip.substring(0,3);
+  if (ZIP_MAP[p3]) { const [s,r]=ZIP_MAP[p3].split('|'); return {state:s,region:r}; }
   return null;
 }
 
-function onZipInput() {
-  const zip = document.getElementById('zip').value.trim();
-  const hint = document.getElementById('zipHint');
-  if (zip.length === 5) {
-    const info = zipToInfo(zip);
-    if (info) {
-      hint.textContent = `📍 ${info.state} — BLS ${info.region} prices`;
-      hint.style.display = 'block';
-    } else {
-      hint.textContent = 'Using national average prices';
-      hint.style.display = 'block';
-    }
-  } else {
-    hint.style.display = 'none';
+// ── WALKTHROUGH LOGIC
+function nextStep(current) {
+  const err = document.getElementById(`err-${current}`);
+  if (err) err.style.display = 'none';
+
+  if (current === 1) {
+    const v = parseFloat(document.getElementById('inp-budget').value);
+    if (!v || v < 1) { err.style.display='block'; return; }
+    answers.budget = v;
   }
+  if (current === 2) {
+    const p = parseInt(document.getElementById('inp-people').value);
+    const d = parseInt(document.getElementById('inp-days').value);
+    if (!p || !d) { err.style.display='block'; return; }
+    answers.people = p; answers.days = d;
+  }
+  if (current === 3) {
+    const z = document.getElementById('inp-zip').value.trim();
+    if (z.length !== 5) { err.style.display='block'; return; }
+    const info = zipToInfo(z);
+    answers.zip = z;
+    answers.state = info ? info.state : null;
+    answers.region = info ? info.region : 'national';
+  }
+  if (current === 4) {
+    if (!selections.store) { err.style.display='block'; return; }
+    answers.store = selections.store;
+  }
+
+  showStep(current + 1);
 }
 
-// ── FOOD DATABASE — tiered by budget
+function prevStep(current) { showStep(current - 1); }
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const next = document.getElementById(`step-${n}`);
+  if (next) { next.classList.add('active'); next.scrollIntoView({behavior:'smooth',block:'start'}); }
+  updateProgress(n);
+}
+
+function updateProgress(active) {
+  document.querySelectorAll('.step-progress .step-dot').forEach((dot, i) => {
+    dot.className = 'step-dot';
+    if (i+1 < active) dot.classList.add('done');
+    else if (i+1 === active) dot.classList.add('active');
+  });
+}
+
+function selectOption(group, value) {
+  selections[group] = value;
+  document.querySelectorAll(`[id^="${group}-"]`).forEach(btn => btn.classList.remove('selected'));
+  document.getElementById(`${group}-${value}`).classList.add('selected');
+}
+
+function toggleMulti(group, value) {
+  const arr = multiSelections[group];
+  if (value === 'none') {
+    multiSelections[group] = [];
+    document.querySelectorAll(`[id^="${group}-"]`).forEach(btn => btn.classList.remove('selected'));
+    document.getElementById(`${group}-none`).classList.add('selected');
+    return;
+  }
+  document.getElementById(`${group}-none`).classList.remove('selected');
+  const idx = arr.indexOf(value);
+  if (idx > -1) { arr.splice(idx,1); document.getElementById(`${group}-${value}`).classList.remove('selected'); }
+  else { arr.push(value); document.getElementById(`${group}-${value}`).classList.add('selected'); }
+}
+
+// ── ZIP CONTEXT
+document.getElementById('inp-zip').addEventListener('input', function() {
+  const z = this.value.trim();
+  const ctx = document.getElementById('zip-context');
+  if (z.length === 5) {
+    const info = zipToInfo(z);
+    ctx.textContent = info ? `📍 ${info.state} — we'll use BLS ${info.region} prices and find your ${info.state} representatives` : 'Using national average prices';
+  } else { ctx.textContent = ''; }
+});
+
+// ── FOOD DATABASE
 const FOOD_DB = [
-  // TIER 1 — Essential (always included first)
-  { id:'rice',           name:'White Rice (2 lb bag)',       cal:3280, servings:16, cat:'grain',    tier:1, note:'The backbone. Pairs with everything.' },
-  { id:'drybeans',       name:'Dry Pinto Beans (1 lb)',      cal:1560, servings:10, cat:'protein',  tier:1, note:'Cheapest protein per dollar available.' },
-  { id:'oats',           name:'Rolled Oats (42 oz)',         cal:4200, servings:28, cat:'grain',    tier:1, note:'Best breakfast value. Keeps you full for hours.' },
-  { id:'eggs',           name:'Eggs, Grade A Large (dozen)', cal:840,  servings:12, cat:'protein',  tier:1, note:'Versatile protein — any meal, any time.' },
-  { id:'potatoes',       name:'Potatoes (5 lb bag)',         cal:3500, servings:14, cat:'vegetable',tier:1, note:'Filling, nutritious, stores for weeks.' },
-  { id:'bread',          name:'White Bread (loaf)',          cal:1200, servings:20, cat:'grain',    tier:1, note:'Quick meals, sandwiches, sides.' },
-  { id:'onions',         name:'Onions (3 lb bag)',           cal:480,  servings:12, cat:'vegetable',tier:1, note:'Flavor base for almost everything.' },
-  { id:'bananas',        name:'Bananas (~6 count)',          cal:420,  servings:6,  cat:'fruit',    tier:1, note:'Cheapest fruit. Quick snack or breakfast.' },
-  { id:'peanutbutter',   name:'Peanut Butter (16 oz)',       cal:2688, servings:16, cat:'protein',  tier:1, note:'Calorie-dense. Lasts forever. Emergency fuel.' },
-  { id:'cannedtomatoes', name:'Canned Tomatoes (28 oz)',     cal:140,  servings:6,  cat:'vegetable',tier:1, note:'Turns rice and beans into a real meal.' },
-  // TIER 2 — Stretch (added when budget allows)
-  { id:'chicken',        name:'Chicken Leg Quarters (2 lb)', cal:1100, servings:4,  cat:'protein',  tier:2, note:'Best value meat. Flavorful and filling.' },
-  { id:'lentils',        name:'Dry Lentils (1 lb)',          cal:1560, servings:10, cat:'protein',  tier:2, note:'Faster than beans, just as nutritious.' },
-  { id:'pasta',          name:'Pasta (1 lb box)',            cal:1600, servings:8,  cat:'grain',    tier:2, note:'Quick meals. Works with almost anything.' },
-  { id:'carrots',        name:'Carrots (2 lb bag)',          cal:328,  servings:8,  cat:'vegetable',tier:2, note:'Cheap, nutritious, stores well.' },
-  { id:'oil',            name:'Vegetable Oil (48 oz)',       cal:3840, servings:48, cat:'fat',      tier:2, note:'Essential for cooking everything else.' },
-  { id:'cabbage',        name:'Cabbage (1 head)',            cal:440,  servings:8,  cat:'vegetable',tier:2, note:'Lasts 2–3 weeks in the fridge.' },
-  { id:'tuna',           name:'Canned Tuna (5 oz)',          cal:150,  servings:2,  cat:'protein',  tier:2, note:'Quick protein. Good on bread or rice.' },
-  { id:'milk',           name:'Whole Milk (1 gallon)',       cal:2400, servings:16, cat:'dairy',    tier:2, note:'Protein and calories. Works in oatmeal too.' },
-  // TIER 3 — Quality of life (added when budget is comfortable)
-  { id:'flour',          name:'All-Purpose Flour (5 lb)',    cal:7700, servings:50, cat:'grain',    tier:3, note:'Make bread, pancakes, thicken soups.' },
-  { id:'frozenvegs',     name:'Frozen Mixed Vegetables (1 lb)', cal:280, servings:4, cat:'vegetable',tier:3, note:'Affordable nutrition. No prep needed.' },
-  { id:'garlic',         name:'Garlic (1 head)',             cal:45,   servings:8,  cat:'vegetable',tier:3, note:'Transforms simple food into real flavor.' },
-  { id:'sweetpotatoes',  name:'Sweet Potatoes (3 lb)',       cal:1080, servings:6,  cat:'vegetable',tier:3, note:'More nutritious than white potatoes.' },
-  { id:'applesauce',     name:'Applesauce (46 oz jar)',      cal:700,  servings:10, cat:'fruit',    tier:3, note:'Sweet, filling, shelf stable.' },
+  {id:'rice',         name:'White Rice (2 lb bag)',        cal:3280, servings:16, cat:'grain',    tier:1, note:'The backbone. Pairs with everything.',             avoid:[], hasProp:'rice'},
+  {id:'drybeans',     name:'Dry Pinto Beans (1 lb)',       cal:1560, servings:10, cat:'protein',  tier:1, note:'Cheapest protein per dollar available.',           avoid:[], hasProp:'beans'},
+  {id:'oats',         name:'Rolled Oats (42 oz)',          cal:4200, servings:28, cat:'grain',    tier:1, note:'Best breakfast value. Keeps you full for hours.',  avoid:['gluten'], hasProp:'oats'},
+  {id:'eggs',         name:'Eggs, Grade A Large (dozen)',  cal:840,  servings:12, cat:'protein',  tier:1, note:'Versatile protein — any meal, any time.',          avoid:['eggs'], hasProp:'eggs'},
+  {id:'potatoes',     name:'Potatoes (5 lb bag)',          cal:3500, servings:14, cat:'vegetable',tier:1, note:'Filling, nutritious, stores for weeks.',           avoid:[], hasProp:'potatoes'},
+  {id:'bread',        name:'White Bread (loaf)',           cal:1200, servings:20, cat:'grain',    tier:1, note:'Quick meals, sandwiches, sides.',                  avoid:['gluten'], hasProp:'bread'},
+  {id:'onions',       name:'Onions (3 lb bag)',            cal:480,  servings:12, cat:'vegetable',tier:1, note:'Flavor base for almost everything.',               avoid:[], hasProp:null},
+  {id:'bananas',      name:'Bananas (~6 count)',           cal:420,  servings:6,  cat:'fruit',    tier:1, note:'Cheapest fruit. Quick snack or breakfast.',        avoid:[], hasProp:null},
+  {id:'peanutbutter', name:'Peanut Butter (16 oz)',        cal:2688, servings:16, cat:'protein',  tier:1, note:'Calorie-dense. Lasts forever. Emergency fuel.',    avoid:['peanuts'], hasProp:null},
+  {id:'cannedtomatoes',name:'Canned Tomatoes (28 oz)',     cal:140,  servings:6,  cat:'vegetable',tier:1, note:'Turns rice and beans into a real meal.',           avoid:[], hasProp:null},
+  {id:'chicken',      name:'Chicken Leg Quarters (2 lb)', cal:1100, servings:4,  cat:'protein',  tier:2, note:'Best value meat. Flavorful and filling.',           avoid:['meat'], hasProp:null},
+  {id:'lentils',      name:'Dry Lentils (1 lb)',           cal:1560, servings:10, cat:'protein',  tier:2, note:'Faster than beans, just as nutritious.',           avoid:[], hasProp:null},
+  {id:'pasta',        name:'Pasta (1 lb box)',             cal:1600, servings:8,  cat:'grain',    tier:2, note:'Quick meals. Works with almost anything.',         avoid:['gluten'], hasProp:'pasta'},
+  {id:'carrots',      name:'Carrots (2 lb bag)',           cal:328,  servings:8,  cat:'vegetable',tier:2, note:'Cheap, nutritious, stores well.',                  avoid:[], hasProp:null},
+  {id:'oil',          name:'Vegetable Oil (48 oz)',        cal:3840, servings:48, cat:'fat',      tier:2, note:'Essential for cooking everything else.',           avoid:[], hasProp:'oil'},
+  {id:'cabbage',      name:'Cabbage (1 head)',             cal:440,  servings:8,  cat:'vegetable',tier:2, note:'Lasts 2–3 weeks in the fridge.',                  avoid:[], hasProp:null},
+  {id:'tuna',         name:'Canned Tuna (5 oz)',           cal:150,  servings:2,  cat:'protein',  tier:2, note:'Quick protein. Good on bread or rice.',            avoid:['fish','meat'], hasProp:null},
+  {id:'milk',         name:'Whole Milk (1 gallon)',        cal:2400, servings:16, cat:'dairy',    tier:2, note:'Protein and calories. Works in oatmeal too.',      avoid:['dairy'], hasProp:null},
+  {id:'flour',        name:'All-Purpose Flour (5 lb)',     cal:7700, servings:50, cat:'grain',    tier:3, note:'Make bread, pancakes, thicken soups.',             avoid:['gluten'], hasProp:null},
+  {id:'frozenvegs',   name:'Frozen Mixed Vegetables (1 lb)',cal:280, servings:4,  cat:'vegetable',tier:3, note:'Affordable nutrition. No prep needed.',            avoid:[], hasProp:null},
+  {id:'garlic',       name:'Garlic (1 head)',              cal:45,   servings:8,  cat:'vegetable',tier:3, note:'Transforms simple food into real flavor.',          avoid:[], hasProp:null},
+  {id:'sweetpotatoes',name:'Sweet Potatoes (3 lb)',        cal:1080, servings:6,  cat:'vegetable',tier:3, note:'More nutritious than white potatoes.',             avoid:[], hasProp:null},
+  {id:'applesauce',   name:'Applesauce (46 oz jar)',       cal:700,  servings:10, cat:'fruit',    tier:3, note:'Sweet, filling, shelf stable.',                    avoid:[], hasProp:null},
 ];
 
-const PRICES_FALLBACK = {
-  northeast: { rice:3.19, drybeans:2.09, oats:3.99, eggs:3.89, potatoes:4.59, bread:2.29, cabbage:1.69, onions:2.49, bananas:0.99, milk:4.49, cannedtomatoes:1.39, peanutbutter:3.29, chicken:6.29, pasta:1.59, lentils:2.49, oil:5.29, carrots:1.89, flour:3.69, frozenvegs:2.69, tuna:1.59, garlic:0.89, sweetpotatoes:3.49, applesauce:3.99 },
-  midwest:   { rice:2.79, drybeans:1.79, oats:3.69, eggs:3.29, potatoes:4.09, bread:1.89, cabbage:1.39, onions:2.19, bananas:0.85, milk:3.89, cannedtomatoes:1.19, peanutbutter:3.09, chicken:5.29, pasta:1.29, lentils:1.99, oil:4.49, carrots:1.49, flour:2.99, frozenvegs:2.19, tuna:1.29, garlic:0.69, sweetpotatoes:2.99, applesauce:3.49 },
-  south:     { rice:2.69, drybeans:1.79, oats:3.59, eggs:3.29, potatoes:4.19, bread:1.89, cabbage:1.39, onions:2.09, bananas:0.85, milk:3.99, cannedtomatoes:1.19, peanutbutter:3.09, chicken:5.19, pasta:1.29, lentils:1.99, oil:4.39, carrots:1.49, flour:2.99, frozenvegs:2.19, tuna:1.29, garlic:0.69, sweetpotatoes:2.99, applesauce:3.49 },
-  west:      { rice:3.09, drybeans:2.19, oats:4.09, eggs:3.79, potatoes:4.79, bread:2.19, cabbage:1.59, onions:2.39, bananas:0.95, milk:4.29, cannedtomatoes:1.29, peanutbutter:3.19, chicken:6.29, pasta:1.59, lentils:2.49, oil:5.29, carrots:1.89, flour:3.69, frozenvegs:2.69, tuna:1.59, garlic:0.89, sweetpotatoes:3.49, applesauce:3.99 },
-  national:  { rice:2.89, drybeans:1.89, oats:3.79, eggs:3.49, potatoes:4.29, bread:1.99, cabbage:1.49, onions:2.29, bananas:0.89, milk:4.09, cannedtomatoes:1.29, peanutbutter:3.14, chicken:5.59, pasta:1.39, lentils:2.19, oil:4.69, carrots:1.59, flour:3.19, frozenvegs:2.39, tuna:1.39, garlic:0.79, sweetpotatoes:3.19, applesauce:3.69 }
+const PRICES = {
+  northeast:{rice:3.19,drybeans:2.09,oats:3.99,eggs:3.89,potatoes:4.59,bread:2.29,cabbage:1.69,onions:2.49,bananas:0.99,milk:4.49,cannedtomatoes:1.39,peanutbutter:3.29,chicken:6.29,pasta:1.59,lentils:2.49,oil:5.29,carrots:1.89,flour:3.69,frozenvegs:2.69,tuna:1.59,garlic:0.89,sweetpotatoes:3.49,applesauce:3.99},
+  midwest:  {rice:2.79,drybeans:1.79,oats:3.69,eggs:3.29,potatoes:4.09,bread:1.89,cabbage:1.39,onions:2.19,bananas:0.85,milk:3.89,cannedtomatoes:1.19,peanutbutter:3.09,chicken:5.29,pasta:1.29,lentils:1.99,oil:4.49,carrots:1.49,flour:2.99,frozenvegs:2.19,tuna:1.29,garlic:0.69,sweetpotatoes:2.99,applesauce:3.49},
+  south:    {rice:2.69,drybeans:1.79,oats:3.59,eggs:3.29,potatoes:4.19,bread:1.89,cabbage:1.39,onions:2.09,bananas:0.85,milk:3.99,cannedtomatoes:1.19,peanutbutter:3.09,chicken:5.19,pasta:1.29,lentils:1.99,oil:4.39,carrots:1.49,flour:2.99,frozenvegs:2.19,tuna:1.29,garlic:0.69,sweetpotatoes:2.99,applesauce:3.49},
+  west:     {rice:3.09,drybeans:2.19,oats:4.09,eggs:3.79,potatoes:4.79,bread:2.19,cabbage:1.59,onions:2.39,bananas:0.95,milk:4.29,cannedtomatoes:1.29,peanutbutter:3.19,chicken:6.29,pasta:1.59,lentils:2.49,oil:5.29,carrots:1.89,flour:3.69,frozenvegs:2.69,tuna:1.59,garlic:0.89,sweetpotatoes:3.49,applesauce:3.99},
+  national: {rice:2.89,drybeans:1.89,oats:3.79,eggs:3.49,potatoes:4.29,bread:1.99,cabbage:1.49,onions:2.29,bananas:0.89,milk:4.09,cannedtomatoes:1.29,peanutbutter:3.14,chicken:5.59,pasta:1.39,lentils:2.19,oil:4.69,carrots:1.59,flour:3.19,frozenvegs:2.39,tuna:1.39,garlic:0.79,sweetpotatoes:3.19,applesauce:3.69}
 };
 
+// Dollar store price adjustments (limited selection, slightly different pricing)
+const DOLLAR_STORE_ADJUSTMENTS = { rice:0.9, bread:0.85, pasta:0.8, cannedtomatoes:0.9, oats:1.1, eggs:1.05 };
+// Corner store adjustments (higher prices, limited selection)
+const CORNER_STORE_EXCLUDE = ['drybeans','lentils','flour','frozenvegs','sweetpotatoes','applesauce'];
+const CORNER_STORE_ADJUSTMENTS = { bread:1.2, eggs:1.3, milk:1.25, bananas:1.1 };
+
 const MEALS = [
-  { name:'Rice & Beans',            desc:'The most filling meal per dollar on earth. Onion, salt, any spice you have.',                 serves:4,  needs:['rice','drybeans','onions'] },
-  { name:'Potato Soup',             desc:'Diced potato and onion simmered in water. Add milk at the end for creamy texture.',            serves:4,  needs:['potatoes','onions','milk'] },
-  { name:'Oatmeal with Banana',     desc:'Oats cooked in milk or water, topped with sliced banana.',                                    serves:2,  needs:['oats','bananas'] },
-  { name:'Egg Fried Rice',          desc:'Day-old rice, scrambled egg, onion. One of the fastest filling meals possible.',              serves:2,  needs:['rice','eggs','onions'] },
-  { name:'Bean & Cabbage Stew',     desc:'Beans, cabbage, onion, canned tomato simmered together. Tastes like it cooked all day.',      serves:4,  needs:['drybeans','cabbage','onions','cannedtomatoes'] },
-  { name:'Peanut Butter Toast',     desc:'High-calorie, no cooking needed. Good breakfast or between-meal fuel.',                       serves:1,  needs:['bread','peanutbutter'] },
-  { name:'Scrambled Eggs & Toast',  desc:'Simple protein-rich breakfast or dinner. Ready in five minutes.',                             serves:2,  needs:['eggs','bread'] },
-  { name:'Cabbage & Potato Fry',    desc:'Thin-sliced potatoes and cabbage fried with onion until golden.',                            serves:3,  needs:['potatoes','cabbage','onions'] },
-  { name:'Lentil Soup',             desc:'Lentils, onion, canned tomato simmered with spices. Fast, filling, and cheap.',              serves:4,  needs:['lentils','onions','cannedtomatoes'] },
-  { name:'Pasta with Tomato',       desc:'Pasta cooked and tossed with canned tomato, onion, and a little oil.',                       serves:3,  needs:['pasta','cannedtomatoes','onions','oil'] },
-  { name:'Chicken & Rice',          desc:'Chicken simmered with rice and onion. A full meal from very little.',                        serves:4,  needs:['chicken','rice','onions'] },
-  { name:'Bean Soup with Bread',    desc:'Beans and canned tomato simmered with onion. Tear bread on the side to soak it up.',         serves:4,  needs:['drybeans','onions','cannedtomatoes','bread'] },
-  { name:'Tuna & Rice Bowl',        desc:'Canned tuna over rice with onion. Quick protein-packed meal.',                               serves:2,  needs:['tuna','rice','onions'] },
+  {name:'Rice & Beans',           desc:'The most filling meal per dollar on earth. Onion, salt, any spice you have.',                serves:4, needs:['rice','drybeans','onions']},
+  {name:'Potato Soup',            desc:'Diced potato and onion simmered in water. Add milk for creamy texture.',                     serves:4, needs:['potatoes','onions']},
+  {name:'Oatmeal with Banana',    desc:'Oats cooked in milk or water, topped with sliced banana.',                                   serves:2, needs:['oats','bananas']},
+  {name:'Egg Fried Rice',         desc:'Day-old rice, scrambled egg, onion. One of the fastest filling meals possible.',             serves:2, needs:['rice','eggs','onions']},
+  {name:'Bean & Cabbage Stew',    desc:'Beans, cabbage, onion, canned tomato simmered together. Tastes like it cooked all day.',     serves:4, needs:['drybeans','cabbage','onions','cannedtomatoes']},
+  {name:'Peanut Butter Toast',    desc:'High-calorie, no cooking needed. Good breakfast or between-meal fuel.',                      serves:1, needs:['bread','peanutbutter']},
+  {name:'Scrambled Eggs & Toast', desc:'Simple protein-rich breakfast or dinner. Ready in five minutes.',                            serves:2, needs:['eggs','bread']},
+  {name:'Cabbage & Potato Fry',   desc:'Thin-sliced potatoes and cabbage fried with onion until golden.',                           serves:3, needs:['potatoes','cabbage','onions']},
+  {name:'Lentil Soup',            desc:'Lentils, onion, canned tomato simmered with spices. Fast, filling, cheap.',                 serves:4, needs:['lentils','onions','cannedtomatoes']},
+  {name:'Pasta with Tomato',      desc:'Pasta tossed with canned tomato, onion, and a little oil.',                                 serves:3, needs:['pasta','cannedtomatoes','onions']},
+  {name:'Chicken & Rice',         desc:'Chicken simmered with rice and onion. A full meal from very little.',                       serves:4, needs:['chicken','rice','onions']},
+  {name:'Bean Soup with Bread',   desc:'Beans and canned tomato simmered with onion. Tear bread on the side to soak it up.',        serves:4, needs:['drybeans','onions','cannedtomatoes','bread']},
+  {name:'Tuna & Rice Bowl',       desc:'Canned tuna over rice with onion. Quick protein-packed meal.',                              serves:2, needs:['tuna','rice','onions']},
+  {name:'Carrot & Potato Soup',   desc:'Carrots and potatoes simmered with onion. Simple, warming, and filling.',                  serves:3, needs:['carrots','potatoes','onions']},
+  {name:'Pancakes',               desc:'Flour, egg, milk mixed and cooked. A welcome change from rice and beans.',                  serves:4, needs:['flour','eggs','milk']},
 ];
 
 const TIPS = [
@@ -428,10 +760,12 @@ const TIPS = [
   '🥜 Peanut butter on bread is 500+ calories in 2 minutes. Keep it as emergency fuel for the hardest days.',
   '❄️ Cook a double batch of beans and freeze half. Saves time and energy cost.',
   '🥬 Cabbage lasts 2–3 weeks in the fridge. Use it last — still fresh when everything else is gone.',
-  '🌡️ Soak oats overnight in water. Zero cooking energy, ready in the morning.'
+  '🌡️ Soak oats overnight in water. Zero cooking energy, ready in the morning.',
+  '🥕 Carrots and cabbage are the best value vegetables for nutrition per dollar.',
+  '🧄 Garlic makes everything taste better. A single head lasts weeks and costs almost nothing.'
 ];
 
-// ── STATE REP DATA
+// ── STATE REPS
 const STATE_REPS = {
   AL:{s1:{name:'Tommy Tuberville',party:'R',since:'2021'},s2:{name:'Katie Britt',party:'R',since:'2023'}},
   AK:{s1:{name:'Lisa Murkowski',party:'R',since:'2002'},s2:{name:'Dan Sullivan',party:'R',since:'2015'}},
@@ -487,28 +821,22 @@ const STATE_REPS = {
 };
 
 const KEY_VOTES = [
-  { bill:'H.R.1 — One Big Beautiful Bill (SNAP cuts)', desc:'Includes major cuts to SNAP benefits. Est. 3 million households lose eligibility.', impact:'Direct impact on food assistance budgets', url:'https://www.congress.gov/bill/119th-congress/house-bill/1', votes:{D:'N',R:'Y',I:'NV'} },
-  { bill:'SNAP Work Requirements Expansion (H.R.1 §701)', desc:'Expands mandatory work requirements for SNAP recipients up to age 64.', impact:'Affects food access for adults without stable employment', url:'https://www.congress.gov/bill/119th-congress/house-bill/1', votes:{D:'N',R:'Y',I:'NV'} },
-  { bill:'Emergency Food Assistance Funding (FY2025 CR)', desc:'Maintained funding for TEFAP — the Emergency Food Assistance Program used by food banks.', impact:'Keeps food bank supply chains funded', url:'https://www.congress.gov/bill/119th-congress/house-bill/1968', votes:{D:'Y',R:'Y',I:'Y'} }
+  {bill:'H.R.1 — SNAP Cuts (One Big Beautiful Bill)',desc:'Cuts SNAP benefits. Est. 3 million households lose eligibility.',impact:'Direct impact on food assistance budgets',url:'https://www.congress.gov/bill/119th-congress/house-bill/1',votes:{D:'N',R:'Y',I:'NV'}},
+  {bill:'SNAP Work Requirements Expansion',desc:'Expands mandatory work requirements for SNAP recipients up to age 64.',impact:'Affects food access for adults without stable employment',url:'https://www.congress.gov/bill/119th-congress/house-bill/1',votes:{D:'N',R:'Y',I:'NV'}},
+  {bill:'Emergency Food Assistance Funding (FY2025)',desc:'Maintained TEFAP funding — the Emergency Food Assistance Program used by food banks.',impact:'Keeps food bank supply chains funded',url:'https://www.congress.gov/bill/119th-congress/house-bill/1968',votes:{D:'Y',R:'Y',I:'Y'}}
 ];
 
 function renderRepCard(rep, role, state) {
   if (!rep) return '';
-  const partyLabel = {D:'Democrat',R:'Republican',I:'Independent'}[rep.party] || rep.party;
-  const searchName = encodeURIComponent(rep.name);
-  const congressUrl = `https://www.congress.gov/search?q=%7B%22source%22%3A%22members%22%2C%22search%22%3A%22${searchName}%22%7D`;
-
-  const votesHTML = KEY_VOTES.map(v => {
-    const vote = v.votes[rep.party] || 'NV';
-    const badgeClass = vote === 'Y' ? 'vote-Y' : vote === 'N' ? 'vote-N' : 'vote-NV';
-    const badgeText = vote === 'Y' ? 'YES' : vote === 'N' ? 'NO' : 'Not Recorded';
-    return `<div class="vote-item">
-      <span class="vote-badge ${badgeClass}">${badgeText}</span>
-      <div class="vote-bill">${v.bill}<span>${v.desc}</span><span style="color:var(--wheat);font-size:9px">${v.impact}</span></div>
-      <a href="${v.url}" target="_blank" class="vote-link">View →</a>
-    </div>`;
+  const partyLabel = {D:'Democrat',R:'Republican',I:'Independent'}[rep.party]||rep.party;
+  const sn = encodeURIComponent(rep.name);
+  const congressUrl = `https://www.congress.gov/search?q=%7B%22source%22%3A%22members%22%2C%22search%22%3A%22${sn}%22%7D`;
+  const votesHTML = KEY_VOTES.map(v=>{
+    const vote=v.votes[rep.party]||'NV';
+    const bc=vote==='Y'?'vote-Y':vote==='N'?'vote-N':'vote-NV';
+    const bt=vote==='Y'?'YES':vote==='N'?'NO':'Not Recorded';
+    return `<div class="vote-item"><span class="vote-badge ${bc}">${bt}</span><div class="vote-bill">${v.bill}<span>${v.desc}</span><span style="color:var(--wheat);font-size:9px">${v.impact}</span></div><a href="${v.url}" target="_blank" class="vote-link">View →</a></div>`;
   }).join('');
-
   return `<div class="rep-card">
     <div class="rep-role">${role}</div>
     <div class="rep-name">${rep.name}</div>
@@ -523,258 +851,262 @@ function renderRepCard(rep, role, state) {
   </div>`;
 }
 
-let currentState = null;
+async function setCalcMsg(msg, delay=0) {
+  if (delay) await new Promise(r=>setTimeout(r,delay));
+  document.getElementById('calc-msg').textContent = msg;
+}
+
+async function runCalculation() {
+  answers.avoid = multiSelections.avoid;
+  answers.have = multiSelections.have;
+
+  // Show calculating step
+  showStep('calc');
+  document.getElementById('walkthrough').scrollIntoView({behavior:'smooth',block:'start'});
+
+  await setCalcMsg('Finding your regional prices...');
+  await new Promise(r=>setTimeout(r,800));
+
+  // Get prices
+  let prices = PRICES[answers.region] || PRICES.national;
+  try {
+    const priceRes = await fetch(`/api/food-prices?region=${answers.region||'national'}`);
+    const priceData = await priceRes.json();
+    if (priceData.prices && !priceData.fallback && Object.keys(priceData.prices).length > 0) {
+      prices = { ...prices, ...priceData.prices };
+    }
+  } catch(e) { /* use fallback */ }
+
+  await setCalcMsg('Filtering by your dietary needs...');
+  await new Promise(r=>setTimeout(r,600));
+
+  // Apply store type adjustments
+  if (answers.store === 'dollar') {
+    Object.keys(DOLLAR_STORE_ADJUSTMENTS).forEach(k => { if(prices[k]) prices[k] = +(prices[k]*DOLLAR_STORE_ADJUSTMENTS[k]).toFixed(2); });
+  }
+  if (answers.store === 'corner') {
+    Object.keys(CORNER_STORE_ADJUSTMENTS).forEach(k => { if(prices[k]) prices[k] = +(prices[k]*CORNER_STORE_ADJUSTMENTS[k]).toFixed(2); });
+  }
+
+  await setCalcMsg('Checking what you already have...');
+  await new Promise(r=>setTimeout(r,600));
+
+  // Filter food database
+  const haveItems = answers.have;
+  const avoidItems = answers.avoid;
+  const cornerExclude = answers.store === 'corner' ? CORNER_STORE_EXCLUDE : [];
+
+  const foods = FOOD_DB
+    .filter(f => {
+      if (!prices[f.id]) return false;
+      if (cornerExclude.includes(f.id)) return false;
+      if (f.avoid.some(a => avoidItems.includes(a))) return false;
+      if (f.hasProp && haveItems.includes(f.hasProp)) return false; // skip what they have
+      return true;
+    })
+    .map(f => ({ ...f, price: prices[f.id], cpd: Math.round(f.cal / prices[f.id]) }))
+    .sort((a,b) => a.tier - b.tier || b.cpd - a.cpd);
+
+  await setCalcMsg('Building your personalized shopping list...');
+  await new Promise(r=>setTimeout(r,700));
+
+  // Smart calorie-target allocation
+  const targetCals = answers.people * answers.days * 2000;
+  let remaining = answers.budget;
+  let totalCals = 0;
+  let cart = [];
+
+  // First pass — one of each affordable item
+  for (const food of foods) {
+    if (remaining >= food.price) {
+      cart.push({ ...food, qty:1, subtotal: food.price });
+      remaining = +(remaining - food.price).toFixed(2);
+      totalCals += food.cal;
+    }
+  }
+
+  // Second pass — buy more of highest-value items until budget or target met
+  let iterations = 0;
+  while (remaining >= 1 && totalCals < targetCals && iterations < 30) {
+    iterations++;
+    const topItems = cart.filter(c => c.tier <= 2).sort((a,b) => b.cpd - a.cpd);
+    let bought = false;
+    for (const item of topItems) {
+      const maxQty = item.tier === 1 ? 8 : 4;
+      if (item.qty < maxQty && remaining >= item.price) {
+        item.qty++;
+        item.subtotal = +(item.price * item.qty).toFixed(2);
+        remaining = +(remaining - item.price).toFixed(2);
+        totalCals += item.cal;
+        bought = true;
+        break;
+      }
+    }
+    if (!bought) break;
+  }
+
+  await setCalcMsg('Finding meals you can make...');
+  await new Promise(r=>setTimeout(r,500));
+
+  const spent = +(answers.budget - remaining).toFixed(2);
+  const pct = Math.min(100, Math.round((spent / answers.budget) * 100));
+  const cppd = Math.round(totalCals / answers.people / answers.days);
+  const calPct = Math.round((cppd/2000)*100);
+
+  // Render results
+  document.getElementById('resultsMeta').textContent = `$${answers.budget} · ${answers.people} ${answers.people==1?'person':'people'} · ${answers.days} days`;
+  document.getElementById('regionLabel').textContent = answers.state ? `${answers.state} (${answers.region})` : 'National Average';
+  document.getElementById('repsbudget').textContent = answers.budget.toFixed(0);
+  document.getElementById('repsdays').textContent = answers.days;
+
+  // Budget
+  document.getElementById('budgetSec').innerHTML = `
+    <p class="r-title">💰 Budget Breakdown</p>
+    <div class="b-row"><span>Total budget</span><strong>$${answers.budget.toFixed(2)}</strong></div>
+    <div class="b-row"><span>Estimated spend</span><span>$${spent.toFixed(2)}</span></div>
+    <div class="b-track"><div class="b-fill" style="width:${pct}%"></div></div>
+    <div class="b-row"><span style="color:${remaining<0?'var(--rust)':remaining<2?'var(--wheat)':'var(--trust)'}">Remaining: $${remaining.toFixed(2)}</span><span style="font-size:10px;color:var(--muted)">Keep for tax or spices</span></div>
+    <div class="cal-note"><strong>~${cppd.toLocaleString()} cal/person/day</strong> — ${calPct>=80?'✓ Meets basic caloric needs':calPct>=60?'⚠ Below recommended — see food resources below':'⚠ Low — please use food resources below to supplement'}</div>`;
+
+  // Shopping table
+  const maxCpd = Math.max(...cart.map(c=>c.cpd));
+  const tL={1:'Essential',2:'Stretch',3:'Quality'};
+  const tC={1:'tier-1',2:'tier-2',3:'tier-3'};
+  let tHTML=`<thead><tr><th>Item</th><th>Qty</th><th>Value per $</th><th>Cost</th></tr></thead><tbody>`;
+  for(const item of cart){
+    const bw=Math.round((item.cpd/maxCpd)*72);
+    tHTML+=`<tr><td><div style="font-weight:700">${item.name} <span class="tier-badge ${tC[item.tier]}">${tL[item.tier]}</span></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">${item.note}</div>
+      <span class="itag">${item.cat}</span></td>
+      <td style="color:var(--muted)">${item.qty}</td>
+      <td><div class="cpd-bar"><div class="cpd-fill" style="width:${bw}px"></div>
+      <span style="font-size:10px;color:var(--muted)">${item.cpd.toLocaleString()} cal/$</span></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">${item.servings*item.qty} servings</div></td>
+      <td>$${item.subtotal.toFixed(2)}</td></tr>`;
+  }
+  tHTML+=`<tr class="total-row"><td colspan="3">Total</td><td>$${spent.toFixed(2)}</td></tr></tbody>`;
+  document.getElementById('shopTable').innerHTML=tHTML;
+
+  // Meals — filter by what's in cart AND dietary restrictions
+  const cartIds=cart.map(c=>c.id);
+  const meals=MEALS.filter(m=>{
+    if(m.needs.filter(n=>cartIds.includes(n)).length < 2) return false;
+    if(avoidItems.includes('eggs') && m.needs.includes('eggs')) return false;
+    if(avoidItems.includes('meat') && m.needs.includes('chicken')) return false;
+    if(avoidItems.includes('fish') && m.needs.includes('tuna')) return false;
+    if(avoidItems.includes('dairy') && m.needs.includes('milk')) return false;
+    return true;
+  }).slice(0,9);
+  document.getElementById('mealsDiv').innerHTML=meals.map(m=>`
+    <div class="meal-item">
+      <div class="meal-name">${m.name}</div>
+      <div class="meal-desc">${m.desc}</div>
+      <div class="meal-serves">Serves ${m.serves} · From your shopping list</div>
+    </div>`).join('')||'<p style="font-size:11px;color:var(--muted)">Try adjusting your dietary restrictions to unlock more meal combinations.</p>';
+
+  // Tips
+  document.getElementById('tipsDiv').innerHTML=TIPS.map((t,i)=>`<div class="tip-item"><span class="tip-n">${i+1}</span><span>${t}</span></div>`).join('');
+
+  // Show results
+  document.getElementById('walkthrough').style.display='none';
+  document.getElementById('results').style.display='block';
+  setTimeout(()=>document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}),100);
+
+  // Load secondary panels
+  if(answers.state){
+    document.getElementById('resourcesPanel').style.display='block';
+    document.getElementById('federalPanel').style.display='block';
+    document.getElementById('statePanel').style.display='block';
+    loadResources(answers.state, answers.zip);
+    loadFederalReps(answers.state);
+    loadStateReps(answers.state);
+  }
+}
 
 async function loadResources(state, zip) {
   try {
     const res = await fetch(`/api/food-resources?state=${state}&zip=${zip||''}`);
     const data = await res.json();
-    const grid = document.getElementById('resourceGrid');
-    grid.innerHTML = Object.values(data.resources).map(r => `
+    document.getElementById('resourceGrid').innerHTML = Object.values(data.resources).map(r=>`
       <div class="resource-card">
         <h4>${r.title}</h4>
         <p>${r.description}</p>
-        ${r.note ? `<p class="note">${r.note}</p>` : ''}
+        ${r.note?`<p class="rnote">${r.note}</p>`:''}
         <a href="${r.url}" target="_blank" class="resource-link">Learn more →</a>
-        ${r.screener ? `&nbsp;&nbsp;<a href="${r.screener}" target="_blank" class="resource-link">Check eligibility →</a>` : ''}
-        ${r.emergency ? `&nbsp;&nbsp;<a href="${r.emergency}" target="_blank" class="resource-link">Emergency help →</a>` : ''}
+        ${r.screener?`<a href="${r.screener}" target="_blank" class="resource-link">Check eligibility →</a>`:''}
+        ${r.emergency?`<a href="${r.emergency}" target="_blank" class="resource-link">Emergency help →</a>`:''}
       </div>`).join('');
   } catch(e) {
-    document.getElementById('resourceGrid').innerHTML = '<p style="font-size:11px;color:var(--muted)">Could not load resources. <a href="https://www.211.org" target="_blank" style="color:var(--wheat)">Visit 211.org for emergency help →</a></p>';
+    document.getElementById('resourceGrid').innerHTML='<p style="font-size:11px;color:var(--muted)"><a href="https://www.211.org" target="_blank" style="color:var(--wheat)">Visit 211.org for emergency food help →</a></p>';
   }
 }
 
 function loadFederalReps(state) {
   const data = STATE_REPS[state];
-  if (!data) {
-    document.getElementById('federalCards').innerHTML = `<div class="loading-msg"><a href="https://www.congress.gov/members" target="_blank" style="color:var(--wheat)">Find your representatives on Congress.gov →</a></div>`;
-    return;
-  }
-  let html = renderRepCard(data.s1, 'U.S. Senator', state);
-  if (data.s2) html += renderRepCard(data.s2, 'U.S. Senator', state);
-  html += `<div class="rep-card" style="background:var(--warm)">
+  if(!data){ document.getElementById('federalCards').innerHTML=`<div class="loading-msg"><a href="https://www.congress.gov/members" target="_blank" style="color:var(--wheat)">Find your representatives on Congress.gov →</a></div>`; return; }
+  let html = renderRepCard(data.s1,'U.S. Senator',state);
+  if(data.s2) html += renderRepCard(data.s2,'U.S. Senator',state);
+  html+=`<div class="rep-card" style="background:var(--warm)">
     <div class="rep-role">U.S. House Representative</div>
     <div class="rep-name" style="font-size:14px;color:var(--muted)">Find your House district representative</div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.7;margin-top:6px;margin-bottom:10px">House districts are too granular to map from zip code alone.</div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.7;margin-top:6px;margin-bottom:10px">House districts can't be mapped from zip code alone.</div>
     <div class="rep-actions">
       <a href="https://www.house.gov/representatives/find-your-representative" target="_blank" class="rep-btn primary">Find my House Rep →</a>
       <a href="https://www.congress.gov/roll-call-votes" target="_blank" class="rep-btn">All food-related votes →</a>
     </div>
   </div>`;
-  document.getElementById('federalCards').innerHTML = html;
+  document.getElementById('federalCards').innerHTML=html;
 }
 
 async function loadStateReps(state) {
   try {
     const res = await fetch(`/api/state-bills?state=${state}`);
     const data = await res.json();
-    const bills = data.results || [];
-    const stateAbbr = state.toLowerCase();
-
-    if (!bills.length) {
-      document.getElementById('stateCards').innerHTML = `<div class="rep-card">
-        <p style="font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:10px">No recent food-related bills found for ${state} in OpenStates.</p>
-        <div class="rep-actions">
-          <a href="https://openstates.org/${stateAbbr}/bills/" target="_blank" class="rep-btn primary">Browse all ${state} bills →</a>
-          <a href="https://openstates.org/find_your_legislator/" target="_blank" class="rep-btn">Find my state legislators →</a>
-        </div>
-      </div>`;
+    const bills = data.results||[];
+    const abbr = state.toLowerCase();
+    if(!bills.length){
+      document.getElementById('stateCards').innerHTML=`<div class="rep-card"><p style="font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:10px">No recent food-related bills found for ${state} in OpenStates.</p><div class="rep-actions"><a href="https://openstates.org/${abbr}/bills/" target="_blank" class="rep-btn primary">Browse all ${state} bills →</a><a href="https://openstates.org/find_your_legislator/" target="_blank" class="rep-btn">Find my state legislators →</a></div></div>`;
       return;
     }
-
-    let html = '';
-    for (const bill of bills.slice(0,6)) {
-      const identifier = bill.identifier || '';
-      const title = bill.title || 'Untitled';
-      const updated = bill.updated_at ? new Date(bill.updated_at).toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '';
-      const action = bill.latest_action_description || bill.latest_action || 'Status unknown';
-      const sponsors = (bill.sponsors||[]).slice(0,2).map(s=>s.name).join(', ') || 'Unavailable';
-      const chamber = bill.from_organization?.name || '';
-      const billUrl = `https://openstates.org/${stateAbbr}/bills/${encodeURIComponent(identifier)}/`;
-      html += `<div class="rep-card">
-        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
-          <span style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">${chamber}${updated?' · Updated '+updated:''}</span>
-        </div>
-        <div class="rep-name" style="font-size:14px;margin-bottom:6px">${identifier}</div>
+    let html='';
+    for(const bill of bills.slice(0,5)){
+      const id=bill.identifier||'';
+      const title=bill.title||'Untitled';
+      const updated=bill.updated_at?new Date(bill.updated_at).toLocaleDateString('en-US',{month:'short',year:'numeric'}):'';
+      const action=bill.latest_action_description||bill.latest_action||'Status unknown';
+      const sponsors=(bill.sponsors||[]).slice(0,2).map(s=>s.name).join(', ')||'Unavailable';
+      const chamber=bill.from_organization?.name||'';
+      const billUrl=`https://openstates.org/${abbr}/bills/${encodeURIComponent(id)}/`;
+      html+=`<div class="rep-card">
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">${chamber}${updated?' · Updated '+updated:''}</div>
+        <div class="rep-name" style="font-size:14px;margin-bottom:6px">${id}</div>
         <p style="font-size:11px;color:var(--soil);line-height:1.6;margin-bottom:8px">${title}</p>
         <div style="font-size:10px;color:var(--muted);margin-bottom:4px"><strong style="color:var(--soil)">Latest:</strong> ${action}</div>
         <div style="font-size:10px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--soil)">Sponsors:</strong> ${sponsors}</div>
-        <div class="rep-actions">
-          <a href="${billUrl}" target="_blank" class="rep-btn primary">Full bill & votes →</a>
-        </div>
+        <div class="rep-actions"><a href="${billUrl}" target="_blank" class="rep-btn primary">Full bill & votes →</a></div>
       </div>`;
     }
-    html += `<div class="rep-card">
-      <div class="rep-actions">
-        <a href="https://openstates.org/find_your_legislator/" target="_blank" class="rep-btn primary">Find my state legislators →</a>
-        <a href="https://openstates.org/${stateAbbr}/bills/?q=food" target="_blank" class="rep-btn">All food bills in ${state} →</a>
-      </div>
-    </div>`;
-    document.getElementById('stateCards').innerHTML = html;
+    html+=`<div class="rep-card"><div class="rep-actions"><a href="https://openstates.org/find_your_legislator/" target="_blank" class="rep-btn primary">Find my state legislators →</a><a href="https://openstates.org/${abbr}/bills/?q=food" target="_blank" class="rep-btn">All food bills in ${state} →</a></div></div>`;
+    document.getElementById('stateCards').innerHTML=html;
   } catch(err) {
-    document.getElementById('stateCards').innerHTML = `<div class="rep-card">
-      <p style="font-size:11px;color:var(--muted);margin-bottom:10px">Could not load state bills right now.</p>
-      <div class="rep-actions">
-        <a href="https://openstates.org/find_your_legislator/" target="_blank" class="rep-btn primary">Find your state legislators →</a>
-      </div>
-    </div>`;
+    document.getElementById('stateCards').innerHTML=`<div class="rep-card"><p style="font-size:11px;color:var(--muted);margin-bottom:10px">Could not load state bills right now.</p><div class="rep-actions"><a href="https://openstates.org/find_your_legislator/" target="_blank" class="rep-btn primary">Find your state legislators →</a></div></div>`;
   }
 }
 
-async function calculate() {
-  const budget  = parseFloat(document.getElementById('budget').value);
-  const days    = parseInt(document.getElementById('days').value);
-  const people  = parseInt(document.getElementById('people').value);
-  const zip     = document.getElementById('zip').value.trim();
-
-  const errorBox = document.getElementById('errorBox');
-  errorBox.style.display = 'none';
-  document.getElementById('results').style.display = 'none';
-  ['resourcesPanel','federalPanel','statePanel'].forEach(id => document.getElementById(id).style.display = 'none');
-
-  if (!budget || !days || !people) {
-    errorBox.textContent = 'Please fill in your budget, days, and number of people.';
-    errorBox.style.display = 'block';
-    return;
-  }
-
-  const btn = document.getElementById('submitBtn');
-  const spinner = document.getElementById('spinner');
-  const btnText = document.getElementById('btnText');
-  btn.disabled = true;
-  spinner.style.display = 'block';
-  btnText.textContent = 'Building your plan...';
-
-  // Get region info
-  let region = 'national';
-  let regionDisplay = 'National Average';
-  let state = null;
-
-  if (zip.length >= 3) {
-    const info = zipToInfo(zip);
-    if (info) { region = info.region; state = info.state; regionDisplay = `${info.state} (${info.region})`; currentState = info.state; }
-  }
-
-  document.getElementById('regionLabel').textContent = regionDisplay;
-  document.getElementById('resultsMeta').textContent = `$${budget} · ${people} ${people==1?'person':'people'} · ${days} days`;
-  document.getElementById('repsbudget').textContent = budget.toFixed(0);
-  document.getElementById('repsdays').textContent = days;
-
-  // Fetch prices — always fall back to hardcoded BLS averages if API unavailable
-  let prices = PRICES_FALLBACK[region] || PRICES_FALLBACK.national;
-  try {
-    const priceRes = await fetch(`/api/food-prices?region=${region}`);
-    const priceData = await priceRes.json();
-    // Only use API prices if they actually contain data
-    if (priceData.prices && Object.keys(priceData.prices).length > 0 && !priceData.fallback) {
-      prices = { ...prices, ...priceData.prices };
-    }
-  } catch(e) {
-    // Silently use fallback prices
-  }
-
-  // Build food list with prices and calorie-per-dollar
-  // Include all foods that have a price in fallback OR api data
-  const foods = FOOD_DB
-    .map(f => ({ ...f, price: prices[f.id] || null, cpd: prices[f.id] ? Math.round(f.cal / prices[f.id]) : 0 }))
-    .filter(f => f.price)
-    .sort((a,b) => a.tier - b.tier || b.cpd - a.cpd);
-
-  // Calculate caloric target
-  const targetCals = people * days * 2000;
-
-  // Smart allocation — fill by tier then by value until budget or target met
-  let remaining = budget;
-  let totalCals = 0;
-  let cart = [];
-
-  for (const food of foods) {
-    if (remaining < food.price) continue;
-
-    // How many do we need based on caloric target
-    const calsNeeded = Math.max(0, targetCals - totalCals);
-    const unitsNeeded = Math.max(1, Math.ceil(calsNeeded / food.cal));
-    const unitsByBudget = Math.floor(remaining / food.price);
-    const qty = Math.min(unitsNeeded, unitsByBudget, food.tier === 1 ? 4 : food.tier === 2 ? 3 : 2);
-
-    if (qty > 0) {
-      cart.push({ ...food, qty, subtotal: +(food.price * qty).toFixed(2) });
-      remaining = +(remaining - food.price * qty).toFixed(2);
-      totalCals += food.cal * qty;
-    }
-
-    if (remaining < 1 && totalCals >= targetCals) break;
-  }
-
-  const spent = +(budget - remaining).toFixed(2);
-  const pct = Math.min(100, Math.round((spent / budget) * 100));
-  const cppd = Math.round(totalCals / people / days);
-  const calPct = Math.round((cppd / 2000) * 100);
-
-  // Budget section
-  document.getElementById('budgetSec').innerHTML = `
-    <p class="r-title">💰 Budget Breakdown</p>
-    <div class="b-row"><span>Total budget</span><strong>$${budget.toFixed(2)}</strong></div>
-    <div class="b-row"><span>Estimated spend</span><span>$${spent.toFixed(2)}</span></div>
-    <div class="b-track"><div class="b-fill" style="width:${pct}%"></div></div>
-    <div class="b-row"><span style="color:${remaining<0?'var(--rust)':remaining<2?'var(--wheat)':'var(--trust)'}">Remaining: $${remaining.toFixed(2)}</span><span style="font-size:10px;color:var(--muted)">Keep for tax or spices</span></div>
-    <div class="cal-note"><strong>~${cppd.toLocaleString()} calories/person/day</strong> — ${calPct >= 80 ? '✓ Meets basic caloric needs' : calPct >= 60 ? '⚠ Below recommended — see food resources below' : '⚠ Low — please use food resources below to supplement'}</div>`;
-
-  // Shopping table
-  const maxCpd = Math.max(...cart.map(c=>c.cpd));
-  const tierLabel = {1:'Essential',2:'Stretch',3:'Quality'};
-  const tierClass = {1:'tier-1',2:'tier-2',3:'tier-3'};
-  let tHTML = `<thead><tr><th>Item</th><th>Qty</th><th>Value per $</th><th>Cost</th></tr></thead><tbody>`;
-  for (const item of cart) {
-    const bw = Math.round((item.cpd/maxCpd)*72);
-    tHTML += `<tr>
-      <td><div style="font-weight:700">${item.name} <span class="tier-badge ${tierClass[item.tier]}">${tierLabel[item.tier]}</span></div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">${item.note}</div>
-          <span class="itag">${item.cat}</span></td>
-      <td style="color:var(--muted)">${item.qty}</td>
-      <td><div class="cpd-bar"><div class="cpd-fill" style="width:${bw}px"></div>
-          <span style="font-size:10px;color:var(--muted)">${item.cpd.toLocaleString()} cal/$</span></div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">${item.servings * item.qty} servings</div></td>
-      <td>$${item.subtotal.toFixed(2)}</td></tr>`;
-  }
-  tHTML += `<tr class="total-row"><td colspan="3">Total</td><td>$${spent.toFixed(2)}</td></tr></tbody>`;
-  document.getElementById('shopTable').innerHTML = tHTML;
-
-  // Meals
-  const cartIds = cart.map(c=>c.id);
-  const meals = MEALS.filter(m => m.needs.filter(n=>cartIds.includes(n)).length >= 2).slice(0,8);
-  document.getElementById('mealsDiv').innerHTML = meals.map(m=>`
-    <div class="meal-item">
-      <div class="meal-name">${m.name}</div>
-      <div class="meal-desc">${m.desc}</div>
-      <div class="meal-serves">Serves ${m.serves} · From your shopping list</div>
-    </div>`).join('') || '<p style="font-size:11px;color:var(--muted)">Increase your budget slightly to unlock more meal combinations.</p>';
-
-  // Tips
-  document.getElementById('tipsDiv').innerHTML = TIPS.map((t,i)=>
-    `<div class="tip-item"><span class="tip-n">${i+1}</span><span>${t}</span></div>`).join('');
-
-  // Show results
-  document.getElementById('results').style.display = 'block';
-
-  btn.disabled = false;
-  spinner.style.display = 'none';
-  btnText.textContent = 'Show Me What I Can Afford →';
-
-  setTimeout(() => document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}), 100);
-
-  // Load secondary panels
-  if (state) {
-    document.getElementById('resourcesPanel').style.display = 'block';
-    document.getElementById('federalPanel').style.display = 'block';
-    document.getElementById('statePanel').style.display = 'block';
-    loadResources(state, zip);
-    loadFederalReps(state);
-    loadStateReps(state);
-  }
+function restart() {
+  document.getElementById('results').style.display='none';
+  ['resourcesPanel','federalPanel','statePanel'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('walkthrough').style.display='block';
+  // Reset state
+  Object.assign(answers,{budget:null,people:null,days:null,zip:null,state:null,region:null,store:null,avoid:[],have:[]});
+  selections.store=null;
+  multiSelections.avoid=[];
+  multiSelections.have=[];
+  document.querySelectorAll('.option-btn,.multi-btn').forEach(b=>b.classList.remove('selected'));
+  ['inp-budget','inp-people','inp-days','inp-zip','inp-other-have'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  showStep(1);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-
-document.addEventListener('keydown', e => { if(e.key==='Enter' && e.target.tagName !== 'TEXTAREA') calculate(); });
 </script>
 </body>
 </html>
