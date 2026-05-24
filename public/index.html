@@ -829,7 +829,7 @@ function calculate() {
     <div class="b-row"><span style="color:${remaining<0?'var(--rust)':remaining<2?'var(--wheat)':'var(--trust)'}">Remaining: $${remaining.toFixed(2)}</span><span style="font-size:10px;color:var(--muted)">Keep for tax or spices</span></div>
     <div class="cal-note">
       <strong>~${cppd.toLocaleString()} calories/person/day</strong> — 
-      ${calPct>=80?'✓ Meets basic caloric needs':'calPct>=60?⚠ Below recommended — add any available food resources':' ⚠ Low — supplement with food bank, SNAP, or school meal programs'}
+      ${calPct >= 80 ? '✓ Meets basic caloric needs' : calPct >= 60 ? '⚠ Below recommended — add any available food resources' : '⚠ Low — supplement with food bank, SNAP, or school meal programs'}
     </div>`;
 
   // Shopping table
