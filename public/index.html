@@ -660,20 +660,24 @@ async function calculate() {
   document.getElementById('repsbudget').textContent = budget.toFixed(0);
   document.getElementById('repsdays').textContent = days;
 
-  // Fetch prices
-  let prices;
+  // Fetch prices — always fall back to hardcoded BLS averages if API unavailable
+  let prices = PRICES_FALLBACK[region] || PRICES_FALLBACK.national;
   try {
     const priceRes = await fetch(`/api/food-prices?region=${region}`);
     const priceData = await priceRes.json();
-    prices = priceData.prices || PRICES_FALLBACK[region] || PRICES_FALLBACK.national;
+    // Only use API prices if they actually contain data
+    if (priceData.prices && Object.keys(priceData.prices).length > 0 && !priceData.fallback) {
+      prices = { ...prices, ...priceData.prices };
+    }
   } catch(e) {
-    prices = PRICES_FALLBACK[region] || PRICES_FALLBACK.national;
+    // Silently use fallback prices
   }
 
   // Build food list with prices and calorie-per-dollar
+  // Include all foods that have a price in fallback OR api data
   const foods = FOOD_DB
-    .filter(f => prices[f.id])
-    .map(f => ({ ...f, price: prices[f.id], cpd: Math.round(f.cal / prices[f.id]) }))
+    .map(f => ({ ...f, price: prices[f.id] || null, cpd: prices[f.id] ? Math.round(f.cal / prices[f.id]) : 0 }))
+    .filter(f => f.price)
     .sort((a,b) => a.tier - b.tier || b.cpd - a.cpd);
 
   // Calculate caloric target
