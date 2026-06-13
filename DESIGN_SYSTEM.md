@@ -436,4 +436,121 @@ States:
 
 ---
 
+## 11. Donation Infrastructure — Implementation Reference
+
+### 11.1 Placement Philosophy
+
+The donation ask appears in **two locations** — both earned, neither interruptive:
+
+1. **Header** — a small pill button "Support This Tool" top-right of the hero, present from the moment the page loads but understated enough not to demand attention before the person has used the tool.
+2. **Shopping List sidebar** — below the four utility action buttons, above the grocery items. By the time someone opens the shopping list, they've received the full value of the tool. The ask is contextually earned.
+
+**Never** surface the donation request between the dashboard and the meal plan. That's the worst moment — the person came to feed their family, not to be asked for money before seeing their plan.
+
+### 11.2 Stripe Integration
+
+**SDK:** Loaded in `<head>` with `defer` — `https://js.stripe.com/v3/`
+
+**Keys (live, wired in):**
+- Publishable key: `pk_live_51Thuf...` — safe in frontend, identifies Stripe account only
+- Price ID: `price_1ThuuEPo7HmLEBd46gDEuDma` — one-time $5 contribution
+- Payment link: `https://buy.stripe.com/28EcN7giU7JS6LM53kfQI00` — fallback when SDK unavailable
+
+**`initDonation()`** — called once when the dashboard reveals. Shows the donation card (hidden by default via `display:none`) and initializes `_stripe` with the publishable key.
+
+**`launchStripe()`** — called by both the header button and the shopping list button. If `_stripe` is initialized and starts with `pk_`, opens Stripe Checkout via `redirectToCheckout` with the Price ID. Falls back to opening the Payment Link in a new tab if SDK isn't loaded.
+
+**No PayPal** — removed entirely. Peter Thiel involvement conflicts with the values of this project.
+
+**Apple Pay / Google Pay** activate automatically through Stripe — no separate configuration. Stripe detects what the user's browser/device supports.
+
+### 11.3 Stripe Account Notes
+
+- Account registered fresh under getdealtin, not Margin Ventures LLC
+- Stripe holds payouts until identity verification clears (1-2 business days after account creation)
+- The publishable key is safe in frontend HTML — it cannot charge anyone or access account data
+- Secret key (`sk_live_...`) must never appear in frontend code — server only
+
+### 11.4 Donation Card CSS
+
+```
+.donation-card    — hidden by default (display:none), shown by initDonation()
+.donation-eyebrow — Plus Jakarta Sans 700 uppercase 0.1em tracking, #5A6E61
+.donation-headline — Lora 600, 1rem, forest green italic on <em>
+.donation-body    — Plus Jakarta Sans 0.82rem, var(--ink3)
+.stripe-btn       — #635BFF Stripe purple (intentionally off-brand — signals payment processor)
+.stripe-btn-main  — Plus Jakarta Sans 700 uppercase
+.stripe-btn-sub   — Plus Jakarta Sans 400 0.6rem (Apple Pay · Google Pay · CashApp)
+```
+
+The Stripe purple `#635BFF` is the only place in the UI where a non-brand color is used intentionally. It signals "third-party payment processor" — users recognize it as Stripe's color. Do not replace it with Warm Ochre or Deep Forest.
+
+### 11.5 Header Donate Button
+
+```css
+.header-nav         — flex row, space-between, wraps eyebrow + donate button
+.header-donate-btn  — pill shape (border-radius: 20px), semi-transparent white bg,
+                      forest green border, Plus Jakarta Sans 700 uppercase
+```
+
+The button calls `launchStripe()` directly. Styled to sit within the header's color story — not Stripe purple, not Ochre, just a quiet pill that fits the `#f5f0e8` header background.
+
+---
+
+### 11.6 Shopping List Sticky Sidebar Layout
+
+The shopping list accordion body uses a two-column layout instead of a single stacked column:
+
+```
+.shopping-list-container  — display:flex, gap:28px, align-items:flex-start (critical for sticky)
+.list-sidebar             — position:sticky, top:20px, width:260px, flex-shrink:0
+.list-content             — flex:1, min-width:0 (prevents overflow on long item names)
+```
+
+**Inside `.list-sidebar`:** action buttons (stacked vertically, full-width) → donation card.
+
+**`align-items: flex-start` on the container is non-negotiable** — without it the sidebar stretches to full list height and sticky has no room to scroll within.
+
+**Mobile breakpoint (≤780px):** collapses to single column. Sidebar goes `position:static`, action buttons go `flex-direction:row` wrapping, donation card sits below them full-width. Sticky behavior is disabled on mobile — viewport too narrow to be useful.
+
+**Print:** `.list-sidebar` is hidden via `@media print` — only the grocery items print.
+
+---
+
+## 12. What to Build Next
+
+### Remaining from Phase 1c — Context Page
+
+A dedicated `/why` page linked from the sidebar CTA button. Should explain:
+- What SNAP is and what current cuts mean in dollar terms
+- Why the USDA discontinued its annual food security survey
+- Where getdealtin's price data comes from (BLS)
+- How to read the voting records in Know Your System
+
+Design: same cream canvas `#FAF8F5`, Lora headings, editorial tone. Link from the sidebar's "See Who Votes on Your Food →" CTA.
+
+### Phase 3 — Substack
+
+Launch the Substack in two registers: practical posts for families and deeper policy/data pieces for funders. One good post every two weeks. A program officer who reads three issues should understand getdealtin before you ever pitch them.
+
+### Phase 4 — Are.na Resource Page
+
+The "Meal Prep Resources" button already links to `are.na/erin-relford/make-it-stretch-recipes`. Build the `/resources` page on the site pulling from the Are.na API, rendering each link as a `.resource-card`. When you add something to Are.na, it auto-appears on the site.
+
+### Phase 5 — Zip Code Input
+
+Add voluntary zip code entry to the tool. This enables the PostgreSQL behavioral logging in Phase 6 and makes the sidebar local stats actually dynamic per user.
+
+### Phase 6 — PostgreSQL Event Database
+
+Stand up Supabase. Add `logEvent(type, data)` helper to the script block. Events to log: budget tier entered, food items in cart, brand comparisons clicked, online vs. local selections, post-output actions taken.
+
+When live, wire sidebar pulse stats (`47M+`, `$6`, `13%`) to `/api/pulse-stats` — the `populateSystemPulse()` function already accepts these as parameters.
+
+### Phase 7 — Community Intelligence & Na Formalization
+
+Surface aggregate zip-level insights back to users. Package data for food bank partners. Grant narrative around the USDA data gap. Formalize Native's 501(c)(3) or fiscal sponsorship.
+
+---
+
 *Na · Native · Narrative · getdealtin · 2026*
