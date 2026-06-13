@@ -5,54 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Make It Stretch · Get Dealt In</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  /* IBM design tokens — clean white */
-  --ink:     #111827;
-  --ink2:    #374151;
-  --ink3:    #6b7280;
-  --ink4:    #9ca3af;
-  --bg:      #ffffff;
-  --bg2:     #f9fafb;
-  --bg3:     #f3f4f6;
-  --border:  #e5e7eb;
-  --border2: #d1d5db;
-  --green:   #16a34a;
-  --green-bg:#f0fdf4;
-  --green-border: #bbf7d0;
-  --green-dim: #f0fdf4;
-  --red:     #dc2626;
-  --red-dim: #fef2f2;
-  --red-bg:  #fef2f2;
-  --red-border: #fecaca;
-  --blue:    #2563eb;
-  --blue-dim:#eff6ff;
-  --blue-bg: #eff6ff;
-  --blue-border: #bfdbfe;
-  --gold:    #d97706;
-  --gold-dim:#fffbeb;
-  --amber:   #d97706;
-  --amber-bg:#fffbeb;
-  --amber-border: #fde68a;
-  --purple:  #7c3aed;
-  --purple-bg:#faf5ff;
-  --purple-border: #e9d5ff;
-  /* Keep page vars pointing to same white palette */
-  --page-bg:      #ffffff;
-  --page-surface: #ffffff;
-  --page-border:  #e5e7eb;
-  --page-text:    #111827;
-  --page-text2:   #374151;
-  --page-text3:   #6b7280;
+  /* ── Grounded Resilience palette ── */
+  --ink:     #1B3624;        /* Deep Forest — primary text & hierarchy */
+  --ink2:    #3E4A42;        /* Slate Grey — secondary text, data, borders */
+  --ink3:    #6b7a70;        /* Muted sage — tertiary/hint text */
+  --ink4:    #9aaa9f;        /* Faint sage — disabled/placeholder */
+  --bg:      #FAF8F5;        /* Warm Cream — canvas */
+  --bg2:     #F3F0EB;        /* Slightly deeper cream — card surfaces */
+  --bg3:     #EAE6DF;        /* Card hover / pressed state */
+  --border:  #DDD9D1;        /* Warm grey border */
+  --border2: #C8C4BC;        /* Stronger border */
+  --green:   #1B3624;        /* Forest green — positive/confirmed */
+  --green-bg:#EEF3EE;
+  --green-border: #B8CDB8;
+  --green-dim: #EEF3EE;
+  --red:     #b83c2b;        /* Terracotta red — alerts */
+  --red-dim: #fdf0ec;
+  --red-bg:  #fdf0ec;
+  --red-border: #f0c4b8;
+  --blue:    #2a5c8a;        /* Slate blue — links */
+  --blue-dim:#eaf0f7;
+  --blue-bg: #eaf0f7;
+  --blue-border: #b8d0e8;
+  --gold:    #D9822B;        /* Warm Ochre — THE accent, use sparingly */
+  --gold-dim:#fdf0e4;
+  --amber:   #D9822B;
+  --amber-bg:#fdf0e4;
+  --amber-border: #f0c898;
+  --purple:  #6b4e8a;
+  --purple-bg:#f4f0f8;
+  --purple-border: #d4c8e8;
+  /* Page aliases */
+  --page-bg:      #FAF8F5;
+  --page-surface: #F3F0EB;
+  --page-border:  #DDD9D1;
+  --page-text:    #1B3624;
+  --page-text2:   #3E4A42;
+  --page-text3:   #6b7a70;
 }
 
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.6;
@@ -93,15 +93,16 @@ header {
   flex: 1;
 }
 .header-eyebrow {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
-  letter-spacing: 5px;
-  color: #3d7a55;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #1B3624;
   text-transform: uppercase;
   margin-bottom: 12px;
 }
 .header-eyebrow a {
-  color: #3d7a55;
+  color: #1B3624;
   text-decoration: none;
   opacity: .7;
   transition: opacity .15s;
@@ -132,7 +133,7 @@ header h1 em {
 }
 .header-quote cite {
   display: block;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-style: normal;
   font-size: 15px;
   letter-spacing: 2px;
@@ -143,7 +144,209 @@ header h1 em {
 
 
 /* ── MAIN LAYOUT ── */
-.main { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+.main { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* ── INTAKE: keep narrow ── */
+.intake-wrap { max-width: 780px; margin: 0 auto; }
+
+/* ── DASHBOARD GRID: Dual-Narrative ── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+}
+.dash-main { min-width: 0; }
+.dash-sidebar {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+/* ── SYSTEM PULSE SIDEBAR ── */
+.system-pulse {
+  background: #25332B;
+  border: 1px solid #35473D;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.pulse-hdr {
+  padding: 16px 20px;
+  border-bottom: 1px solid #35473D;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pulse-hdr-label {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  color: #FFFFFF;
+}
+.pulse-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: blink 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.pulse-body { padding: 20px; }
+.pulse-hook {
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  font-style: italic;
+  color: rgba(250,248,245,.9);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.pulse-stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.pulse-stat-item {
+  padding: 12px 14px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid #35473D;
+  border-radius: 8px;
+}
+.pulse-stat-val {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.pulse-stat-label {
+  font-size: 12px;
+  color: rgba(250,248,245,.6);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.pulse-cta {
+  display: block;
+  text-align: center;
+  padding: 11px 16px;
+  background: rgba(217,130,43,.18);
+  border: 1px solid rgba(217,130,43,.5);
+  border-radius: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .3px;
+  margin-top: 4px;
+}
+.pulse-cta:hover {
+  background: rgba(217,130,43,.3);
+  border-color: var(--gold);
+}
+.pulse-policy-alert {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(184,60,43,.12);
+  border: 1px solid rgba(184,60,43,.3);
+  border-radius: 8px;
+  font-size: 12px;
+  color: rgba(250,200,190,.9);
+  line-height: 1.6;
+}
+.pulse-policy-alert strong {
+  color: #f5b8aa;
+}
+.pulse-divider {
+  height: 1px;
+  background: #35473D;
+  margin: 16px 0;
+}
+.pulse-local-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(250,248,245,.35);
+  margin-bottom: 10px;
+}
+.pulse-local-stat {
+  font-size: 13px;
+  color: rgba(250,248,245,.7);
+  line-height: 1.7;
+  margin-bottom: 6px;
+}
+.pulse-local-stat strong {
+  color: #FAF8F5;
+}
+
+/* ── MOBILE SYSTEM PULSE CARD (shown in main flow on mobile) ── */
+.mobile-system-pulse {
+  display: none;
+  background: #25332B;
+  border: 1px solid #35473D;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+
+/* ── COLLAPSIBLE ACCORDION SECTIONS ── */
+.accordion-section {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.accordion-hdr {
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: var(--bg2);
+  transition: background .15s;
+  gap: 12px;
+  user-select: none;
+}
+.accordion-hdr:hover { background: #EDE8DF; }
+.accordion-section.open .accordion-hdr { background: #EDE8DF; border-bottom: 1px solid var(--border); }
+.accordion-hdr-left { flex: 1; }
+.accordion-title {
+  font-family: 'Lora', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -.2px;
+}
+.accordion-subtitle {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-top: 2px;
+}
+.accordion-chevron {
+  font-size: 14px;
+  color: var(--ink3);
+  transition: transform .2s;
+  flex-shrink: 0;
+}
+.accordion-section.open .accordion-chevron { transform: rotate(180deg); }
+.accordion-body { display: none; padding: 24px 20px; }
+.accordion-section.open .accordion-body { display: block; animation: fadeUp .2s ease; }
+
+@media(max-width:900px){
+  .dash-grid { grid-template-columns: 1fr; }
+  .dash-sidebar { display: none; }
+  .mobile-system-pulse { display: block; }
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); }
+}
+@media(max-width:480px){
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .stat { min-width: unset; }
+}
 
 /* ── INTAKE FORM ── */
 .intake-card {
@@ -173,14 +376,16 @@ header h1 em {
   border-radius: 0 2px 2px 0;
 }
 .step-eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 4px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink3);
+  color: #5A6E61;
   margin-bottom: 10px;
 }
 .step-q {
+  font-family: 'Lora', serif;
   font-size: 22px;
   font-weight: 700;
   color: var(--ink);
@@ -217,7 +422,7 @@ header h1 em {
   box-shadow: 0 0 0 3px var(--gold-dim);
 }
 .field-input {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 16px; color: var(--ink);
   background: var(--bg2);
   border: 1.5px solid var(--border);
@@ -236,7 +441,7 @@ header h1 em {
 }
 .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .option-btn {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px; padding: 14px 16px;
   background: var(--bg2);
   border: 1.5px solid var(--border);
@@ -244,54 +449,71 @@ header h1 em {
   text-align: left; line-height: 1.4;
   transition: all .12s; color: var(--ink);
 }
-.option-btn:hover { border-color: var(--gold); background: #fffbf0; }
+.option-btn:hover { border-color: var(--gold); background: #EDE8DF; }
 .option-btn.selected {
-  border-color: var(--gold);
-  background: #fffbf0;
-  box-shadow: 0 0 0 3px var(--gold-dim);
+  border-color: #1B3624;
+  background: #1B3624;
+  color: #fff;
+  box-shadow: none;
 }
+.option-btn.selected .opt-sub { color: rgba(255,255,255,.7); }
 .opt-icon { font-size: 20px; display: block; margin-bottom: 6px; }
 .opt-label { font-weight: 600; display: block; font-size: 14px; }
 .opt-sub { font-size: 12px; color: var(--ink2); display: block; margin-top: 2px; }
-.multi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 8px; }
-.multi-btn {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 13px; padding: 10px 8px;
-  background: var(--bg2);
-  border: 1.5px solid var(--border);
-  border-radius: 6px; cursor: pointer;
-  text-align: center; transition: all .12s;
-  color: var(--ink2); line-height: 1.3;
+
+/* Compact pill tags for multi-select groups */
+.tag-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.tag-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem; font-weight: 500;
+  padding: 0.45rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px; cursor: pointer;
+  transition: all .15s; color: var(--ink2);
+  white-space: nowrap;
 }
-.multi-btn:hover { border-color: var(--gold); color: var(--ink); }
-.multi-btn.selected {
-  border-color: var(--gold);
-  background: #fffbf0;
-  color: var(--ink);
-  font-weight: 600;
+.tag-btn:hover { border-color: var(--ink2); color: var(--ink); }
+/* Store tags — ochre selected */
+.tag-btn.tag-store.selected {
+  background: #D9822B; border-color: #D9822B;
+  color: #fff; font-weight: 700;
+}
+/* Avoid tags — deep forest selected */
+.tag-btn.tag-avoid.selected {
+  background: #1B3624; border-color: #1B3624;
+  color: #fff; font-weight: 700;
+}
+/* Have tags — sage selected with + prefix handled via content */
+.tag-btn.tag-have.selected {
+  background: #eef3ee; border-color: #3a7a50;
+  color: #1B3624; font-weight: 700;
 }
 .step-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 3px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  color: var(--ink3);
-  display: block; margin-bottom: 8px; margin-top: 20px;
+  letter-spacing: 0.12em;
+  color: #4A5D50;
+  display: block; margin-bottom: 0.75rem; margin-top: 20px;
 }
 .step-nav { display: flex; gap: 8px; align-items: center; margin-top: 24px; }
 .btn-primary {
-  background: var(--gold); color: #000;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 14px; font-weight: 700;
+  background: var(--gold); color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   border: none; padding: 13px 24px;
   border-radius: 8px; cursor: pointer;
   transition: all .15s; flex: 1;
-  letter-spacing: .3px;
 }
-.btn-primary:hover { background: #ffb31a; transform: translateY(-1px); }
+.btn-primary:hover { background: #c47225; transform: translateY(-1px); }
 .btn-back {
   background: none; border: none;
   color: var(--ink2);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px; cursor: pointer; padding: 8px;
 }
 .btn-back:hover { color: var(--ink); }
@@ -339,12 +561,13 @@ header h1 em {
   margin-bottom: 10px;
 }
 .summary-title {
-  font-size: clamp(20px,3vw,26px);
-  font-weight: 700; color: var(--ink);
-  letter-spacing: -.3px; margin-bottom: 20px;
+  font-family: 'Lora', serif;
+  font-size: 1.75rem;
+  font-weight: 600; color: #1B3624;
+  letter-spacing: -0.01em; margin-bottom: 20px;
   line-height: 1.2;
 }
-.summary-title span { color: var(--ink); }
+.summary-title span { color: #1B3624; }
 .stats-row {
   display: flex; gap: 12px; flex-wrap: wrap;
   margin-bottom: 16px;
@@ -361,8 +584,13 @@ header h1 em {
   color: var(--ink); line-height: 1;
 }
 .stat-label {
-  font-size: 12px; color: var(--ink3);
-  margin-top: 4px; line-height: 1.4;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718276;
+  margin-top: 5px; line-height: 1.4;
 }
 .summary-desc {
   font-size: 14px; color: var(--ink2);
@@ -375,7 +603,7 @@ header h1 em {
   margin-top: 14px; background: none;
   border: 1px solid var(--border2);
   color: var(--ink3);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 13px; padding: 8px 16px;
   border-radius: 6px; cursor: pointer;
   transition: all .15s;
@@ -399,6 +627,7 @@ header h1 em {
   margin-bottom: 10px;
 }
 .sol-headline {
+  font-family: 'Lora', serif;
   font-size: 18px; font-weight: 700;
   color: var(--ink); margin-bottom: 8px;
   letter-spacing: -.2px;
@@ -431,7 +660,8 @@ header h1 em {
   flex-wrap: wrap;
 }
 .section-hdr h2 {
-  font-size: 20px; font-weight: 700;
+  font-family: 'Lora', serif;
+  font-size: 22px; font-weight: 700;
   color: var(--ink); letter-spacing: -.3px;
 }
 .section-hdr p {
@@ -464,16 +694,19 @@ header h1 em {
   transition: background .15s;
   gap: 12px;
 }
-.week-card-hdr:hover { background: #fffbf0; }
+.week-card-hdr:hover { background: #EDE8DF; }
 .week-card.open .week-card-hdr {
   border-bottom-color: var(--border);
-  background: #fffbf0;
+  background: #EDE8DF;
 }
 .week-card-left { flex: 1; }
 .week-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #D9822B;
   margin-bottom: 4px;
 }
 .week-title {
@@ -512,66 +745,84 @@ header h1 em {
 }
 .day-row:last-child { border-bottom: none; }
 .day-name {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; letter-spacing: 2px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--ink3);
   padding-top: 3px;
 }
 .day-meals { display: flex; flex-direction: column; gap: 8px; }
 .meal-slot { }
 .meal-slot-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--ink3);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #718276;
   margin-bottom: 4px;
 }
 .meal-options-row { display: flex; gap: 6px; flex-wrap: wrap; }
 .meal-chip {
-  font-size: 13px; padding: 7px 12px;
-  border: 1.5px solid var(--border);
+  font-size: 13px; padding: 8px 14px;
+  border: none;
   border-radius: 6px; cursor: pointer;
-  background: var(--bg2);
+  background: #fff;
   color: var(--ink);
+  box-shadow: 0 1px 4px rgba(27,54,36,.1), 0 0 0 1px rgba(27,54,36,.06);
   transition: all .12s; line-height: 1.3;
   position: relative;
 }
-.meal-chip:hover { border-color: var(--gold); background: #fffbf0; }
+.meal-chip:hover {
+  box-shadow: 0 2px 8px rgba(27,54,36,.15), 0 0 0 1px rgba(27,54,36,.1);
+  transform: translateY(-1px);
+}
 .meal-chip.chosen {
-  border-color: var(--green);
-  background: #f0fdf7;
-  color: #1a5a38;
+  background: #eef3ee;
+  color: #1B3624;
+  box-shadow: 0 0 0 2px #3a7a50;
 }
 .meal-chip.discover {
-  border-color: rgba(74,158,255,.4);
-  background: var(--blue-bg);
-  color: var(--blue);
+  background: #f0f4f1;
+  color: #4A5D50;
+  box-shadow: 0 1px 4px rgba(74,93,80,.1), 0 0 0 1px rgba(74,93,80,.15);
 }
 .meal-chip.discover.chosen {
-  border-color: var(--blue);
-  background: rgba(74,158,255,.12);
+  background: #e4ece6;
+  color: #1B3624;
+  box-shadow: 0 0 0 2px #3a7a50;
 }
-.meal-chip-name { font-weight: 600; }
+.meal-chip-name { font-weight: 700; }
 .meal-chip-cuisine {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; opacity: .65;
+  font-size: 10px; opacity: .55;
   margin-left: 4px;
 }
 .discover-pill {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 1px;
-  background: var(--blue-bg);
-  color: var(--blue);
-  border: 1px solid var(--blue-border);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+  background: #e4ece6;
+  color: #4A5D50;
+  border: 1px solid rgba(74,93,80,.2);
   padding: 2px 6px; border-radius: 4px;
-  margin-right: 6px; vertical-align: middle;
+  margin-right: 5px; vertical-align: middle;
+  text-transform: uppercase;
 }
 .leftover-chip {
-  font-size: 13px; padding: 7px 12px;
-  border: 1.5px dashed rgba(58,184,122,.4);
+  font-size: 13px; font-weight: 600; padding: 8px 14px;
+  border: none;
   border-radius: 6px;
-  background: var(--green-bg);
-  color: #1a5a38;
-  font-style: italic;
+  background: #eef3ee;
+  color: #3a7a50;
+  box-shadow: 0 0 0 1px rgba(58,122,80,.2);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.leftover-chip::before {
+  content: '↻';
+  font-size: 14px;
+  font-style: normal;
+  opacity: .7;
 }
 
 /* ── SHOPPING LIST ── */
@@ -609,18 +860,19 @@ header h1 em {
 .shop-note { font-size: 12px; color: var(--ink2); margin-top: 2px; line-height: 1.5; }
 .shop-price {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px; font-weight: 700;
-  color: var(--ink); white-space: nowrap;
+  font-size: 15px; font-weight: 700;
+  color: #3E4A42; white-space: nowrap;
 }
 .tier-badge {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; padding: 2px 6px;
-  border-radius: 4px; margin-left: 6px;
-  font-weight: 700; letter-spacing: .5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem; padding: 2px 7px;
+  border-radius: 4px; margin-left: 7px;
+  font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; vertical-align: middle;
 }
-.tb-1 { background: #dcfce7; color: #15803d; }
-.tb-2 { background: #fef9c3; color: #854d0e; }
-.tb-3 { background: #eff6ff; color: #1d4ed8; }
+.tb-1 { background: #e4ece6; color: #1B3624; }
+.tb-2 { background: #f0e8d8; color: #6b4a18; }
+.tb-3 { background: #e8edf0; color: #2a4a5c; }
 .shop-total {
   display: flex; justify-content: space-between;
   align-items: center; padding: 16px 0;
@@ -644,7 +896,7 @@ header h1 em {
   color: var(--ink2); transition: all .12s;
 }
 .brand-pill:hover { border-color: var(--gold); color: var(--ink); }
-.brand-pill.active { border-color: var(--gold); background: #fffbf0; color: var(--ink); font-weight: 600; }
+.brand-pill.active { border-color: var(--gold); background: #EDE8DF; color: var(--ink); font-weight: 600; }
 .bcard {
   border: 1px solid var(--border);
   border-radius: 8px; padding: 14px 16px;
@@ -688,48 +940,113 @@ header h1 em {
 /* ── CIVIC SECTION ── */
 .civic-section { margin-bottom: 28px; }
 .civic-banner {
-  background: var(--bg2);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 10px; overflow: hidden;
   margin-bottom: 16px;
 }
 .civic-banner-hdr {
-  padding: 14px 20px;
-  background: linear-gradient(90deg, #0a0a14 0%, var(--bg2) 100%);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
+  padding: 20px 24px 0;
 }
 .civic-banner-hdr-text {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 6px;
 }
-.means-box { padding: 20px; }
+.civic-banner-subhead {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink3);
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+.means-box { padding: 16px 24px 20px; }
+/* Personal baseline badge */
 .means-intro {
-  font-size: 14px; color: var(--ink3);
-  line-height: 1.8; margin-bottom: 16px;
-  padding-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--border);
 }
-.means-intro strong { color: var(--ink); }
+.personal-baseline-tag {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  background-color: var(--bg3);
+  padding: 0.45rem 1rem;
+  border-radius: 4px;
+  display: inline-block;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.means-intro-lead {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink3);
+  line-height: 1.6;
+}
+/* Policy micro-cards */
 .means-item {
-  display: flex; align-items: flex-start;
-  gap: 10px; padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  border-left: 4px solid var(--border2);
+  background: var(--bg2);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: block;
 }
-.means-item:last-child { border-bottom: none; }
+.means-item:last-child { margin-bottom: 0; }
+.means-item.item-against {
+  border-left-color: #b83c2b;
+  background: #fdf0ec;
+}
+.means-item.item-for {
+  border-left-color: #3a7a50;
+  background: #f0f5f1;
+}
+.means-item.item-neutral {
+  border-left-color: var(--border2);
+  background: var(--bg2);
+}
 .means-tag {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; font-weight: 700;
-  letter-spacing: 1px; padding: 3px 8px;
-  border-radius: 4px; flex-shrink: 0;
-  margin-top: 2px; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 8px;
+  white-space: nowrap;
 }
-.tag-for { background: rgba(58,184,122,.15); color: var(--green); border: 1px solid var(--green-border); }
-.tag-against { background: rgba(224,74,58,.15); color: var(--red); border: 1px solid var(--red-border); }
-.tag-neutral { background: rgba(112,112,160,.1); color: var(--ink3); border: 1px solid var(--border); }
-.means-text { font-size: 14px; color: var(--ink3); line-height: 1.7; }
-.means-text strong { color: var(--ink); }
+.tag-for { background: rgba(58,122,80,.15); color: #3a7a50; border: 1px solid rgba(58,122,80,.25); }
+.tag-against { background: rgba(184,60,43,.15); color: #b83c2b; border: 1px solid rgba(184,60,43,.25); }
+.tag-neutral { background: rgba(90,110,97,.1); color: #5A6E61; border: 1px solid rgba(90,110,97,.2); }
+.means-bill-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.means-text {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink2);
+  line-height: 1.7;
+}
+.means-text strong { color: var(--ink); font-style: normal; }
 .privacy-note {
   font-size: 11px; color: var(--ink4);
   margin-top: 12px; font-style: italic; line-height: 1.6;
@@ -745,12 +1062,15 @@ header h1 em {
 }
 .rep-card-hdr { padding: 16px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); }
 .rep-role {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--ink3);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #5A6E61;
   margin-bottom: 4px;
 }
-.rep-name { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -.3px; }
+.rep-name { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -.3px; }
 .rep-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .party-badge { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 4px; }
 .party-D { background: rgba(74,158,255,.15); color: var(--blue); }
@@ -758,25 +1078,45 @@ header h1 em {
 .party-I { background: rgba(112,112,160,.15); color: var(--ink3); }
 .rep-since { font-size: 12px; color: var(--ink3); }
 .rep-card-body { padding: 16px 20px; }
-.vote-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.vote-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
 .vote-row:last-of-type { border-bottom: none; }
 .vote-pill {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; font-weight: 700;
-  letter-spacing: 1px; padding: 4px 8px;
-  border-radius: 4px; flex-shrink: 0;
-  margin-top: 2px; white-space: nowrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 5px 10px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  white-space: nowrap;
+  border: none;
 }
-.vpY { background: rgba(224,74,58,.15); color: var(--red); border: 1px solid var(--red-border); }
-.vpN { background: rgba(58,184,122,.15); color: var(--green); border: 1px solid var(--green-border); }
-.vpNV { background: rgba(112,112,160,.1); color: var(--ink3); border: 1px solid var(--border); }
+.vpY { background: #b83c2b; color: #fff; }
+.vpN { background: #3a7a50; color: #fff; }
+.vpNV { background: var(--bg3); color: var(--ink3); }
 .vote-content { flex: 1; }
-.vote-bluf { font-size: 14px; color: var(--ink); line-height: 1.6; margin-bottom: 6px; }
+.vote-bluf {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.vote-impact {
+  font-family: 'Lora', serif;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink2);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
 .vote-expand {
   background: none; border: none;
   font-size: 12px; color: var(--blue);
   cursor: pointer; padding: 0;
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .vote-detail {
   display: none; margin-top: 12px;
@@ -805,7 +1145,7 @@ header h1 em {
   text-decoration: none; transition: all .15s;
   border: 1px solid var(--border2);
   color: var(--ink3); background: var(--bg2);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .rep-btn:hover { border-color: var(--gold); color: var(--gold); }
 .rep-btn.primary { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 700; }
@@ -861,16 +1201,22 @@ header h1 em {
 /* ── TIPS ── */
 .tips-list { margin-top: 8px; }
 .tip-row {
-  display: flex; gap: 12px; padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  display: flex; gap: 10px; padding: 0.75rem 0;
+  border-bottom: none;
   font-size: 14px; color: var(--ink2); line-height: 1.6;
 }
-.tip-row:last-child { border-bottom: none; }
-.tip-n {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px; color: var(--ink3);
-  flex-shrink: 0; margin-top: 2px;
+.tip-n { display: none; }
+
+.shop-tip {
+  font-size: 12px;
+  color: #5A6E61;
+  margin-top: 4px;
+  line-height: 1.5;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
 }
+.shop-tip-icon { flex-shrink: 0; font-style: normal; }
 
 /* ── PRICE INFO ── */
 .price-note {
@@ -916,6 +1262,43 @@ header h1 em {
 }
 .corr-brand { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
 
+/* ── POST-OUTPUT ACTIONS ── */
+.post-output-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 14px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.action-trigger {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--blue);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 7px 12px;
+  text-decoration: none;
+  transition: all .15s;
+}
+.action-trigger:hover {
+  background: var(--bg3);
+  border-color: var(--blue);
+}
+.action-trigger.confirmed {
+  color: #3a7a50;
+  border-color: #3a7a50;
+  background: #eef3ee;
+}
+
 /* ── FOOTER ── */
 footer {
   background: var(--bg2);
@@ -928,6 +1311,8 @@ footer {
 footer a { color: var(--ink3); text-decoration: none; }
 footer a:hover { color: var(--gold); }
 
+/* Civic accordion: visible on all screen sizes (sidebar has pulse summary; accordion has full detail) */
+
 @media(max-width:600px){
   header { min-height: auto; flex-direction: column; }
   .header-content { padding: 30px 20px; }
@@ -935,12 +1320,30 @@ footer a:hover { color: var(--gold); }
   header h1 { font-size: 56px; }
   .main { padding: 24px 16px 60px; }
   .option-grid { grid-template-columns: 1fr 1fr; }
-  .multi-grid { grid-template-columns: repeat(2,1fr); }
+  .tag-grid { gap: 5px; }
   .stats-row { gap: 8px; }
   .stat { min-width: 80px; }
   .day-row { grid-template-columns: 52px 1fr; gap: 10px; }
   .sol-stats { gap: 16px; }
   footer { padding: 20px; }
+  .accordion-body { padding: 18px 16px; }
+  .meal-options-row { flex-direction: column; align-items: flex-start; }
+  .meal-chip, .leftover-chip { width: 100%; box-sizing: border-box; }
+}
+@media print {
+  header, .intake-wrap, .dash-sidebar, .mobile-system-pulse,
+  .acc-brands, .acc-civic, .acc-help, #acc-brands, #acc-civic, #acc-help,
+  .post-output-actions, .restart-btn, .solidarity,
+  .accordion-hdr, footer, .price-note { display: none !important; }
+  body { background: #fff !important; }
+  .main { max-width: 100% !important; padding: 0 !important; }
+  .dash-grid { display: block !important; }
+  .dash-main { width: 100% !important; }
+  .accordion-body { display: block !important; }
+  .accordion-section { border: none !important; margin-bottom: 0 !important; }
+  .week-card { break-inside: avoid; }
+  .week-body { display: block !important; }
+  .summary-card { border: none !important; box-shadow: none !important; }
 }
 </style>
 </head>
@@ -965,6 +1368,7 @@ footer a:hover { color: var(--gold); }
 <div class="main">
 
   <!-- INTAKE -->
+  <div class="intake-wrap">
   <div class="intake-card" id="walkthrough">
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
 
@@ -1049,37 +1453,37 @@ footer a:hover { color: var(--gold); }
         </div>
 
         <span class="step-label">Where do you shop?</span>
-        <div class="multi-grid">
-          <button class="multi-btn" id="store-full" onclick="toggleMulti('store','full')">Full grocery</button>
-          <button class="multi-btn" id="store-walmart" onclick="toggleMulti('store','walmart')">Walmart</button>
-          <button class="multi-btn" id="store-aldi" onclick="toggleMulti('store','aldi')">Aldi / Lidl</button>
-          <button class="multi-btn" id="store-dollar" onclick="toggleMulti('store','dollar')">Dollar store</button>
-          <button class="multi-btn" id="store-corner" onclick="toggleMulti('store','corner')">Corner / bodega</button>
-          <button class="multi-btn" id="store-none" onclick="toggleMulti('store','none')">Not sure</button>
+        <div class="tag-grid">
+          <button class="tag-btn tag-store" id="store-full" onclick="toggleMulti('store','full')">Full grocery</button>
+          <button class="tag-btn tag-store" id="store-walmart" onclick="toggleMulti('store','walmart')">Walmart</button>
+          <button class="tag-btn tag-store" id="store-aldi" onclick="toggleMulti('store','aldi')">Aldi / Lidl</button>
+          <button class="tag-btn tag-store" id="store-dollar" onclick="toggleMulti('store','dollar')">Dollar store</button>
+          <button class="tag-btn tag-store" id="store-corner" onclick="toggleMulti('store','corner')">Corner / bodega</button>
+          <button class="tag-btn tag-store" id="store-none" onclick="toggleMulti('store','none')">Not sure</button>
         </div>
 
         <span class="step-label">Foods to avoid?</span>
-        <div class="multi-grid">
-          <button class="multi-btn" id="avoid-gluten" onclick="toggleMulti('avoid','gluten')">Gluten-free</button>
-          <button class="multi-btn" id="avoid-dairy" onclick="toggleMulti('avoid','dairy')">No dairy</button>
-          <button class="multi-btn" id="avoid-meat" onclick="toggleMulti('avoid','meat')">No meat</button>
-          <button class="multi-btn" id="avoid-eggs" onclick="toggleMulti('avoid','eggs')">No eggs</button>
-          <button class="multi-btn" id="avoid-peanuts" onclick="toggleMulti('avoid','peanuts')">No peanuts</button>
-          <button class="multi-btn" id="avoid-fish" onclick="toggleMulti('avoid','fish')">No fish</button>
-          <button class="multi-btn" id="avoid-nothing" onclick="toggleMulti('avoid','nothing')">No restrictions</button>
+        <div class="tag-grid">
+          <button class="tag-btn tag-avoid" id="avoid-gluten" onclick="toggleMulti('avoid','gluten')">Gluten-free</button>
+          <button class="tag-btn tag-avoid" id="avoid-dairy" onclick="toggleMulti('avoid','dairy')">No dairy</button>
+          <button class="tag-btn tag-avoid" id="avoid-meat" onclick="toggleMulti('avoid','meat')">No meat</button>
+          <button class="tag-btn tag-avoid" id="avoid-eggs" onclick="toggleMulti('avoid','eggs')">No eggs</button>
+          <button class="tag-btn tag-avoid" id="avoid-peanuts" onclick="toggleMulti('avoid','peanuts')">No peanuts</button>
+          <button class="tag-btn tag-avoid" id="avoid-fish" onclick="toggleMulti('avoid','fish')">No fish</button>
+          <button class="tag-btn tag-avoid" id="avoid-nothing" onclick="toggleMulti('avoid','nothing')">No restrictions</button>
         </div>
 
         <span class="step-label">What do you already have?</span>
-        <div class="multi-grid">
-          <button class="multi-btn" id="have-rice" onclick="toggleMulti('have','rice')">Rice</button>
-          <button class="multi-btn" id="have-beans" onclick="toggleMulti('have','beans')">Beans</button>
-          <button class="multi-btn" id="have-oats" onclick="toggleMulti('have','oats')">Oats</button>
-          <button class="multi-btn" id="have-eggs" onclick="toggleMulti('have','eggs')">Eggs</button>
-          <button class="multi-btn" id="have-potatoes" onclick="toggleMulti('have','potatoes')">Potatoes</button>
-          <button class="multi-btn" id="have-bread" onclick="toggleMulti('have','bread')">Bread</button>
-          <button class="multi-btn" id="have-pasta" onclick="toggleMulti('have','pasta')">Pasta</button>
-          <button class="multi-btn" id="have-oil" onclick="toggleMulti('have','oil')">Oil</button>
-          <button class="multi-btn" id="have-nothing" onclick="toggleMulti('have','nothing')">Nothing extra</button>
+        <div class="tag-grid">
+          <button class="tag-btn tag-have" id="have-rice" onclick="toggleMulti('have','rice')">+ Rice</button>
+          <button class="tag-btn tag-have" id="have-beans" onclick="toggleMulti('have','beans')">+ Beans</button>
+          <button class="tag-btn tag-have" id="have-oats" onclick="toggleMulti('have','oats')">+ Oats</button>
+          <button class="tag-btn tag-have" id="have-eggs" onclick="toggleMulti('have','eggs')">+ Eggs</button>
+          <button class="tag-btn tag-have" id="have-potatoes" onclick="toggleMulti('have','potatoes')">+ Potatoes</button>
+          <button class="tag-btn tag-have" id="have-bread" onclick="toggleMulti('have','bread')">+ Bread</button>
+          <button class="tag-btn tag-have" id="have-pasta" onclick="toggleMulti('have','pasta')">+ Pasta</button>
+          <button class="tag-btn tag-have" id="have-oil" onclick="toggleMulti('have','oil')">+ Oil</button>
+          <button class="tag-btn tag-have" id="have-nothing" onclick="toggleMulti('have','nothing')">Nothing extra</button>
         </div>
         <span class="step-label">Anything else?</span>
         <input class="field-input" type="text" id="inp-other-have" placeholder="e.g. hot sauce, spices, flour...">
@@ -1107,8 +1511,14 @@ footer a:hover { color: var(--gold); }
     </div>
   </div>
 
+  </div><!-- /intake-wrap -->
+
   <!-- ── DASHBOARD ── -->
   <div class="dashboard" id="dashboard">
+  <div class="dash-grid">
+
+    <!-- ════ LEFT/CENTER: SURVIVAL TOOLS ════ -->
+    <div class="dash-main">
 
     <!-- Summary Card -->
     <div class="summary-card">
@@ -1129,7 +1539,7 @@ footer a:hover { color: var(--gold); }
 
     <div class="section-divider"></div>
 
-    <!-- ── GAME PLAN ── -->
+    <!-- ── GAME PLAN (Anchor #2: High Engagement) ── -->
     <div class="section-hdr">
       <h2>Your Meal Game Plan</h2>
       <p>Tap any meal to confirm it. One "Try something new" option per slot introduces a dish from outside your preference — same budget, new flavors.</p>
@@ -1137,51 +1547,127 @@ footer a:hover { color: var(--gold); }
     <div class="weeks-wrap" id="weeks-wrap"></div>
     <div class="tips-list" id="tips-list"></div>
 
-    <div class="section-divider"></div>
-
-    <!-- ── SHOPPING LIST ── -->
-    <div class="section-hdr">
-      <h2>Shopping List</h2>
-      <p>Everything your plan needs. Sorted cheapest-first within each category. Check off as you shop.</p>
+    <!-- ── MOBILE SYSTEM PULSE (The Subversive Pivot — appears right after meals on mobile) ── -->
+    <div class="mobile-system-pulse" id="mobile-system-pulse">
+      <div class="pulse-hdr">
+        <span class="pulse-dot"></span>
+        <span class="pulse-hdr-label">Why Your Groceries Cost This Much</span>
+      </div>
+      <div class="pulse-body" id="mobile-pulse-body">
+        <p class="pulse-hook">"The price you pay at checkout isn't random. Here's what's actually driving it."</p>
+        <div class="pulse-stat-row" id="mobile-pulse-stats"></div>
+        <a class="pulse-cta" onclick="scrollToSystem()">See Who Votes on Your Food →</a>
+      </div>
     </div>
-    <div class="shop-wrap" id="shop-wrap"></div>
-
-    <div class="section-divider"></div>
-
-    <!-- ── BRAND COMPARISONS ── -->
-    <div class="section-hdr">
-      <h2>Brand Comparisons</h2>
-      <p>Cheapest option shown first — always. Tap any price to correct it with what you actually paid.</p>
-    </div>
-    <div class="brand-section">
-      <div class="brand-pills" id="brand-pills"></div>
-      <div id="brand-detail-area"></div>
-    </div>
-    <div class="section-hdr" style="margin-top:24px">
-      <h2>Beat the Markup</h2>
-      <p>Order staples online when local prices are high.</p>
-    </div>
-    <div id="online-retailers-list"></div>
-    <div class="price-note" id="price-note"></div>
 
     <div class="section-divider"></div>
 
-    <!-- ── KNOW YOUR SYSTEM ── -->
-    <div class="section-hdr">
-      <h2>Know Your System</h2>
-      <p>The people who voted on what your grocery dollar is worth — and what they actually decided.</p>
+    <!-- ── UTILITY ACCORDIONS ── -->
+
+    <!-- Shopping List -->
+    <div class="accordion-section" id="acc-shopping">
+      <div class="accordion-hdr" onclick="toggleAccordion('acc-shopping')">
+        <div class="accordion-hdr-left">
+          <div class="accordion-title">Shopping List</div>
+          <div class="accordion-subtitle">Everything your plan needs — sorted cheapest first. Check off as you shop.</div>
+        </div>
+        <span class="accordion-chevron">▾</span>
+      </div>
+      <div class="accordion-body">
+        <div class="post-output-actions">
+          <button class="action-trigger" onclick="emailList()" id="action-email">
+            <span>✉</span> Send List
+          </button>
+          <button class="action-trigger" onclick="shareList()" id="action-share">
+            <span>⎋</span> Share
+          </button>
+          <button class="action-trigger" onclick="window.print()">
+            <span>⎙</span> Print / PDF
+          </button>
+          <a class="action-trigger" href="https://are.na/erin-relford/make-it-stretch-recipes" target="_blank">
+            <span>🗂</span> Meal Prep Resources
+          </a>
+        </div>
+        <div class="shop-wrap" id="shop-wrap"></div>
+      </div>
     </div>
-    <div class="civic-section" id="civic-section"></div>
 
-    <div class="section-divider"></div>
-
-    <!-- ── GET HELP ── -->
-    <div class="section-hdr">
-      <h2>Programs That Can Help</h2>
-      <p>Sometimes the math doesn't add up no matter how careful you are. These programs exist because of that. No judgment.</p>
+    <!-- Brand Comparisons -->
+    <div class="accordion-section" id="acc-brands">
+      <div class="accordion-hdr" onclick="toggleAccordion('acc-brands')">
+        <div class="accordion-hdr-left">
+          <div class="accordion-title">Brand Comparisons</div>
+          <div class="accordion-subtitle">Cheapest option shown first. Tap any price to correct it.</div>
+        </div>
+        <span class="accordion-chevron">▾</span>
+      </div>
+      <div class="accordion-body">
+        <div class="brand-section">
+          <div class="brand-pills" id="brand-pills"></div>
+          <div id="brand-detail-area"></div>
+        </div>
+        <div class="section-hdr" style="margin-top:24px">
+          <h2>Beat the Markup</h2>
+          <p>Order staples online when local prices are high.</p>
+        </div>
+        <div id="online-retailers-list"></div>
+        <div class="price-note" id="price-note"></div>
+      </div>
     </div>
-    <div class="help-section" id="help-section"></div>
 
+    <!-- Know Your System (desktop: goes in sidebar; mobile: accordion here) -->
+    <div class="accordion-section" id="acc-civic">
+      <div class="accordion-hdr" onclick="toggleAccordion('acc-civic')">
+        <div class="accordion-hdr-left">
+          <div class="accordion-title">Know Your System</div>
+          <div class="accordion-subtitle">The people who voted on what your grocery dollar is worth.</div>
+        </div>
+        <span class="accordion-chevron">▾</span>
+      </div>
+      <div class="accordion-body">
+        <div class="civic-section" id="civic-section"></div>
+      </div>
+    </div>
+
+    <!-- Get Help -->
+    <div class="accordion-section" id="acc-help">
+      <div class="accordion-hdr" onclick="toggleAccordion('acc-help')">
+        <div class="accordion-hdr-left">
+          <div class="accordion-title">Programs That Can Help</div>
+          <div class="accordion-subtitle">Sometimes the math doesn't add up. These programs exist because of that.</div>
+        </div>
+        <span class="accordion-chevron">▾</span>
+      </div>
+      <div class="accordion-body">
+        <div class="help-section" id="help-section"></div>
+      </div>
+    </div>
+
+    </div><!-- /dash-main -->
+
+    <!-- ════ RIGHT COLUMN: THE POLITICAL STORY (desktop only) ════ -->
+    <aside class="dash-sidebar" id="dash-sidebar">
+      <div class="system-pulse">
+        <div class="pulse-hdr">
+          <span class="pulse-dot"></span>
+          <span class="pulse-hdr-label">Why Your Groceries Cost This Much</span>
+        </div>
+        <div class="pulse-body" id="sidebar-pulse-body">
+          <p class="pulse-hook">"The price you pay at checkout isn't random. Here's what's actually driving it."</p>
+          <div class="pulse-stat-row" id="sidebar-pulse-stats"></div>
+          <div class="pulse-policy-alert" id="sidebar-policy-alert" style="display:none"></div>
+          <div class="pulse-divider"></div>
+          <p class="pulse-local-label">Local Realities</p>
+          <div id="sidebar-local-stats">
+            <p class="pulse-local-stat">Enter your zip code to see local food cost data.</p>
+          </div>
+          <div class="pulse-divider"></div>
+          <a class="pulse-cta" onclick="scrollToSystem()">See Who Votes on Your Food →</a>
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /dash-grid -->
   </div><!-- /dashboard -->
 </div><!-- /main -->
 
@@ -1216,6 +1702,7 @@ const answers = {
 const paydayState = { key:null, days:null };
 const multiSelections = { store:[], avoid:[], have:[] };
 let cart = [];
+let activePrices = {};
 let livePrices = null;
 let brandState = { selectedFood:null, corrections:{}, correcting:null, voltAlerts:{} };
 
@@ -1542,6 +2029,9 @@ async function runCalculation(){
   if(hasCorner)Object.keys(CORNER_ADJ).forEach(k=>{if(prices[k])prices[k]=+(prices[k]*CORNER_ADJ[k]).toFixed(2);});
   if(hasDollar)Object.keys(DOLLAR_ADJ).forEach(k=>{if(prices[k])prices[k]=+(prices[k]*DOLLAR_ADJ[k]).toFixed(2);});
 
+  // Make prices available to swapMealIngredients for re-adding foods
+  activePrices=prices;
+
   const avoidItems=answers.avoid;
   const haveItems=answers.have;
 
@@ -1551,37 +2041,114 @@ async function runCalculation(){
     if(f.avoid.some(a=>avoidItems.includes(a)))return false;
     if(f.hasProp&&haveItems.includes(f.hasProp))return false;
     return true;
-  }).map(f=>({...f,price:prices[f.id]||0,cpd:prices[f.id]?Math.round(f.cal/prices[f.id]):0}))
-    .sort((a,b)=>a.tier-b.tier||b.cpd-a.cpd);
+  }).map(f=>({...f,price:prices[f.id]||0,cpd:prices[f.id]?Math.round(f.cal/prices[f.id]):0}));
 
-  // Smart cart: spend FULL budget proportionally
-  const targetCals=answers.people*answers.days*2000;
-  const budgetPerDay=answers.budget/answers.days;
+  // ── USDA Thrifty Food Plan category weights ──
+  // Mirrors real market-basket proportions for a balanced, credible cart
+  const USDA_WEIGHTS={
+    grain:    0.20,
+    protein:  0.23,
+    vegetable:0.14,
+    fruit:    0.10,
+    dairy:    0.16,
+    fat:      0.07,
+    pantry:   0.10,
+  };
+
+  // ── Cuisine boost packages ──
+  // Ensures a culturally coherent flavor base before general staple scaling
+  const CUISINE_BOOSTS={
+    american:      ['eggs','bread','potatoes','butter','milk'],
+    latin:         ['tortillas','onions','garlic','cannedtomatoes','salsa'],
+    asian:         ['soy','garlic','onions','cabbage','rice'],
+    southern:      ['cornmeal','sweetpotatoes','onions','garlic','cannedtomatoes'],
+    mediterranean: ['oliveoil','lentils','onions','garlic','cannedtomatoes'],
+    any:           ['onions','garlic','cannedtomatoes'],
+  };
+
+  // ── Survival floor items — always secured first ──
+  // These four guarantee a calorie-safe baseline regardless of cuisine or budget
+  const FLOOR_IDS=['rice','drybeans','oil','oats'];
+
+  const cuisine=answers.cuisine||'any';
   let remaining=answers.budget;
   let totalCals=0;
   cart=[];
 
-  // First pass: buy one of each affordable item
-  for(const f of foods){
-    if(remaining>=f.price&&f.price>0){
-      cart.push({...f,qty:1,subtotal:+f.price.toFixed(2)});
-      remaining=+(remaining-f.price).toFixed(2);
-      totalCals+=f.cal;
+  const addToCart=(food)=>{
+    if(!food||food.price<=0) return false;
+    if(remaining<food.price) return false;
+    const existing=cart.find(c=>c.id===food.id);
+    if(existing){
+      existing.qty++;
+      existing.subtotal=+(existing.price*existing.qty).toFixed(2);
+    } else {
+      cart.push({...food,qty:1,subtotal:+food.price.toFixed(2)});
+    }
+    remaining=+(remaining-food.price).toFixed(2);
+    totalCals+=food.cal;
+    return true;
+  };
+
+  const getFood=(id)=>foods.find(f=>f.id===id);
+
+  // ── PHASE 1: Nutritional floor (40% of budget max, core survival staples) ──
+  // getFood() returns undefined for foods excluded by avoidItems — dietary restrictions
+  // are automatically respected without any additional filtering needed here
+  const floorBudget=answers.budget*0.40;
+  let floorSpent=0;
+  for(const id of FLOOR_IDS){
+    const f=getFood(id);
+    if(f&&floorSpent+f.price<=floorBudget){
+      if(addToCart(f)) floorSpent+=f.price;
     }
   }
 
-  // Second pass: scale up quantities based on budget and days
-  // More days = more of each staple needed
+  // ── PHASE 2: Cuisine boost package (10% of budget max) ──
+  // Skip entirely if Phase 1 consumed the budget (tiny budget survival mode)
+  if(remaining>0.50){
+    const boostBudget=answers.budget*0.10;
+    let boostSpent=0;
+    const boostIds=CUISINE_BOOSTS[cuisine]||CUISINE_BOOSTS.any;
+    for(const id of boostIds){
+      const f=getFood(id); // undefined if restricted by avoidItems — safely skipped
+      if(f&&!cart.find(c=>c.id===id)&&boostSpent+f.price<=boostBudget){
+        if(addToCart(f)) boostSpent+=f.price;
+      }
+    }
+  }
+
+  // ── PHASE 3: USDA-weighted category fill (remaining budget) ──
+  // Skip if tiny budget already consumed by Phases 1+2
+  if(remaining>0.50){
+    const remainingForFill=remaining;
+    const categoryBudgets={};
+    Object.entries(USDA_WEIGHTS).forEach(([cat,weight])=>{
+      categoryBudgets[cat]=+(remainingForFill*weight).toFixed(2);
+    });
+    // foods array already filtered by avoidItems — restrictions fully respected here
+    const catSpent={};
+    const sortedFoods=[...foods].sort((a,b)=>a.tier-b.tier||b.cpd-a.cpd);
+    for(const f of sortedFoods){
+      if(cart.find(c=>c.id===f.id)) continue; // already in cart from Phase 1 or 2
+      const catLimit=categoryBudgets[f.cat]||0;
+      const spent=catSpent[f.cat]||0;
+      if(spent+f.price<=catLimit&&remaining>=f.price){
+        if(addToCart(f)) catSpent[f.cat]=(catSpent[f.cat]||0)+f.price;
+      }
+    }
+  }
+
+  // ── PHASE 4: Scale up staples with any remaining budget ──
+  // Spend every remaining dollar on tier-1 staples scaled to timeline
   const daysMultiplier=Math.max(1,Math.floor(answers.days/7));
   let iter=0;
-  while(remaining>=0.5&&iter<200){
+  while(remaining>=0.50&&iter<200){
     iter++;
-    // Prioritize tier 1 staples for scaling
     const scalables=cart.filter(c=>c.tier===1).sort((a,b)=>b.cpd-a.cpd);
     const tier2=cart.filter(c=>c.tier===2).sort((a,b)=>b.cpd-a.cpd);
-    const candidates=[...scalables,...tier2];
     let bought=false;
-    for(const item of candidates){
+    for(const item of [...scalables,...tier2]){
       const maxQty=item.tier===1?Math.max(8,daysMultiplier*4):Math.max(4,daysMultiplier*2);
       if(item.qty<maxQty&&remaining>=item.price){
         item.qty++;
@@ -1606,13 +2173,13 @@ async function runCalculation(){
   clearInterval(msgInterval);
 
   // ── SUMMARY CARD
-  document.getElementById('summary-title').innerHTML='Your <span>'+answers.days+'-day</span> game plan';
+  document.getElementById('summary-title').innerHTML='Your <span>'+answers.days+'-Day</span> Game Plan';
   document.getElementById('stats-row').innerHTML=
     '<div class="stat"><div class="stat-val">$'+answers.budget.toFixed(0)+'</div><div class="stat-label">Budget</div></div>'+
     '<div class="stat"><div class="stat-val">'+answers.days+'</div><div class="stat-label">'+dayWord+'</div></div>'+
-    '<div class="stat"><div class="stat-val">'+answers.people+'</div><div class="stat-label">'+( answers.people===1?'person':'people')+'</div></div>'+
-    '<div class="stat"><div class="stat-val">$'+pppd+'</div><div class="stat-label">per person/day</div></div>'+
-    '<div class="stat"><div class="stat-val">$'+ppmeal+'</div><div class="stat-label">per meal</div></div>';
+    '<div class="stat"><div class="stat-val">'+answers.people+'</div><div class="stat-label">'+(answers.people===1?'Person':'People')+'</div></div>'+
+    '<div class="stat"><div class="stat-val">$'+pppd+'</div><div class="stat-label">Per Person / Day</div></div>'+
+    '<div class="stat"><div class="stat-val">$'+ppmeal+'</div><div class="stat-label">Per Meal</div></div>';
   document.getElementById('summary-desc').innerHTML=
     'Your <strong>$'+answers.budget.toFixed(0)+'</strong> feeds <strong>'+plural(answers.people)+'</strong> for <strong>'+answers.days+' '+dayWord+'</strong> — <strong>$'+pppd+'/person/day</strong>, about <strong>$'+ppmeal+' per meal</strong>. The plan puts <strong>$'+spent.toFixed(2)+'</strong> of your budget to work'+(remaining>1?', leaving <strong>$'+remaining.toFixed(2)+'</strong> for tax or extras.':'.')+
     (calPct>=80?' ✓ Meets daily caloric needs.':calPct>=60?' ⚠ Slightly below 2,000 cal/day — see Get Help for free supplements.':' ⚠ Tight budget — the Get Help section has free food programs near you.');
@@ -1634,6 +2201,13 @@ async function runCalculation(){
 
   // ── HELP
   loadResources(answers.zip,answers.state);
+
+  // ── SYSTEM PULSE (sidebar + mobile card)
+  populateSystemPulse(answers.state,pppd,answers.people,answers.days);
+
+  // ── Open shopping list accordion by default
+  const shoppingAcc=document.getElementById('acc-shopping');
+  if(shoppingAcc)shoppingAcc.classList.add('open');
 
   document.getElementById('walkthrough').style.display='none';
   document.getElementById('dashboard').style.display='block';
@@ -1773,6 +2347,11 @@ function buildWeekCards(cart,avoidItems){
     weeks.push({index:w,days:weekDays});
   }
 
+  // Reset plan state
+  Object.keys(mealChoices).forEach(k=>delete mealChoices[k]);
+  Object.keys(mealPlan).forEach(k=>delete mealPlan[k]);
+  Object.keys(mealOptions).forEach(k=>delete mealOptions[k]);
+
   // Build HTML
   let html='';
   weeks.forEach((wk,wi)=>{
@@ -1803,11 +2382,22 @@ function buildWeekCards(cart,avoidItems){
       } else {
         ['breakfast','lunch','dinner'].forEach(slot=>{
           const slotData=day[slot];
+          const key=day.index+'-'+slot;
+          // Store full meal objects for swap logic
+          mealOptions[key]={};
+          slotData.opts.forEach((m,mi)=>{ mealOptions[key][mi]=m; });
+          if(slotData.discover) mealOptions[key]['d']=slotData.discover;
+          // Pre-select first option as the default active meal
+          if(slotData.opts.length){
+            mealPlan[key]=slotData.opts[0];
+            mealChoices[key]='mc-'+day.index+'-'+slot+'-0';
+          }
           html+=`<div class="meal-slot">
             <div class="meal-slot-label">${slot}</div>
             <div class="meal-options-row">`;
           slotData.opts.forEach((m,mi)=>{
-            html+=`<div class="meal-chip" id="mc-${day.index}-${slot}-${mi}" onclick="chooseMeal(${day.index},'${slot}',${mi},'${m.name.replace(/'/g,"\\'")}')">
+            const isFirst=mi===0;
+            html+=`<div class="meal-chip${isFirst?' chosen':''}" id="mc-${day.index}-${slot}-${mi}" onclick="chooseMeal(${day.index},'${slot}',${mi},'${m.name.replace(/'/g,"\\'")}')">
               <span class="meal-chip-name">${m.name}</span>
             </div>`;
           });
@@ -1831,8 +2421,7 @@ function buildWeekCards(cart,avoidItems){
   // Tips
   const cartSet2=new Set(cart.map(c=>c.id));
   const tips=[...ALL_TIPS.filter(t=>t.needs.some(n=>cartSet2.has(n))),...ALL_TIPS.filter(t=>!t.needs.some(n=>cartSet2.has(n)))].slice(0,8);
-  document.getElementById('tips-list').innerHTML='<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:20px"><div style="font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px">Tips to Make It Last</div>'+
-    tips.map((t,i)=>`<div class="tip-row"><span class="tip-n">${i+1}</span><span>${t.text}</span></div>`).join('')+'</div>';
+  document.getElementById('tips-list').innerHTML='';
 }
 
 function toggleWeek(wi){
@@ -1841,17 +2430,85 @@ function toggleWeek(wi){
 }
 
 const mealChoices={};
+const mealPlan={};   // key: "dayIdx-slot" → full meal object currently active
+const mealOptions={}; // key: "dayIdx-slot" → array of full meal objects available
+
 function chooseMeal(dayIdx,slot,optIdx,name){
   const key=dayIdx+'-'+slot;
   const id='mc-'+dayIdx+'-'+slot+'-'+optIdx;
+
+  // Already chosen — deselect
   if(mealChoices[key]===id){
     mealChoices[key]=null;
     document.getElementById(id)?.classList.remove('chosen');
-  } else {
-    if(mealChoices[key])document.getElementById(mealChoices[key])?.classList.remove('chosen');
-    mealChoices[key]=id;
-    document.getElementById(id)?.classList.add('chosen');
+    const oldMeal=mealPlan[key]||null;
+    mealPlan[key]=null;
+    swapMealIngredients(oldMeal, null);  // audit cart with this slot now empty
+    return;
   }
+
+  // Deselect previously chosen chip for this slot
+  if(mealChoices[key]) document.getElementById(mealChoices[key])?.classList.remove('chosen');
+  mealChoices[key]=id;
+  document.getElementById(id)?.classList.add('chosen');
+
+  const newMeal=mealOptions[key]?.[optIdx==='d'?'d':parseInt(optIdx)];
+  if(!newMeal) return;
+
+  const oldMeal=mealPlan[key]||null;
+  mealPlan[key]=newMeal;
+
+  // Swap ingredients in cart
+  swapMealIngredients(oldMeal, newMeal);
+}
+
+function swapMealIngredients(oldMeal, newMeal){
+  // Build cached set of every food ID referenced by any meal in the library.
+  // These are "meal-dependent" — their presence in cart should track meal choices.
+  // Foods that never appear in any meal's needs are pure budget staples and always stay.
+  if(!swapMealIngredients._mealFoods){
+    const s=new Set();
+    [...Object.values(MEAL_LIBRARY).flat(),...DISCOVER_MEALS].forEach(m=>m.needs.forEach(id=>s.add(id)));
+    swapMealIngredients._mealFoods=s;
+  }
+  const mealFoods=swapMealIngredients._mealFoods;
+
+  // Count references across the ENTIRE active plan (all slots, all days)
+  const refCount={};
+  Object.values(mealPlan).forEach(meal=>{
+    if(!meal) return;
+    meal.needs.forEach(id=>{ refCount[id]=(refCount[id]||0)+1; });
+  });
+
+  // Add any foods the new meal needs that aren't in cart yet
+  if(newMeal){
+    newMeal.needs.forEach(id=>{
+      if(!cart.find(c=>c.id===id)){
+        const food=FOOD_DB.find(f=>f.id===id);
+        if(food){
+          const price=activePrices[id]||food.price||1.00;
+          cart.push({...food,price,qty:1,subtotal:+price.toFixed(2)});
+        }
+      }
+    });
+  }
+
+  // Full cart audit: remove any meal-dependent food with zero active plan references.
+  // Exempt: pure budget staples (not in any meal's needs) and items the user said they have.
+  const haveIds=new Set((answers.have||[]).map(h=>
+    FOOD_DB.find(f=>f.hasProp===h)?.id
+  ).filter(Boolean));
+
+  cart=cart.filter(item=>{
+    if(!mealFoods.has(item.id)) return true;   // pure budget staple — always keep
+    if(haveIds.has(item.id)) return true;        // user said they already have it — keep
+    return (refCount[item.id]||0) > 0;           // meal-dependent — keep only if referenced
+  });
+
+  // Recalculate and re-render
+  const spent=cart.reduce((s,i)=>s+i.subtotal,0);
+  const remaining=+(answers.budget-spent).toFixed(2);
+  buildShoppingList(cart,spent,remaining,answers.region);
 }
 
 // ━━ SHOPPING LIST ━━
@@ -1859,24 +2516,43 @@ function buildShoppingList(cart,spent,remaining,region){
   const cats={grain:'Grains & Bread',protein:'Protein',vegetable:'Vegetables',fruit:'Fruit',dairy:'Dairy',fat:'Oils & Fats',pantry:'Pantry'};
   const tC={1:'tb-1',2:'tb-2',3:'tb-3'};
   const tL={1:'Essential',2:'Stretch',3:'Quality'};
+
+  // Build item→tip lookup from ALL_TIPS
+  const tipMap={};
+  ALL_TIPS.forEach(t=>{
+    t.needs.forEach(id=>{
+      if(!tipMap[id]) tipMap[id]=t.text;
+    });
+  });
+
   let html='';
   Object.entries(cats).forEach(([cat,label])=>{
     const items=cart.filter(i=>i.cat===cat).sort((a,b)=>a.price-b.price);
     if(!items.length)return;
     html+=`<div class="shop-section"><div class="shop-cat-label">${label}</div>`;
     items.forEach(item=>{
+      const tip=tipMap[item.id];
+      // Split emoji from tip text for styled rendering
+      const tipMatch=tip?tip.match(/^(\S+)\s+(.+)$/):null;
       html+=`<div class="shop-row" id="shopr-${item.id}">
         <div class="shop-check" id="shopck-${item.id}" onclick="toggleCheck('${item.id}')"></div>
         <div class="shop-info">
           <div class="shop-name">${item.name} ×${item.qty}<span class="tier-badge ${tC[item.tier]}">${tL[item.tier]}</span></div>
           <div class="shop-note">${item.note}</div>
+          ${tipMatch?`<div class="shop-tip"><span class="shop-tip-icon">${tipMatch[1]}</span><span>${tipMatch[2]}</span></div>`:''}
         </div>
         <div class="shop-price">$${item.subtotal.toFixed(2)}</div>
       </div>`;
     });
     html+='</div>';
   });
-  html+=`<div class="shop-total"><span class="shop-total-label">Total</span><span class="shop-total-val">$${spent.toFixed(2)}</span></div>`;
+  html+=`<div class="shop-total">
+    <span class="shop-total-label">Total</span>
+    <div style="text-align:right">
+      <span class="shop-total-val" id="shop-total-val">$${spent.toFixed(2)}</span>
+      <div id="shop-total-sub" style="font-size:12px;color:var(--ink3);margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif;display:none"></div>
+    </div>
+  </div>`;
   if(remaining>1)html+=`<div style="font-size:13px;color:var(--ink2);margin-top:6px">$${remaining.toFixed(2)} remaining for tax or extras</div>`;
   document.getElementById('shop-wrap').innerHTML=html;
   document.getElementById('price-note').innerHTML='BLS regional averages for <strong>'+(answers.state?answers.state+' ('+answers.region+' region)':'national average')+'</strong>'+(livePrices?' — live data loaded':'— using May 2025 estimates')+'. Your local store may vary. <a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank">About BLS price data →</a>';
@@ -1889,6 +2565,29 @@ function toggleCheck(id){
   ck.classList.toggle('checked');
   ck.textContent=ck.classList.contains('checked')?'✓':'';
   if(row)row.classList.toggle('checked',ck.classList.contains('checked'));
+
+  // Recalculate live totals
+  const total=cart.reduce((s,i)=>s+i.subtotal,0);
+  const inCart=cart.filter(i=>document.getElementById('shopck-'+i.id)?.classList.contains('checked'))
+                   .reduce((s,i)=>s+i.subtotal,0);
+  const remaining=total-inCart;
+  const valEl=document.getElementById('shop-total-val');
+  const subEl=document.getElementById('shop-total-sub');
+  if(!valEl||!subEl)return;
+  if(inCart===0){
+    valEl.textContent='$'+total.toFixed(2);
+    subEl.style.display='none';
+  } else if(remaining<0.01){
+    valEl.textContent='$'+total.toFixed(2);
+    subEl.textContent='✓ All items in cart';
+    subEl.style.display='block';
+    subEl.style.color='#3a7a50';
+  } else {
+    valEl.textContent='$'+total.toFixed(2);
+    subEl.innerHTML='<span style="color:#3a7a50;font-weight:700">$'+inCart.toFixed(2)+' in cart</span> &nbsp;·&nbsp; $'+remaining.toFixed(2)+' left';
+    subEl.style.display='block';
+    subEl.style.color='var(--ink3)';
+  }
 }
 
 // ━━ BRAND COMPARISON ━━
@@ -1972,14 +2671,24 @@ function buildCivic(state,spent,days,people,budget,region){
     {bill:'SNAP work requirement expansion',tag:(likelySNAP&&people>1)?'against':'neutral',text:likelySNAP?`If anyone in your household is between 55–64 without stable work, <strong>this expansion could put their SNAP eligibility at risk</strong> — even without another income source.`:`This mainly affects adults ages 55–64 who receive SNAP. Limited direct impact on your situation.`},
     {bill:'Emergency food assistance (TEFAP)',tag:'for',text:`This vote kept food bank supply funding active. The programs in the Get Help section below <strong>depend on this federal supply to stock their shelves</strong>.`},
   ];
-  const tC={for:'tag-for',against:'tag-against',neutral:'tag-neutral'};
+  const tC={for:'item-for',against:'item-against',neutral:'item-neutral'};
   const tL={for:'Helped you',against:'Worked against you',neutral:'Less direct'};
 
   html+=`<div class="civic-banner">
-    <div class="civic-banner-hdr"><span>⚖️</span><span class="civic-banner-hdr-text">What these votes mean for your situation</span></div>
+    <div class="civic-banner-hdr">
+      <span class="civic-banner-hdr-text">How federal policy impacts your kitchen.</span>
+      <p class="civic-banner-subhead">The policies and politicians shaping what your dollar is worth.</p>
+    </div>
     <div class="means-box">
-      <p class="means-intro">Your situation: <strong>$${budget.toFixed(0)}</strong> for <strong>${people===1?'1 person':people+' people'}</strong> for <strong>${days} ${days===1?'day':'days'}</strong>${state?' in <strong>'+state+'</strong>':''} — <strong>$${pppd}/person/day</strong>. Analysis based only on what you entered. Nothing stored or shared.</p>
-      ${items.map(it=>`<div class="means-item"><span class="means-tag ${tC[it.tag]}">${tL[it.tag]}</span><div class="means-text"><strong>${it.bill}:</strong> ${it.text}</div></div>`).join('')}
+      <div class="means-intro">
+        <span class="personal-baseline-tag">MY BASELINE: $${pppd} / person / day${state?' in '+state:''}</span>
+        <span class="means-intro-lead">How current federal policy directly impacts your household's math:</span>
+      </div>
+      ${items.map(it=>`<div class="means-item ${tC[it.tag]}">
+        <div class="means-tag">${tL[it.tag]}</div>
+        <div class="means-bill-name">${it.bill}</div>
+        <div class="means-text">${it.text}</div>
+      </div>`).join('')}
       <p class="privacy-note">🔒 This analysis runs in your browser using only what you entered here.</p>
     </div>
   </div>`;
@@ -2002,12 +2711,14 @@ function buildCivic(state,spent,days,people,budget,region){
         const pc=vote==='Y'?'vpY':vote==='N'?'vpN':'vpNV';
         const bt=vote==='Y'?'VOTED YES':vote==='N'?'VOTED NO':'NOT RECORDED';
         const bluf=v.bluf(rep.name,vote);
+        const impact=vote==='Y'?v.whatYesMeans:vote==='N'?v.whatNoMeans:null;
         const did='vd-'+rep.name.replace(/\W/g,'')+'-'+vi;
         html+=`<div class="vote-row">
           <span class="vote-pill ${pc}">${bt}</span>
           <div class="vote-content">
             <div class="vote-bluf">${bluf}</div>
-            <button class="vote-expand" onclick="toggleVoteDetail('${did}')">What did this bill do? ▾</button>
+            ${impact?`<div class="vote-impact">${impact}</div>`:''}
+            <button class="vote-expand" onclick="toggleVoteDetail('${did}')">Full bill details ▾</button>
             <div class="vote-detail" id="${did}">
               <div class="vd-label">The bill: ${v.bill}</div>
               <div>${v.whatItDoes}</div>
@@ -2105,17 +2816,126 @@ async function loadResources(zip,state){
   }
 }
 
+// ━━ ACCORDION ━━
+// ━━ POST-OUTPUT ACTIONS ━━
+function buildListText(){
+  if(!cart||!cart.length) return '';
+  const lines=['Make It Stretch — Shopping List',''];
+  const cats={grain:'Grains & Bread',protein:'Protein',vegetable:'Vegetables',fruit:'Fruit',dairy:'Dairy',fat:'Oils & Fats',pantry:'Pantry'};
+  Object.entries(cats).forEach(([cat,label])=>{
+    const items=cart.filter(i=>i.cat===cat).sort((a,b)=>a.price-b.price);
+    if(!items.length) return;
+    lines.push('── '+label+' ──');
+    items.forEach(i=>lines.push(`  ${i.name} ×${i.qty}  $${i.subtotal.toFixed(2)}`));
+    lines.push('');
+  });
+  const total=cart.reduce((s,i)=>s+i.subtotal,0);
+  lines.push('──────────────────');
+  lines.push(`TOTAL  $${total.toFixed(2)}`);
+  if(answers.state) lines.push(`Budget: $${answers.budget} · ${answers.people} people · ${answers.days} days · ${answers.state}`);
+  lines.push('');
+  lines.push('Built with Make It Stretch — getdealtin.com');
+  return lines.join('\n');
+}
+
+function emailList(){
+  const btn=document.getElementById('action-email');
+  const text=buildListText();
+  if(!text){if(btn){const o=btn.innerHTML;btn.innerHTML='<span>○</span> No list yet';setTimeout(()=>btn.innerHTML=o,2000);}return;}
+  const subject=encodeURIComponent('My Make It Stretch Shopping List');
+  const body=encodeURIComponent(text);
+  const a=document.createElement('a');
+  a.href=`mailto:?subject=${subject}&body=${body}`;
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function shareList(){
+  const btn=document.getElementById('action-share');
+  const text=buildListText();
+  if(!text) return;
+  if(navigator.share){
+    navigator.share({title:'My Make It Stretch Shopping List',text}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>{
+      if(!btn) return;
+      const orig=btn.innerHTML;
+      btn.innerHTML='<span>✓</span> Copied!';
+      btn.classList.add('confirmed');
+      setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('confirmed');},2200);
+    }).catch(()=>{
+      if(btn){const orig=btn.innerHTML;btn.innerHTML='<span>✗</span> Try again';setTimeout(()=>btn.innerHTML=orig,2000);}
+    });
+  }
+}
+
+function toggleAccordion(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('open');
+}
+
+// ━━ SCROLL TO SYSTEM ━━
+function scrollToSystem(){
+  const acc=document.getElementById('acc-civic');
+  if(acc){
+    if(!acc.classList.contains('open')) acc.classList.add('open');
+    setTimeout(()=>acc.scrollIntoView({behavior:'smooth',block:'start'}),50);
+  }
+}
+
+// ━━ POPULATE SYSTEM PULSE SIDEBAR + MOBILE CARD ━━
+function populateSystemPulse(state,pppd,people,days){
+  const stats=[
+    {val:'47M+',label:'Americans facing food insecurity right now'},
+    {val:'$6',label:'Average daily SNAP benefit per person — before recent cuts'},
+    {val:'13%',label:'Grocery price increase since 2021 (USDA)'},
+  ];
+  const statHTML=stats.map(s=>`<div class="pulse-stat-item"><div class="pulse-stat-val">${s.val}</div><div class="pulse-stat-label">${s.label}</div></div>`).join('');
+
+  // Sidebar
+  const sbStats=document.getElementById('sidebar-pulse-stats');
+  if(sbStats)sbStats.innerHTML=statHTML;
+
+  // Policy alert (sidebar)
+  const alertEl=document.getElementById('sidebar-policy-alert');
+  if(alertEl){
+    alertEl.style.display='block';
+    alertEl.innerHTML=`<strong>Active Policy Alert:</strong> H.R.1 would reduce SNAP eligibility for an estimated 3–4 million households. ${state?'Your district\'s votes are tracked below.':'Scroll down to see your representatives\' votes.'}`;
+  }
+
+  // Local stats (sidebar)
+  const localEl=document.getElementById('sidebar-local-stats');
+  if(localEl&&state){
+    localEl.innerHTML=`
+      <p class="pulse-local-stat">Your budget puts you at <strong>$${pppd}/person/day</strong>. The federal poverty threshold for food is $5.36/person/day.</p>
+      <p class="pulse-local-stat">State: <strong>${state}</strong> — scroll down to see how your senators voted on SNAP.</p>
+    `;
+  }
+
+  // Mobile card
+  const mobileStats=document.getElementById('mobile-pulse-stats');
+  if(mobileStats)mobileStats.innerHTML=statHTML;
+}
+
 // ━━ RESTART ━━
 function restart(){
   document.getElementById('dashboard').style.display='none';
   document.getElementById('walkthrough').style.display='block';
   document.getElementById('solidarity').classList.remove('visible');
+  // Close all accordions
+  document.querySelectorAll('.accordion-section').forEach(el=>el.classList.remove('open'));
+  Object.keys(mealChoices).forEach(k=>delete mealChoices[k]);
+  Object.keys(mealPlan).forEach(k=>delete mealPlan[k]);
+  Object.keys(mealOptions).forEach(k=>delete mealOptions[k]);
   Object.assign(answers,{budget:null,people:null,days:null,zip:null,state:null,region:null,stores:[],avoid:[],have:[],otherHave:'',cuisine:'any',leftover:'sometimes'});
   Object.assign(paydayState,{key:null,days:null});
   multiSelections.store=[];multiSelections.avoid=[];multiSelections.have=[];
-  cart=[];livePrices=null;
+  cart=[];activePrices={};livePrices=null;
   brandState={selectedFood:null,corrections:{},correcting:null,voltAlerts:{}};
-  document.querySelectorAll('.option-btn,.multi-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.option-btn,.tag-btn').forEach(b=>b.classList.remove('selected'));
   ['inp-budget','inp-people','inp-zip','inp-other-have'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('zip-context').textContent='';
   setProgress(20);
