@@ -1262,6 +1262,43 @@ header h1 em {
 }
 .corr-brand { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 16px; }
 
+/* ── POST-OUTPUT ACTIONS ── */
+.post-output-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 14px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.action-trigger {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--blue);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 7px 12px;
+  text-decoration: none;
+  transition: all .15s;
+}
+.action-trigger:hover {
+  background: var(--bg3);
+  border-color: var(--blue);
+}
+.action-trigger.confirmed {
+  color: #3a7a50;
+  border-color: #3a7a50;
+  background: #eef3ee;
+}
+
 /* ── FOOTER ── */
 footer {
   background: var(--bg2);
@@ -1292,6 +1329,21 @@ footer a:hover { color: var(--gold); }
   .accordion-body { padding: 18px 16px; }
   .meal-options-row { flex-direction: column; align-items: flex-start; }
   .meal-chip, .leftover-chip { width: 100%; box-sizing: border-box; }
+}
+@media print {
+  header, .intake-wrap, .dash-sidebar, .mobile-system-pulse,
+  .acc-brands, .acc-civic, .acc-help, #acc-brands, #acc-civic, #acc-help,
+  .post-output-actions, .restart-btn, .solidarity,
+  .accordion-hdr, footer, .price-note { display: none !important; }
+  body { background: #fff !important; }
+  .main { max-width: 100% !important; padding: 0 !important; }
+  .dash-grid { display: block !important; }
+  .dash-main { width: 100% !important; }
+  .accordion-body { display: block !important; }
+  .accordion-section { border: none !important; margin-bottom: 0 !important; }
+  .week-card { break-inside: avoid; }
+  .week-body { display: block !important; }
+  .summary-card { border: none !important; box-shadow: none !important; }
 }
 </style>
 </head>
@@ -1522,6 +1574,20 @@ footer a:hover { color: var(--gold); }
         <span class="accordion-chevron">▾</span>
       </div>
       <div class="accordion-body">
+        <div class="post-output-actions">
+          <button class="action-trigger" onclick="emailList()" id="action-email">
+            <span>✉</span> Send List
+          </button>
+          <button class="action-trigger" onclick="shareList()" id="action-share">
+            <span>⎋</span> Share
+          </button>
+          <button class="action-trigger" onclick="window.print()">
+            <span>⎙</span> Print / PDF
+          </button>
+          <a class="action-trigger" href="https://are.na/erin-relford/make-it-stretch-recipes" target="_blank">
+            <span>🗂</span> Meal Prep Resources
+          </a>
+        </div>
         <div class="shop-wrap" id="shop-wrap"></div>
       </div>
     </div>
@@ -1636,6 +1702,7 @@ const answers = {
 const paydayState = { key:null, days:null };
 const multiSelections = { store:[], avoid:[], have:[] };
 let cart = [];
+let activePrices = {};
 let livePrices = null;
 let brandState = { selectedFood:null, corrections:{}, correcting:null, voltAlerts:{} };
 
@@ -1962,6 +2029,9 @@ async function runCalculation(){
   if(hasCorner)Object.keys(CORNER_ADJ).forEach(k=>{if(prices[k])prices[k]=+(prices[k]*CORNER_ADJ[k]).toFixed(2);});
   if(hasDollar)Object.keys(DOLLAR_ADJ).forEach(k=>{if(prices[k])prices[k]=+(prices[k]*DOLLAR_ADJ[k]).toFixed(2);});
 
+  // Make prices available to swapMealIngredients for re-adding foods
+  activePrices=prices;
+
   const avoidItems=answers.avoid;
   const haveItems=answers.have;
 
@@ -1971,37 +2041,114 @@ async function runCalculation(){
     if(f.avoid.some(a=>avoidItems.includes(a)))return false;
     if(f.hasProp&&haveItems.includes(f.hasProp))return false;
     return true;
-  }).map(f=>({...f,price:prices[f.id]||0,cpd:prices[f.id]?Math.round(f.cal/prices[f.id]):0}))
-    .sort((a,b)=>a.tier-b.tier||b.cpd-a.cpd);
+  }).map(f=>({...f,price:prices[f.id]||0,cpd:prices[f.id]?Math.round(f.cal/prices[f.id]):0}));
 
-  // Smart cart: spend FULL budget proportionally
-  const targetCals=answers.people*answers.days*2000;
-  const budgetPerDay=answers.budget/answers.days;
+  // ── USDA Thrifty Food Plan category weights ──
+  // Mirrors real market-basket proportions for a balanced, credible cart
+  const USDA_WEIGHTS={
+    grain:    0.20,
+    protein:  0.23,
+    vegetable:0.14,
+    fruit:    0.10,
+    dairy:    0.16,
+    fat:      0.07,
+    pantry:   0.10,
+  };
+
+  // ── Cuisine boost packages ──
+  // Ensures a culturally coherent flavor base before general staple scaling
+  const CUISINE_BOOSTS={
+    american:      ['eggs','bread','potatoes','butter','milk'],
+    latin:         ['tortillas','onions','garlic','cannedtomatoes','salsa'],
+    asian:         ['soy','garlic','onions','cabbage','rice'],
+    southern:      ['cornmeal','sweetpotatoes','onions','garlic','cannedtomatoes'],
+    mediterranean: ['oliveoil','lentils','onions','garlic','cannedtomatoes'],
+    any:           ['onions','garlic','cannedtomatoes'],
+  };
+
+  // ── Survival floor items — always secured first ──
+  // These four guarantee a calorie-safe baseline regardless of cuisine or budget
+  const FLOOR_IDS=['rice','drybeans','oil','oats'];
+
+  const cuisine=answers.cuisine||'any';
   let remaining=answers.budget;
   let totalCals=0;
   cart=[];
 
-  // First pass: buy one of each affordable item
-  for(const f of foods){
-    if(remaining>=f.price&&f.price>0){
-      cart.push({...f,qty:1,subtotal:+f.price.toFixed(2)});
-      remaining=+(remaining-f.price).toFixed(2);
-      totalCals+=f.cal;
+  const addToCart=(food)=>{
+    if(!food||food.price<=0) return false;
+    if(remaining<food.price) return false;
+    const existing=cart.find(c=>c.id===food.id);
+    if(existing){
+      existing.qty++;
+      existing.subtotal=+(existing.price*existing.qty).toFixed(2);
+    } else {
+      cart.push({...food,qty:1,subtotal:+food.price.toFixed(2)});
+    }
+    remaining=+(remaining-food.price).toFixed(2);
+    totalCals+=food.cal;
+    return true;
+  };
+
+  const getFood=(id)=>foods.find(f=>f.id===id);
+
+  // ── PHASE 1: Nutritional floor (40% of budget max, core survival staples) ──
+  // getFood() returns undefined for foods excluded by avoidItems — dietary restrictions
+  // are automatically respected without any additional filtering needed here
+  const floorBudget=answers.budget*0.40;
+  let floorSpent=0;
+  for(const id of FLOOR_IDS){
+    const f=getFood(id);
+    if(f&&floorSpent+f.price<=floorBudget){
+      if(addToCart(f)) floorSpent+=f.price;
     }
   }
 
-  // Second pass: scale up quantities based on budget and days
-  // More days = more of each staple needed
+  // ── PHASE 2: Cuisine boost package (10% of budget max) ──
+  // Skip entirely if Phase 1 consumed the budget (tiny budget survival mode)
+  if(remaining>0.50){
+    const boostBudget=answers.budget*0.10;
+    let boostSpent=0;
+    const boostIds=CUISINE_BOOSTS[cuisine]||CUISINE_BOOSTS.any;
+    for(const id of boostIds){
+      const f=getFood(id); // undefined if restricted by avoidItems — safely skipped
+      if(f&&!cart.find(c=>c.id===id)&&boostSpent+f.price<=boostBudget){
+        if(addToCart(f)) boostSpent+=f.price;
+      }
+    }
+  }
+
+  // ── PHASE 3: USDA-weighted category fill (remaining budget) ──
+  // Skip if tiny budget already consumed by Phases 1+2
+  if(remaining>0.50){
+    const remainingForFill=remaining;
+    const categoryBudgets={};
+    Object.entries(USDA_WEIGHTS).forEach(([cat,weight])=>{
+      categoryBudgets[cat]=+(remainingForFill*weight).toFixed(2);
+    });
+    // foods array already filtered by avoidItems — restrictions fully respected here
+    const catSpent={};
+    const sortedFoods=[...foods].sort((a,b)=>a.tier-b.tier||b.cpd-a.cpd);
+    for(const f of sortedFoods){
+      if(cart.find(c=>c.id===f.id)) continue; // already in cart from Phase 1 or 2
+      const catLimit=categoryBudgets[f.cat]||0;
+      const spent=catSpent[f.cat]||0;
+      if(spent+f.price<=catLimit&&remaining>=f.price){
+        if(addToCart(f)) catSpent[f.cat]=(catSpent[f.cat]||0)+f.price;
+      }
+    }
+  }
+
+  // ── PHASE 4: Scale up staples with any remaining budget ──
+  // Spend every remaining dollar on tier-1 staples scaled to timeline
   const daysMultiplier=Math.max(1,Math.floor(answers.days/7));
   let iter=0;
-  while(remaining>=0.5&&iter<200){
+  while(remaining>=0.50&&iter<200){
     iter++;
-    // Prioritize tier 1 staples for scaling
     const scalables=cart.filter(c=>c.tier===1).sort((a,b)=>b.cpd-a.cpd);
     const tier2=cart.filter(c=>c.tier===2).sort((a,b)=>b.cpd-a.cpd);
-    const candidates=[...scalables,...tier2];
     let bought=false;
-    for(const item of candidates){
+    for(const item of [...scalables,...tier2]){
       const maxQty=item.tier===1?Math.max(8,daysMultiplier*4):Math.max(4,daysMultiplier*2);
       if(item.qty<maxQty&&remaining>=item.price){
         item.qty++;
@@ -2200,6 +2347,11 @@ function buildWeekCards(cart,avoidItems){
     weeks.push({index:w,days:weekDays});
   }
 
+  // Reset plan state
+  Object.keys(mealChoices).forEach(k=>delete mealChoices[k]);
+  Object.keys(mealPlan).forEach(k=>delete mealPlan[k]);
+  Object.keys(mealOptions).forEach(k=>delete mealOptions[k]);
+
   // Build HTML
   let html='';
   weeks.forEach((wk,wi)=>{
@@ -2230,11 +2382,22 @@ function buildWeekCards(cart,avoidItems){
       } else {
         ['breakfast','lunch','dinner'].forEach(slot=>{
           const slotData=day[slot];
+          const key=day.index+'-'+slot;
+          // Store full meal objects for swap logic
+          mealOptions[key]={};
+          slotData.opts.forEach((m,mi)=>{ mealOptions[key][mi]=m; });
+          if(slotData.discover) mealOptions[key]['d']=slotData.discover;
+          // Pre-select first option as the default active meal
+          if(slotData.opts.length){
+            mealPlan[key]=slotData.opts[0];
+            mealChoices[key]='mc-'+day.index+'-'+slot+'-0';
+          }
           html+=`<div class="meal-slot">
             <div class="meal-slot-label">${slot}</div>
             <div class="meal-options-row">`;
           slotData.opts.forEach((m,mi)=>{
-            html+=`<div class="meal-chip" id="mc-${day.index}-${slot}-${mi}" onclick="chooseMeal(${day.index},'${slot}',${mi},'${m.name.replace(/'/g,"\\'")}')">
+            const isFirst=mi===0;
+            html+=`<div class="meal-chip${isFirst?' chosen':''}" id="mc-${day.index}-${slot}-${mi}" onclick="chooseMeal(${day.index},'${slot}',${mi},'${m.name.replace(/'/g,"\\'")}')">
               <span class="meal-chip-name">${m.name}</span>
             </div>`;
           });
@@ -2267,17 +2430,85 @@ function toggleWeek(wi){
 }
 
 const mealChoices={};
+const mealPlan={};   // key: "dayIdx-slot" → full meal object currently active
+const mealOptions={}; // key: "dayIdx-slot" → array of full meal objects available
+
 function chooseMeal(dayIdx,slot,optIdx,name){
   const key=dayIdx+'-'+slot;
   const id='mc-'+dayIdx+'-'+slot+'-'+optIdx;
+
+  // Already chosen — deselect
   if(mealChoices[key]===id){
     mealChoices[key]=null;
     document.getElementById(id)?.classList.remove('chosen');
-  } else {
-    if(mealChoices[key])document.getElementById(mealChoices[key])?.classList.remove('chosen');
-    mealChoices[key]=id;
-    document.getElementById(id)?.classList.add('chosen');
+    const oldMeal=mealPlan[key]||null;
+    mealPlan[key]=null;
+    swapMealIngredients(oldMeal, null);  // audit cart with this slot now empty
+    return;
   }
+
+  // Deselect previously chosen chip for this slot
+  if(mealChoices[key]) document.getElementById(mealChoices[key])?.classList.remove('chosen');
+  mealChoices[key]=id;
+  document.getElementById(id)?.classList.add('chosen');
+
+  const newMeal=mealOptions[key]?.[optIdx==='d'?'d':parseInt(optIdx)];
+  if(!newMeal) return;
+
+  const oldMeal=mealPlan[key]||null;
+  mealPlan[key]=newMeal;
+
+  // Swap ingredients in cart
+  swapMealIngredients(oldMeal, newMeal);
+}
+
+function swapMealIngredients(oldMeal, newMeal){
+  // Build cached set of every food ID referenced by any meal in the library.
+  // These are "meal-dependent" — their presence in cart should track meal choices.
+  // Foods that never appear in any meal's needs are pure budget staples and always stay.
+  if(!swapMealIngredients._mealFoods){
+    const s=new Set();
+    [...Object.values(MEAL_LIBRARY).flat(),...DISCOVER_MEALS].forEach(m=>m.needs.forEach(id=>s.add(id)));
+    swapMealIngredients._mealFoods=s;
+  }
+  const mealFoods=swapMealIngredients._mealFoods;
+
+  // Count references across the ENTIRE active plan (all slots, all days)
+  const refCount={};
+  Object.values(mealPlan).forEach(meal=>{
+    if(!meal) return;
+    meal.needs.forEach(id=>{ refCount[id]=(refCount[id]||0)+1; });
+  });
+
+  // Add any foods the new meal needs that aren't in cart yet
+  if(newMeal){
+    newMeal.needs.forEach(id=>{
+      if(!cart.find(c=>c.id===id)){
+        const food=FOOD_DB.find(f=>f.id===id);
+        if(food){
+          const price=activePrices[id]||food.price||1.00;
+          cart.push({...food,price,qty:1,subtotal:+price.toFixed(2)});
+        }
+      }
+    });
+  }
+
+  // Full cart audit: remove any meal-dependent food with zero active plan references.
+  // Exempt: pure budget staples (not in any meal's needs) and items the user said they have.
+  const haveIds=new Set((answers.have||[]).map(h=>
+    FOOD_DB.find(f=>f.hasProp===h)?.id
+  ).filter(Boolean));
+
+  cart=cart.filter(item=>{
+    if(!mealFoods.has(item.id)) return true;   // pure budget staple — always keep
+    if(haveIds.has(item.id)) return true;        // user said they already have it — keep
+    return (refCount[item.id]||0) > 0;           // meal-dependent — keep only if referenced
+  });
+
+  // Recalculate and re-render
+  const spent=cart.reduce((s,i)=>s+i.subtotal,0);
+  const remaining=+(answers.budget-spent).toFixed(2);
+  buildShoppingList(cart,spent,remaining,answers.region);
 }
 
 // ━━ SHOPPING LIST ━━
@@ -2315,7 +2546,13 @@ function buildShoppingList(cart,spent,remaining,region){
     });
     html+='</div>';
   });
-  html+=`<div class="shop-total"><span class="shop-total-label">Total</span><span class="shop-total-val">$${spent.toFixed(2)}</span></div>`;
+  html+=`<div class="shop-total">
+    <span class="shop-total-label">Total</span>
+    <div style="text-align:right">
+      <span class="shop-total-val" id="shop-total-val">$${spent.toFixed(2)}</span>
+      <div id="shop-total-sub" style="font-size:12px;color:var(--ink3);margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif;display:none"></div>
+    </div>
+  </div>`;
   if(remaining>1)html+=`<div style="font-size:13px;color:var(--ink2);margin-top:6px">$${remaining.toFixed(2)} remaining for tax or extras</div>`;
   document.getElementById('shop-wrap').innerHTML=html;
   document.getElementById('price-note').innerHTML='BLS regional averages for <strong>'+(answers.state?answers.state+' ('+answers.region+' region)':'national average')+'</strong>'+(livePrices?' — live data loaded':'— using May 2025 estimates')+'. Your local store may vary. <a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank">About BLS price data →</a>';
@@ -2328,6 +2565,29 @@ function toggleCheck(id){
   ck.classList.toggle('checked');
   ck.textContent=ck.classList.contains('checked')?'✓':'';
   if(row)row.classList.toggle('checked',ck.classList.contains('checked'));
+
+  // Recalculate live totals
+  const total=cart.reduce((s,i)=>s+i.subtotal,0);
+  const inCart=cart.filter(i=>document.getElementById('shopck-'+i.id)?.classList.contains('checked'))
+                   .reduce((s,i)=>s+i.subtotal,0);
+  const remaining=total-inCart;
+  const valEl=document.getElementById('shop-total-val');
+  const subEl=document.getElementById('shop-total-sub');
+  if(!valEl||!subEl)return;
+  if(inCart===0){
+    valEl.textContent='$'+total.toFixed(2);
+    subEl.style.display='none';
+  } else if(remaining<0.01){
+    valEl.textContent='$'+total.toFixed(2);
+    subEl.textContent='✓ All items in cart';
+    subEl.style.display='block';
+    subEl.style.color='#3a7a50';
+  } else {
+    valEl.textContent='$'+total.toFixed(2);
+    subEl.innerHTML='<span style="color:#3a7a50;font-weight:700">$'+inCart.toFixed(2)+' in cart</span> &nbsp;·&nbsp; $'+remaining.toFixed(2)+' left';
+    subEl.style.display='block';
+    subEl.style.color='var(--ink3)';
+  }
 }
 
 // ━━ BRAND COMPARISON ━━
@@ -2557,6 +2817,60 @@ async function loadResources(zip,state){
 }
 
 // ━━ ACCORDION ━━
+// ━━ POST-OUTPUT ACTIONS ━━
+function buildListText(){
+  if(!cart||!cart.length) return '';
+  const lines=['Make It Stretch — Shopping List',''];
+  const cats={grain:'Grains & Bread',protein:'Protein',vegetable:'Vegetables',fruit:'Fruit',dairy:'Dairy',fat:'Oils & Fats',pantry:'Pantry'};
+  Object.entries(cats).forEach(([cat,label])=>{
+    const items=cart.filter(i=>i.cat===cat).sort((a,b)=>a.price-b.price);
+    if(!items.length) return;
+    lines.push('── '+label+' ──');
+    items.forEach(i=>lines.push(`  ${i.name} ×${i.qty}  $${i.subtotal.toFixed(2)}`));
+    lines.push('');
+  });
+  const total=cart.reduce((s,i)=>s+i.subtotal,0);
+  lines.push('──────────────────');
+  lines.push(`TOTAL  $${total.toFixed(2)}`);
+  if(answers.state) lines.push(`Budget: $${answers.budget} · ${answers.people} people · ${answers.days} days · ${answers.state}`);
+  lines.push('');
+  lines.push('Built with Make It Stretch — getdealtin.com');
+  return lines.join('\n');
+}
+
+function emailList(){
+  const btn=document.getElementById('action-email');
+  const text=buildListText();
+  if(!text){if(btn){const o=btn.innerHTML;btn.innerHTML='<span>○</span> No list yet';setTimeout(()=>btn.innerHTML=o,2000);}return;}
+  const subject=encodeURIComponent('My Make It Stretch Shopping List');
+  const body=encodeURIComponent(text);
+  const a=document.createElement('a');
+  a.href=`mailto:?subject=${subject}&body=${body}`;
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function shareList(){
+  const btn=document.getElementById('action-share');
+  const text=buildListText();
+  if(!text) return;
+  if(navigator.share){
+    navigator.share({title:'My Make It Stretch Shopping List',text}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>{
+      if(!btn) return;
+      const orig=btn.innerHTML;
+      btn.innerHTML='<span>✓</span> Copied!';
+      btn.classList.add('confirmed');
+      setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('confirmed');},2200);
+    }).catch(()=>{
+      if(btn){const orig=btn.innerHTML;btn.innerHTML='<span>✗</span> Try again';setTimeout(()=>btn.innerHTML=orig,2000);}
+    });
+  }
+}
+
 function toggleAccordion(id){
   const el=document.getElementById(id);
   if(!el)return;
@@ -2613,10 +2927,13 @@ function restart(){
   document.getElementById('solidarity').classList.remove('visible');
   // Close all accordions
   document.querySelectorAll('.accordion-section').forEach(el=>el.classList.remove('open'));
+  Object.keys(mealChoices).forEach(k=>delete mealChoices[k]);
+  Object.keys(mealPlan).forEach(k=>delete mealPlan[k]);
+  Object.keys(mealOptions).forEach(k=>delete mealOptions[k]);
   Object.assign(answers,{budget:null,people:null,days:null,zip:null,state:null,region:null,stores:[],avoid:[],have:[],otherHave:'',cuisine:'any',leftover:'sometimes'});
   Object.assign(paydayState,{key:null,days:null});
   multiSelections.store=[];multiSelections.avoid=[];multiSelections.have=[];
-  cart=[];livePrices=null;
+  cart=[];activePrices={};livePrices=null;
   brandState={selectedFood:null,corrections:{},correcting:null,voltAlerts:{}};
   document.querySelectorAll('.option-btn,.tag-btn').forEach(b=>b.classList.remove('selected'));
   ['inp-budget','inp-people','inp-zip','inp-other-have'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});

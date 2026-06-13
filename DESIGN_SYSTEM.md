@@ -228,18 +228,7 @@ On mobile, the same exact color story applies to `.mobile-system-pulse` — same
 
 ## 8. What to Build Next
 
-### Phase 1b — Post-Output Actions *(highest priority)*
-
-The build plan explicitly calls these "part of the core tool — not nice-to-haves."
-
-- **Email shopping list to yourself** — single tap sends the full list. Critical for mobile users who plan at home and shop later. Use a simple mailto or a `/api/send-list` endpoint.
-- **Share the list** — Web Share API on mobile, copy-to-clipboard fallback on desktop.
-- **Print/save** — print-friendly CSS media query (`@media print`) that hides the sidebar, accordions, and intake form. Shows only the shopping list and meal plan.
-- **Find meals and recipes** — link to the Are.na resource page once built.
-
-Design note: these four actions should appear as a compact row of icon+label buttons directly below the Shopping List accordion header, styled in Plus Jakarta Sans 700, using the `--blue` link color.
-
-### Phase 1c — Context Page
+### Phase 1c — Context Page *(remaining from Phase 1c)*
 
 A dedicated `/context` or `/why` page linked from the sidebar CTA. Explains:
 - What SNAP is and what the current cuts mean
@@ -247,11 +236,11 @@ A dedicated `/context` or `/why` page linked from the sidebar CTA. Explains:
 - Where getdealtin's data comes from
 - How to read the voting records
 
-Design: same cream canvas, Lora headings, editorial tone. The sidebar on the tool page should link here instead of (or in addition to) scrolling to `acc-civic`.
+Design: same cream canvas, Lora headings, editorial tone.
 
 ### Are.na Resource Page (Phase 4)
 
-A `/resources` page pulling from the Are.na API. Each link renders as a card — same `.resource-card` pattern already in the Get Help section. Add to the post-output "Find meals and recipes" CTA.
+A `/resources` page pulling from the Are.na API. Each link renders as a card — same `.resource-card` pattern already in the Get Help section. Add to the post-output "Meal Prep Resources" CTA (already linked to `are.na/erin-relford/make-it-stretch-recipes`).
 
 ### Zip Code Behavioral Logging (Phase 6)
 
@@ -278,6 +267,172 @@ The sidebar pulse stats are currently hardcoded (`47M+`, `$6`, `13%`). When the 
 ```
 
 DM Sans has been fully removed. Do not re-add it.
+
+---
+
+## 10. Cart & Meal Logic — Implementation Reference
+
+This section documents the full interactive logic layer. Read before modifying anything in the shopping list, meal plan, or cart.
+
+---
+
+### 10.1 The 4-Phase Budget Optimizer
+
+The cart is built once at calculation time using four sequential phases. **Do not collapse these into a single loop** — the phase separation is what gives the tool its philosophical coherence.
+
+```
+Phase 1 → Survival floor      (40% budget cap)
+Phase 2 → Cuisine boost        (10% budget cap)
+Phase 3 → USDA weighted fill   (remaining budget)
+Phase 4 → Staple scale-up      (every remaining dollar)
+```
+
+#### Phase 1 — Nutritional Floor (40% of budget max)
+
+Buys `rice`, `drybeans`, `oil`, `oats` first, unconditionally. Guarantees a calorie-safe baseline regardless of cuisine or budget size. These four together cover the minimum survival requirement the tool is built around.
+
+**Edge case:** If Phase 1 exhausts the full budget (tiny budget, e.g. $10), Phases 2 and 3 are skipped entirely. The tool defaults to pure survival mode. Gate: `if(remaining > 0.50)`.
+
+**Dietary restrictions:** `getFood(id)` calls `foods.find()` on a pre-filtered array. If a floor item is excluded by `avoidItems` (e.g. oats for gluten-free), it returns `undefined` and is silently skipped. No additional filter needed.
+
+#### Phase 2 — Cuisine Boost Package (10% of budget max)
+
+Locks in a culturally coherent flavor base before general filling. Maps to the user's intake form selection:
+
+```javascript
+const CUISINE_BOOSTS = {
+  american:      ['eggs','bread','potatoes','butter','milk'],
+  latin:         ['tortillas','onions','garlic','cannedtomatoes','salsa'],
+  asian:         ['soy','garlic','onions','cabbage','rice'],
+  southern:      ['cornmeal','sweetpotatoes','onions','garlic','cannedtomatoes'],
+  mediterranean: ['oliveoil','lentils','onions','garlic','cannedtomatoes'],
+  any:           ['onions','garlic','cannedtomatoes'],
+};
+```
+
+Items already in cart from Phase 1 are skipped (`!cart.find(c=>c.id===id)` check). Dietary restrictions respected automatically — `getFood()` returns `undefined` for restricted items.
+
+#### Phase 3 — USDA Thrifty Food Plan Weighted Fill
+
+Allocates remaining budget proportionally across food categories using actual USDA market-basket breakdown:
+
+```javascript
+const USDA_WEIGHTS = {
+  grain:     0.20,
+  protein:   0.23,
+  vegetable: 0.14,
+  fruit:     0.10,
+  dairy:     0.16,
+  fat:       0.07,
+  pantry:    0.10,
+};
+```
+
+This mirrors the proportions used to calculate SNAP benefits — gives the tool institutional credibility. Items already in cart are skipped. All `avoidItems` restrictions respected via the pre-filtered `foods` array.
+
+#### Phase 4 — Staple Scale-Up
+
+Spends every remaining dollar (≥ $0.50) on tier-1 items, scaled to timeline. `daysMultiplier = Math.max(1, Math.floor(days/7))`. Max quantities: `tier-1: max(8, multiplier*4)`, `tier-2: max(4, multiplier*2)`. Loops up to 200 iterations.
+
+---
+
+### 10.2 Meal Chip Swap System
+
+Meal chips are fully interactive — selecting a different chip updates the shopping list in real time.
+
+#### Global State Variables
+
+```javascript
+const mealChoices = {};  // key: "dayIdx-slot" → currently chosen chip DOM id
+const mealPlan    = {};  // key: "dayIdx-slot" → full meal object currently active
+const mealOptions = {};  // key: "dayIdx-slot" → { 0: mealObj, 1: mealObj, 'd': discoverObj }
+let   activePrices = {}; // resolved regional prices — populated in runCalculation, used by swap
+```
+
+#### On Initial Render (`buildWeekCards`)
+
+For every day/slot, the first chip is pre-selected as default:
+- `mealOptions[key]` stores all available meal objects indexed by chip position
+- `mealPlan[key]` is set to `slotData.opts[0]` (first option)
+- `mealChoices[key]` is set to the first chip's DOM id
+- First chip gets `.chosen` class in HTML
+
+#### On Chip Click (`chooseMeal`)
+
+**Deselect (clicking already-chosen chip):**
+```javascript
+oldMeal = mealPlan[key];
+mealPlan[key] = null;
+swapMealIngredients(oldMeal, null);  // runs full audit with slot now empty
+```
+
+**Select new chip:**
+```javascript
+newMeal = mealOptions[key][optIdx];  // integer or 'd' for discover
+oldMeal = mealPlan[key];
+mealPlan[key] = newMeal;
+swapMealIngredients(oldMeal, newMeal);
+```
+
+#### The Swap Audit (`swapMealIngredients`)
+
+Runs on every chip interaction. Three operations in order:
+
+**1. Build `mealFoods` cache (once)**
+Set of every food ID referenced by any meal in `MEAL_LIBRARY` or `DISCOVER_MEALS`. Determines which cart items are "meal-dependent" vs pure budget staples.
+
+**2. Count `refCount` across entire active plan**
+Iterates all `Object.values(mealPlan)`, counting how many active meals reference each food ID. `mealPlan[key]` is already updated before this runs, so counts are always current.
+
+**3. Add new meal's ingredients (if selecting)**
+For each ID in `newMeal.needs`: if not in cart, look up in `FOOD_DB` and add using `activePrices[id] || food.price || 1.00` as price fallback chain.
+
+**4. Full cart audit (always)**
+```javascript
+cart = cart.filter(item => {
+  if (!mealFoods.has(item.id)) return true;   // pure budget staple — always keep
+  if (haveIds.has(item.id))    return true;   // user said they have it — keep
+  return (refCount[item.id] || 0) > 0;        // meal-dependent — keep only if referenced
+});
+```
+
+`haveIds` is built from `answers.have` mapped through `FOOD_DB.hasProp` — prevents removing items the user declared they already own.
+
+#### Known Limitation
+
+When a meal is deselected and an ingredient drops to zero references, that dollar value is **not reallocated**. The cart total becomes cheaper. The optimizer does not re-run on swaps — forcing a re-run would reset all quantities and create cart thrashing. This is an accepted trade-off.
+
+---
+
+### 10.3 Post-Output Actions
+
+Four action buttons sit above the shopping list items inside the `acc-shopping` accordion body (`.post-output-actions`).
+
+| Button | Function | Mechanism |
+|--------|----------|-----------|
+| ✉ Send List | `emailList()` | Creates hidden `<a>`, sets `href=mailto:?subject=...&body=...`, clicks it, removes it |
+| ⎋ Share | `shareList()` | `navigator.share()` on mobile; clipboard fallback on desktop with `✓ Copied!` flash |
+| ⎙ Print / PDF | `window.print()` | `@media print` stylesheet hides sidebar, intake, accordions; expands week cards |
+| 🗂 Meal Prep Resources | Static `<a>` | Links to `are.na/erin-relford/make-it-stretch-recipes` |
+
+`buildListText()` generates the plain-text list from `cart` — categorized, with quantities and prices. Always call this function to get current list state; do not read from the DOM.
+
+---
+
+### 10.4 Shopping List Checkbox Live Totals
+
+Checkboxes update the total row in real time via `toggleCheck(id)`.
+
+```javascript
+// DOM ids
+shop-total-val  → always shows full plan total
+shop-total-sub  → hidden by default; shows "X in cart · Y left" when items are checked
+```
+
+States:
+- Nothing checked → sub-line hidden, total shows full amount
+- Some checked → `$X.XX in cart` (forest green, bold) `· $Y.YY left` (muted)
+- All checked → `✓ All items in cart` (forest green)
 
 ---
 
