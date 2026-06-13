@@ -31,6 +31,7 @@ function setCache(key, data) {
 // ── ROUTES
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/about', (req, res) => res.sendFile(path.join(__dirname, 'public', 'about.html')));
+app.get('/resources', (req, res) => res.sendFile(path.join(__dirname, 'public', 'resources.html')));
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -307,6 +308,61 @@ app.get('/api/food-resources', async (req, res) => {
   };
 
   res.json({ zip, state: stateAbbr, resources });
+});
+
+// ────────────────────────────────────────────────
+// API: ARE.NA CHANNEL — MEAL PREP RESOURCES
+// Public API — no key required for public channels
+// Fetches blocks from the getdealtin cook on a budget channel
+// ────────────────────────────────────────────────
+app.get('/api/arena-resources', async (req, res) => {
+  const CHANNEL_SLUG = process.env.ARENA_CHANNEL_SLUG || 'getdealtin-cook-on-a-budget';
+  const cacheKey = `arena:${CHANNEL_SLUG}`;
+  const cached = getCached(cacheKey);
+  if (cached) return res.json({ ...cached, _cached: true });
+
+  try {
+    // Are.na public API — no auth needed for public channels
+    const url = `https://api.are.na/v2/channels/${CHANNEL_SLUG}/contents?per=100&page=1`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'getdealtin/1.0 (getdealtin.com)' }
+    });
+
+    if (!response.ok) {
+      return res.json({ error: 'Channel not found', slug: CHANNEL_SLUG, contents: [] });
+    }
+
+    const data = await response.json();
+
+    // Filter to Link and Image blocks only — skip text/media blocks
+    const contents = (data.contents || [])
+      .filter(block => ['Link', 'Image', 'Attachment'].includes(block.class))
+      .map(block => ({
+        id:          block.id,
+        title:       block.title || block.generated_title || 'Untitled',
+        description: block.description || '',
+        url:         block.source?.url || block.attachment?.url || null,
+        image:       block.image?.thumb?.url || block.image?.square?.url || null,
+        class:       block.class,
+        created_at:  block.created_at,
+        source_url:  block.source?.url || null,
+        domain:      block.source?.url ? new URL(block.source.url).hostname.replace('www.','') : null,
+      }))
+      .filter(block => block.url); // only keep blocks with a usable link
+
+    const result = {
+      title:   data.title || 'cook on a budget',
+      length:  contents.length,
+      contents
+    };
+
+    setCache(cacheKey, result);
+    res.json(result);
+
+  } catch (err) {
+    console.error('Are.na API error:', err.message);
+    res.json({ error: err.message, contents: [] });
+  }
 });
 
 // ────────────────────────────────────────────────
