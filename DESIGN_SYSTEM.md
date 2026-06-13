@@ -517,39 +517,109 @@ The shopping list accordion body uses a two-column layout instead of a single st
 
 ---
 
-## 12. What to Build Next
+## 12. Are.na Resource Page — Implementation Reference
 
-### Remaining from Phase 1c — Context Page
+### 12.1 How It Works
 
-A dedicated `/why` page linked from the sidebar CTA button. Should explain:
+The resources page (`/resources`) pulls from a public Are.na channel via `/api/arena-resources` on the server. No API key required — Are.na's channel API is public for open channels.
+
+**Server route:** `GET /api/arena-resources` → proxies `https://api.are.na/v2/channels/{slug}/contents` → filters to Link/Image/Attachment blocks → maps to clean card objects → caches 24 hours.
+
+**Channel slug:** set via `ARENA_CHANNEL_SLUG` env variable in Render. Defaults to `getdealtin-cook-on-a-budget`. Must match the slug in your Are.na URL exactly.
+
+**Are.na channel requirements:** must be set to **Open** (public) visibility. Add resources by pasting URLs directly into the channel — Are.na fetches title, description, and thumbnail automatically. No code changes or deploys needed when adding new resources.
+
+**Fallback:** if the Are.na API is unavailable or the channel has fewer than 3 items, the page renders 10 hardcoded resources (Budget Bytes, Joshua Weissman, Ethan Chlebowski, USDA MyPlate Kitchen, etc.) so the page is never empty.
+
+### 12.2 Domain → Category Mapping
+
+Filter buttons (All / YouTube / Blogs & Substacks / Tools & Guides) use a `DOMAIN_CATEGORIES` lookup:
+
+```javascript
+const DOMAIN_CATEGORIES = {
+  'youtube.com': 'youtube', 'youtu.be': 'youtube',
+  'budgetbytes.com': 'blog', 'thekitchn.com': 'blog',
+  'seriouseats.com': 'blog', 'simplyrecipes.com': 'blog',
+  'substack.com': 'blog', 'medium.com': 'blog',
+  'notion.so': 'tool', 'airtable.com': 'tool',
+};
+```
+
+Add entries here as the channel grows. Unknown domains default to `'blog'`.
+
+### 12.3 Resource Page Design
+
+Matches `index.html` exactly — same CSS variables, same header (Benjamin Franklin engraving, Playfair Display title, Plus Jakarta Sans eyebrow), same footer, same cream canvas. The header donate button links directly to the Stripe payment link since `launchStripe()` is not available outside index.html.
+
+Card anatomy:
+- `.card-thumb` — 156px tall, `object-fit:cover`, placeholder shown if no image
+- `.card-domain` — IBM Plex Mono 9px uppercase tracking
+- `.card-title` — Lora 700 15px
+- `.card-desc` — Plus Jakarta Sans 13px `var(--ink2)`
+- `.card-footer` — "Visit →" in Warm Ochre
+
+Skeleton loading state shown while fetch is in flight — 6 placeholder cards with shimmer animation matching the card grid layout.
+
+### 12.4 Resource Discovery Card (in Meal Plan)
+
+A clickable card injected at the end of `buildWeekCards()`, after the last week card. Appears naturally in the meal plan flow — right after the user has seen their full schedule and is thinking about how to actually cook these meals.
+
+```javascript
+// Appended to html string before setting weeks-wrap innerHTML
+html += `<div class="resource-discovery-card" onclick="window.open('/resources','_blank')">...`
+```
+
+CSS classes:
+```
+.resource-discovery-card   — border:1px solid var(--border), border-radius:10px, cursor:pointer
+.resource-discovery-card:hover — border-color:var(--gold), background:#EDE8DF, translateY(-1px)
+.resource-discovery-eyebrow — Plus Jakarta Sans 700 uppercase, var(--gold)
+.resource-discovery-title   — Lora 700 16px, var(--ink)
+.resource-discovery-sub     — Plus Jakarta Sans 13px, var(--ink2)
+.resource-discovery-btn     — Plus Jakarta Sans 700 uppercase, var(--gold), right-aligned
+```
+
+Layout: flex row, space-between — text left, CTA right. Collapses to column on mobile ≤600px.
+
+---
+
+## 13. Miscellaneous Updates
+
+**Donation button copy:** "Contribute via Stripe" → **"Contribute"** everywhere (button label, JS reset handlers). Cleaner, less corporate.
+
+**Meal Prep Resources link:** updated from direct Are.na URL to `/resources` (the new page). Applied in both the shopping list sidebar action bar and any other references.
+
+**GitHub repo structure:** files must live in `public/` folder — `index.html`, `resources.html`, `about.html` all go inside `public/`. `server.js` and `package.json` at root. Render serves static files from `path.join(__dirname, 'public')`.
+
+---
+
+## 14. What to Build Next
+
+### Remaining from Phase 1c — Context Page `/why`
+
+A dedicated page explaining the political and economic context. Linked from the sidebar "See Who Votes on Your Food →" CTA. Content:
 - What SNAP is and what current cuts mean in dollar terms
 - Why the USDA discontinued its annual food security survey
 - Where getdealtin's price data comes from (BLS)
-- How to read the voting records in Know Your System
+- How to read the voting records
 
-Design: same cream canvas `#FAF8F5`, Lora headings, editorial tone. Link from the sidebar's "See Who Votes on Your Food →" CTA.
+Design: same cream canvas, Lora headings, editorial tone. Same header/footer as resources.html.
 
 ### Phase 3 — Substack
 
-Launch the Substack in two registers: practical posts for families and deeper policy/data pieces for funders. One good post every two weeks. A program officer who reads three issues should understand getdealtin before you ever pitch them.
-
-### Phase 4 — Are.na Resource Page
-
-The "Meal Prep Resources" button already links to `are.na/erin-relford/make-it-stretch-recipes`. Build the `/resources` page on the site pulling from the Are.na API, rendering each link as a `.resource-card`. When you add something to Are.na, it auto-appears on the site.
-
-### Phase 5 — Zip Code Input
-
-Add voluntary zip code entry to the tool. This enables the PostgreSQL behavioral logging in Phase 6 and makes the sidebar local stats actually dynamic per user.
+Two registers: practical posts for families, deeper policy/data pieces for funders. One good post every two weeks. A program officer who reads three issues should understand getdealtin before you ever pitch them.
 
 ### Phase 6 — PostgreSQL Event Database
 
-Stand up Supabase. Add `logEvent(type, data)` helper to the script block. Events to log: budget tier entered, food items in cart, brand comparisons clicked, online vs. local selections, post-output actions taken.
+Stand up Supabase. Add `logEvent(type, data)` helper. Log: budget tier entered, food items in cart, brand comparisons clicked, online vs. local selections, post-output actions taken. Wire sidebar pulse stats to `/api/pulse-stats` when live.
 
-When live, wire sidebar pulse stats (`47M+`, `$6`, `13%`) to `/api/pulse-stats` — the `populateSystemPulse()` function already accepts these as parameters.
+```json
+{ "zip": "78745", "event": "online_alt_click", "item": "rice", "retailer": "amazon" }
+```
 
 ### Phase 7 — Community Intelligence & Na Formalization
 
-Surface aggregate zip-level insights back to users. Package data for food bank partners. Grant narrative around the USDA data gap. Formalize Native's 501(c)(3) or fiscal sponsorship.
+Surface aggregate zip-level insights back to users. Package data for food bank partners. Grant narrative around the USDA data gap. Native 501(c)(3) or fiscal sponsorship. Price-gouging monitoring.
 
 ---
 
