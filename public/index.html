@@ -108,6 +108,31 @@ header {
   transition: opacity .15s;
 }
 .header-eyebrow a:hover { opacity: 1; }
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.header-donate-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1B3624;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(27,54,36,.25);
+  border-radius: 20px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.header-donate-btn:hover {
+  background: rgba(255,255,255,.32);
+  border-color: rgba(27,54,36,.5);
+}
 header h1 {
   font-family: 'Playfair Display', serif;
   font-size: 100px;
@@ -676,6 +701,69 @@ header h1 em {
 
 /* ── WEEK CARDS ── */
 .weeks-wrap { margin-bottom: 8px; }
+
+/* ── RESOURCE DISCOVERY CARD ── */
+.resource-discovery-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 12px;
+  cursor: pointer;
+  background: var(--bg2);
+  transition: all .15s;
+}
+.resource-discovery-card:hover {
+  border-color: var(--gold);
+  background: #EDE8DF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(27,54,36,.08);
+}
+.resource-discovery-inner {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.resource-discovery-eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 5px;
+}
+.resource-discovery-title {
+  font-family: 'Lora', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 5px;
+  letter-spacing: -.2px;
+}
+.resource-discovery-sub {
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.55;
+  max-width: 500px;
+}
+.resource-discovery-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+@media(max-width:600px){
+  .resource-discovery-inner { flex-direction: column; gap: 12px; }
+  .resource-discovery-btn { align-self: flex-start; }
+}
 .week-card {
   border: 1px solid var(--border);
   border-radius: 10px; overflow: hidden;
@@ -1299,6 +1387,226 @@ header h1 em {
   background: #eef3ee;
 }
 
+/* ── SHOPPING LIST STICKY SIDEBAR LAYOUT ── */
+.shopping-list-container {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  padding: 24px 20px;
+}
+.list-sidebar {
+  position: sticky;
+  top: 20px;
+  width: 260px;
+  flex-shrink: 0;
+}
+.list-sidebar .post-output-actions {
+  flex-direction: column;
+  border-bottom: none;
+  margin-bottom: 16px;
+  padding-bottom: 0;
+  gap: 6px;
+}
+.list-sidebar .action-trigger {
+  width: 100%;
+  justify-content: flex-start;
+}
+.list-sidebar .donation-card {
+  padding: 14px 16px;
+  margin-bottom: 0;
+}
+.list-sidebar .stripe-btn {
+  width: 100%;
+  min-width: unset;
+  margin-top: 12px;
+}
+.list-content { flex: 1; min-width: 0; }
+
+@media(max-width:780px){
+  .shopping-list-container { flex-direction: column; gap: 0; padding: 16px; }
+  .list-sidebar { position: static; width: 100%; }
+  .list-sidebar .post-output-actions { flex-direction: row; flex-wrap: wrap; margin-bottom: 12px; }
+  .list-sidebar .action-trigger { width: auto; }
+}
+
+/* ── DONATION CARD ── */
+.donation-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  display: none;
+}
+.donation-eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #5A6E61;
+  margin-bottom: 4px;
+  display: block;
+}
+.donation-headline {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.donation-headline em { font-style: italic; color: #3a7a50; }
+.donation-body {
+  font-size: 0.82rem;
+  color: var(--ink3);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+.stripe-btn {
+  background: #635BFF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: background .15s;
+  flex-shrink: 0;
+  min-width: 190px;
+}
+.stripe-btn:hover { background: #4f46e5; }
+.stripe-btn-main {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.stripe-btn-sub {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+@media(max-width:600px){
+  .donation-card > div { flex-direction: column !important; }
+  .stripe-btn { width: 100%; min-width: unset; margin-top: 12px; }
+}
+
+/* ── POST-OUTPUT ACTIONS ── */
+.post-output-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 14px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.action-trigger {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--blue);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 7px 12px;
+  text-decoration: none;
+  transition: all .15s;
+}
+.action-trigger:hover {
+  background: var(--bg3);
+  border-color: var(--blue);
+}
+.action-trigger.confirmed {
+  color: #3a7a50;
+  border-color: #3a7a50;
+  background: #eef3ee;
+}
+
+/* ── DONATION CARD ── */
+.donation-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  display: none;
+}
+.donation-eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5A6E61;
+  margin-bottom: 6px;
+  display: block;
+}
+.donation-headline {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.donation-headline em { font-style: italic; color: #3a7a50; }
+.donation-body {
+  font-size: 0.875rem;
+  color: var(--ink2);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+.donation-actions {
+  display: flex;
+  align-items: center;
+}
+.stripe-btn {
+  background: #635BFF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: background .15s;
+  width: 100%;
+}
+.stripe-btn:hover { background: #4f46e5; }
+.stripe-btn-main {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.stripe-btn-sub {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 400;
+  opacity: 0.8;
+  letter-spacing: 0;
+}
+@media(max-width:600px){
+  .donation-actions { grid-template-columns: 1fr; }
+}
+
 /* ── FOOTER ── */
 footer {
   background: var(--bg2);
@@ -1346,6 +1654,7 @@ footer a:hover { color: var(--gold); }
   .summary-card { border: none !important; box-shadow: none !important; }
 }
 </style>
+<script src="https://js.stripe.com/v3/" defer></script>
 </head>
 <body>
 
@@ -1355,7 +1664,10 @@ footer a:hover { color: var(--gold); }
     <img src="https://follow-the-money.onrender.com/ben.png" alt="Benjamin Franklin">
   </div>
   <div class="header-content">
-    <div class="header-eyebrow">◆ Civic Budget Tool &nbsp;·&nbsp; <a href="https://getdealtin.com">Get Dealt In</a></div>
+    <div class="header-nav">
+      <div class="header-eyebrow">◆ Civic Budget Tool &nbsp;·&nbsp; <a href="https://getdealtin.com">Get Dealt In</a></div>
+      <button class="header-donate-btn" onclick="launchStripe()">Support This Tool</button>
+    </div>
     <h1>Make It <em>Stretch</em></h1>
     <div class="header-quote">
       "A penny saved is a penny earned."
@@ -1573,22 +1885,44 @@ footer a:hover { color: var(--gold); }
         </div>
         <span class="accordion-chevron">▾</span>
       </div>
-      <div class="accordion-body">
-        <div class="post-output-actions">
-          <button class="action-trigger" onclick="emailList()" id="action-email">
-            <span>✉</span> Send List
-          </button>
-          <button class="action-trigger" onclick="shareList()" id="action-share">
-            <span>⎋</span> Share
-          </button>
-          <button class="action-trigger" onclick="window.print()">
-            <span>⎙</span> Print / PDF
-          </button>
-          <a class="action-trigger" href="https://are.na/erin-relford/make-it-stretch-recipes" target="_blank">
-            <span>🗂</span> Meal Prep Resources
-          </a>
+      <div class="accordion-body" style="padding:0;">
+        <div class="shopping-list-container">
+
+          <!-- ── LEFT STICKY SIDEBAR: actions + donation ── -->
+          <aside class="list-sidebar">
+            <div class="post-output-actions">
+              <button class="action-trigger" onclick="emailList()" id="action-email">
+                <span>✉</span> Send List
+              </button>
+              <button class="action-trigger" onclick="shareList()" id="action-share">
+                <span>⎋</span> Share
+              </button>
+              <button class="action-trigger" onclick="window.print()">
+                <span>⎙</span> Print / PDF
+              </button>
+              <a class="action-trigger" href="/resources" target="_blank">
+                <span>🗂</span> Meal Prep Resources
+              </a>
+            </div>
+
+            <!-- ── DONATION CARD ── -->
+            <div class="donation-card" id="donation-card">
+              <span class="donation-eyebrow">No Ads · No Paywalls · Public Resource</span>
+              <h3 class="donation-headline">If this helped, keep it free for the next person.</h3>
+              <p class="donation-body">Voluntary contributions offset BLS price data, OpenStates API, and hosting costs.</p>
+              <button class="stripe-btn" id="stripe-checkout-btn" onclick="launchStripe()">
+                <span class="stripe-btn-main">Contribute</span>
+                <span class="stripe-btn-sub">Apple Pay · Google Pay · CashApp</span>
+              </button>
+            </div>
+          </aside>
+
+          <!-- ── RIGHT: the actual grocery list ── -->
+          <div class="list-content">
+            <div class="shop-wrap" id="shop-wrap"></div>
+          </div>
+
         </div>
-        <div class="shop-wrap" id="shop-wrap"></div>
       </div>
     </div>
 
@@ -2211,6 +2545,7 @@ async function runCalculation(){
 
   document.getElementById('walkthrough').style.display='none';
   document.getElementById('dashboard').style.display='block';
+  initDonation();
   setTimeout(()=>document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
@@ -2415,6 +2750,20 @@ function buildWeekCards(cart,avoidItems){
 
     html+=`</div></div>`;
   });
+
+  // ── Resource discovery card — appears after the last week ──
+  html+=`<div class="resource-discovery-card" onclick="window.open('/resources','_blank')">
+    <div class="resource-discovery-inner">
+      <div class="resource-discovery-text">
+        <span class="resource-discovery-eyebrow">Curated by getdealtin</span>
+        <h3 class="resource-discovery-title">Need recipe ideas for these meals?</h3>
+        <p class="resource-discovery-sub">YouTube channels, recipe blogs, and budget cooking guides — curated for real families on real budgets. No sponsored content.</p>
+      </div>
+      <div class="resource-discovery-cta">
+        <span class="resource-discovery-btn">Meal Prep Resources →</span>
+      </div>
+    </div>
+  </div>`;
 
   document.getElementById('weeks-wrap').innerHTML=html;
 
@@ -2920,6 +3269,45 @@ function populateSystemPulse(state,pppd,people,days){
   if(mobileStats)mobileStats.innerHTML=statHTML;
 }
 
+// ━━ DONATION INFRASTRUCTURE ━━
+let _stripe = null;
+
+function initDonation(){
+  const card = document.getElementById('donation-card');
+  if(card) card.style.display = 'block';
+
+  // ── Stripe (Apple Pay, Google Pay, CashApp) ──
+  // Replace with your live Stripe publishable key from dashboard.stripe.com
+  const STRIPE_KEY = 'pk_live_51ThufOPo7HmLEBd4CKFgMsE3dL0JTcigsudivn9LC0730rvrXQP3c3qCxY4QNjAoYutOiXMwVfetkCdcmzFlech700hgR9JzQj';
+  if(typeof Stripe !== 'undefined' && STRIPE_KEY.startsWith('pk_')){
+    _stripe = Stripe(STRIPE_KEY);
+  }
+
+}
+
+async function launchStripe(){
+  const btn = document.getElementById('stripe-checkout-btn');
+  if(!_stripe){
+    // Stripe key not yet configured — open Stripe payment link as fallback
+    // Replace with your Stripe payment link from dashboard.stripe.com/payment-links
+    window.open('https://buy.stripe.com/28EcN7giU7JS6LM53kfQI00','_blank');
+    return;
+  }
+  if(btn){ btn.querySelector('.stripe-btn-main').textContent='Opening...'; }
+  try {
+    // Replace 'price_XXXXX' with your Stripe Price ID
+    const {error} = await _stripe.redirectToCheckout({
+      lineItems:[{price:'price_1ThuuEPo7HmLEBd46gDEuDma', quantity:1}],
+      mode:'payment',
+      successUrl: window.location.origin+'?donated=1',
+      cancelUrl: window.location.href,
+    });
+    if(error && btn) btn.querySelector('.stripe-btn-main').textContent='Contribute';
+  } catch(e){
+    if(btn) btn.querySelector('.stripe-btn-main').textContent='Contribute';
+  }
+}
+
 // ━━ RESTART ━━
 function restart(){
   document.getElementById('dashboard').style.display='none';
@@ -2934,6 +3322,9 @@ function restart(){
   Object.assign(paydayState,{key:null,days:null});
   multiSelections.store=[];multiSelections.avoid=[];multiSelections.have=[];
   cart=[];activePrices={};livePrices=null;
+  _stripe=null;
+  const dc=document.getElementById('donation-card');
+  if(dc) dc.style.display='none';
   brandState={selectedFood:null,corrections:{},correcting:null,voltAlerts:{}};
   document.querySelectorAll('.option-btn,.tag-btn').forEach(b=>b.classList.remove('selected'));
   ['inp-budget','inp-people','inp-zip','inp-other-have'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
