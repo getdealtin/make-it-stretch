@@ -701,6 +701,69 @@ header h1 em {
 
 /* ── WEEK CARDS ── */
 .weeks-wrap { margin-bottom: 8px; }
+
+/* ── RESOURCE DISCOVERY CARD ── */
+.resource-discovery-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 12px;
+  cursor: pointer;
+  background: var(--bg2);
+  transition: all .15s;
+}
+.resource-discovery-card:hover {
+  border-color: var(--gold);
+  background: #EDE8DF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(27,54,36,.08);
+}
+.resource-discovery-inner {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.resource-discovery-eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 5px;
+}
+.resource-discovery-title {
+  font-family: 'Lora', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 5px;
+  letter-spacing: -.2px;
+}
+.resource-discovery-sub {
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.55;
+  max-width: 500px;
+}
+.resource-discovery-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+@media(max-width:600px){
+  .resource-discovery-inner { flex-direction: column; gap: 12px; }
+  .resource-discovery-btn { align-self: flex-start; }
+}
 .week-card {
   border: 1px solid var(--border);
   border-radius: 10px; overflow: hidden;
@@ -1848,7 +1911,7 @@ footer a:hover { color: var(--gold); }
               <h3 class="donation-headline">If this helped, keep it free for the next person.</h3>
               <p class="donation-body">Voluntary contributions offset BLS price data, OpenStates API, and hosting costs.</p>
               <button class="stripe-btn" id="stripe-checkout-btn" onclick="launchStripe()">
-                <span class="stripe-btn-main">Contribute via Stripe</span>
+                <span class="stripe-btn-main">Contribute</span>
                 <span class="stripe-btn-sub">Apple Pay · Google Pay · CashApp</span>
               </button>
             </div>
@@ -2688,6 +2751,20 @@ function buildWeekCards(cart,avoidItems){
     html+=`</div></div>`;
   });
 
+  // ── Resource discovery card — appears after the last week ──
+  html+=`<div class="resource-discovery-card" onclick="window.open('/resources','_blank')">
+    <div class="resource-discovery-inner">
+      <div class="resource-discovery-text">
+        <span class="resource-discovery-eyebrow">Curated by getdealtin</span>
+        <h3 class="resource-discovery-title">Need recipe ideas for these meals?</h3>
+        <p class="resource-discovery-sub">YouTube channels, recipe blogs, and budget cooking guides — curated for real families on real budgets. No sponsored content.</p>
+      </div>
+      <div class="resource-discovery-cta">
+        <span class="resource-discovery-btn">Meal Prep Resources →</span>
+      </div>
+    </div>
+  </div>`;
+
   document.getElementById('weeks-wrap').innerHTML=html;
 
   // Tips
@@ -3225,9 +3302,9 @@ async function launchStripe(){
       successUrl: window.location.origin+'?donated=1',
       cancelUrl: window.location.href,
     });
-    if(error && btn) btn.querySelector('.stripe-btn-main').textContent='Contribute via Stripe';
+    if(error && btn) btn.querySelector('.stripe-btn-main').textContent='Contribute';
   } catch(e){
-    if(btn) btn.querySelector('.stripe-btn-main').textContent='Contribute via Stripe';
+    if(btn) btn.querySelector('.stripe-btn-main').textContent='Contribute';
   }
 }
 
