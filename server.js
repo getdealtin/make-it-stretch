@@ -448,14 +448,14 @@ app.post('/api/event', async (req, res) => {
         item:        safeItem,
         retailer:    safeRetailer,
         budget_tier: safeTier,
-        // ts omitted — DB sets it server-side via DEFAULT NOW()
       }),
     });
 
     if (!response.ok) {
       const err = await response.text();
-      console.error('Supabase insert error:', response.status, err.slice(0, 200));
-      return res.status(500).json({ error: 'db_error' });
+      console.error('Supabase insert error:', response.status, err.slice(0, 500));
+      console.error('Key type:', SUPABASE_KEY.startsWith('sb_') ? 'new-format (needs legacy service_role JWT)' : 'JWT');
+      return res.status(500).json({ error: 'db_error', status: response.status });
     }
 
     res.json({ ok: true, stored: true });
