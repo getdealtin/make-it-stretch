@@ -2133,7 +2133,7 @@ footer a:hover { color: var(--gold); }
     <div class="mobile-system-pulse" id="mobile-system-pulse">
       <div class="pulse-hdr">
         <span class="pulse-dot"></span>
-        <span class="pulse-hdr-label">Why Your Groceries Cost This Much</span>
+        <span class="pulse-hdr-label">Where You Stand</span>
       </div>
       <div class="pulse-body" id="mobile-pulse-body">
         <p class="pulse-hook">"The price you pay at checkout isn't random. Here's what's actually driving it."</p>
@@ -2254,7 +2254,7 @@ footer a:hover { color: var(--gold); }
       <div class="system-pulse">
         <div class="pulse-hdr">
           <span class="pulse-dot"></span>
-          <span class="pulse-hdr-label">Why Your Groceries Cost This Much</span>
+          <span class="pulse-hdr-label">Where You Stand</span>
         </div>
         <div class="pulse-body" id="sidebar-pulse-body">
           <p class="pulse-hook">"The price you pay at checkout isn't random. Here's what's actually driving it."</p>
@@ -3560,53 +3560,7 @@ function populateSystemPulse(state, pppd, people, days, censusData){
 
   const POVERTY_LINE = 5.36;
   const SNAP_DAILY   = 6.22;
-  const SCHOOL_LUNCH = 3.65;
-  const GAS_WATER    = 2.49;
-  const MCDONALDS    = 10.50;
-  const STARBUCKS    = 7.25;
-
-  const ppmeal = +(pppd / 3).toFixed(2);
   const snapEligible = pppd < POVERTY_LINE;
-  const belowSNAP    = pppd < SNAP_DAILY;
-
-  // ── YOUR SITUATION ──
-  // Tone: this is a moment in time, a constraint being navigated — not a life sentence.
-  // Frame it as: here's what this budget means right now, here's how the system sees it.
-
-  // Per-meal vs something they bought recently
-  const mealVs = ppmeal < SCHOOL_LUNCH
-    ? `less than a paid school lunch ($${SCHOOL_LUNCH})`
-    : ppmeal < GAS_WATER
-    ? `less than a gas station water bottle ($${GAS_WATER})`
-    : `about the cost of a school lunch`;
-
-  const situationLead = `Right now, each meal on this plan works out to <strong>$${ppmeal}</strong> — ${mealVs}.`;
-
-  // System framing — where this budget sits vs federal benchmarks
-  // Deliberately uses "right now" / "this budget" not "you are"
-  let systemLine;
-  if (snapEligible) {
-    const gap = (POVERTY_LINE - pppd).toFixed(2);
-    systemLine = `The USDA's Thrifty Food Plan sets <strong>$${POVERTY_LINE}/day</strong> as the minimum to eat adequately. This budget is <strong>$${gap} below that line</strong> — which means the federal government's own standard considers it insufficient. That's not a personal judgment. It's a measurement.`;
-  } else if (belowSNAP) {
-    const gap = (SNAP_DAILY - pppd).toFixed(2);
-    systemLine = `The maximum SNAP benefit is <strong>$${SNAP_DAILY}/person/day</strong>. This budget is <strong>$${gap} under that</strong> — stretching further than a federal assistance program is designed to cover, without that program's help.`;
-  } else {
-    const margin = (pppd - POVERTY_LINE).toFixed(2);
-    systemLine = `The federal poverty food threshold is <strong>$${POVERTY_LINE}/day</strong>. This budget clears it by <strong>$${margin}</strong>. The line between "technically adequate" and "not enough" is that narrow.`;
-  }
-
-  // Day-level comparison — muted, not dramatic
-  let dayLine;
-  if (pppd < GAS_WATER) {
-    dayLine = `For context: a full day of food on this plan costs less than a convenience store water bottle.`;
-  } else if (pppd < STARBUCKS) {
-    dayLine = `For context: a full day of food on this plan ($${pppd}) costs less than a Starbucks order ($${STARBUCKS}).`;
-  } else if (pppd < MCDONALDS) {
-    dayLine = `For context: a full day of food on this plan ($${pppd}) costs less than one fast food combo ($${MCDONALDS}).`;
-  } else {
-    dayLine = `For context: a McDonald's combo costs $${MCDONALDS}. This plan covers a full day of food for $${(pppd * people).toFixed(2)}${people > 1 ? ` for ${people} people` : ''}.`;
-  }
 
   // ── YOUR COMMUNITY ──
   let communityHTML;
@@ -3646,13 +3600,11 @@ function populateSystemPulse(state, pppd, people, days, censusData){
     `;
 
   } else if (censusData && !censusData.found && zip) {
-    // Census returned nothing for this zip — use state-level context instead
     communityHTML = `
-      <p class="pulse-chapter-lead">Zip-level data wasn't available for <strong>${zip}</strong>.</p>
-      <p class="pulse-chapter-body" style="margin-top:6px">Nationally, <strong>42 million Americans</strong> rely on SNAP. In <strong>${state || 'your state'}</strong>, food insecurity affects hundreds of thousands of households — and many more are managing tight budgets without assistance. This situation is far from unusual.</p>
+      <p class="pulse-chapter-lead">Nationally, <strong>42 million Americans</strong> rely on SNAP.</p>
+      <p class="pulse-chapter-body" style="margin-top:6px">In <strong>${state || 'your state'}</strong>, food insecurity affects hundreds of thousands of households — many more managing tight budgets without assistance. This situation is far from unusual.</p>
     `;
   } else {
-    // Still waiting on Census
     communityHTML = `<p class="pulse-chapter-body" style="color:rgba(250,248,245,.35)">Loading local data...</p>`;
   }
 
@@ -3685,15 +3637,6 @@ function populateSystemPulse(state, pppd, people, days, censusData){
 
   el.innerHTML = `
     <div class="pulse-chapter">
-      <div class="pulse-chapter-label">RIGHT NOW</div>
-      <p class="pulse-chapter-lead">${situationLead}</p>
-      <p class="pulse-chapter-body" style="margin-top:8px">${systemLine}</p>
-      <p class="pulse-chapter-body" style="margin-top:8px;color:rgba(250,248,245,.45)">${dayLine}</p>
-    </div>
-
-    <div class="pulse-divider"></div>
-
-    <div class="pulse-chapter">
       <div class="pulse-chapter-label">YOUR COMMUNITY</div>
       ${communityHTML}
     </div>
@@ -3711,10 +3654,6 @@ function populateSystemPulse(state, pppd, people, days, censusData){
   const mobileEl = document.getElementById('mobile-pulse-body');
   if (mobileEl) {
     mobileEl.innerHTML = `
-      <p class="pulse-chapter-lead">${situationLead}</p>
-      <p class="pulse-chapter-body" style="margin-bottom:8px">${systemLine}</p>
-      <p class="pulse-chapter-body" style="margin-bottom:14px;color:rgba(250,248,245,.45)">${dayLine}</p>
-      <div style="background:rgba(255,255,255,.1);height:1px;margin:12px 0"></div>
       ${communityHTML}
       ${(sen1||sen2) ? `<div style="background:rgba(255,255,255,.1);height:1px;margin:12px 0"></div>
       <div class="pulse-senate-row">${voteCard(sen1)}${voteCard(sen2)}</div>
