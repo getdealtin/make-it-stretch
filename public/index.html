@@ -2764,6 +2764,19 @@ async function buildWeekCards(cart, avoidItems){
     console.log('Recipe API response:', data.found, 'total:', data.total, 'breakfast:', data.bySlot?.breakfast?.length, 'lunch:', data.bySlot?.lunch?.length, 'dinner:', data.bySlot?.dinner?.length);
     if(data.found) {
       bySlot = data.bySlot;
+      // Client-side cuisine guard: strip recipes that don't match selected cuisines
+      if(cuisine.length > 0 && !cuisine.includes('any')) {
+        const filterByCuisine = (arr) => (arr||[]).filter(r => {
+          const rc = (r.cuisine||'').toLowerCase();
+          return cuisine.includes(rc) || rc === 'any';
+        });
+        bySlot = {
+          breakfast: filterByCuisine(bySlot.breakfast),
+          lunch:     filterByCuisine(bySlot.lunch),
+          dinner:    filterByCuisine(bySlot.dinner),
+          any:       filterByCuisine(bySlot.any),
+        };
+      }
       // Build recipe lookup map so chip clicks can find full recipe data
       [...(bySlot.breakfast||[]), ...(bySlot.lunch||[]), ...(bySlot.dinner||[]), ...(bySlot.any||[])].forEach(r => {
         recipeMap[r.id] = r;
@@ -2873,7 +2886,7 @@ async function buildWeekCards(cart, avoidItems){
           <div class="week-subtitle">${activeDays.length} days · ${cuisineLabel}</div>
         </div>
         <div style="display:flex;align-items:center;gap:12px">
-          <span class="week-day-count" style="color:var(--gold);font-size:13px;font-weight:600">${answers.days} days</span>
+          <span class="week-day-count" style="color:var(--gold);font-size:13px;font-weight:600">${activeDays.length} day${activeDays.length===1?'':'s'}</span>
           <span class="week-toggle">▲</span>
         </div>
       </div>
@@ -3238,7 +3251,7 @@ function openRecipeDrawer(mealName, mealDesc, cuisine, ingredients, instructions
   const bodyEl=document.getElementById('recipe-drawer-body');
 
   titleEl.textContent = mealName;
-  eyebrowEl.textContent = cuisine ? cuisine + ' · Recipe' : 'Recipe';
+  eyebrowEl.textContent = cuisine ? cuisine.charAt(0).toUpperCase()+cuisine.slice(1).toLowerCase() + ' · Recipe' : 'Recipe';
   drawer.classList.add('open');
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
