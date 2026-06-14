@@ -945,6 +945,7 @@ header h1 em {
   gap: 16px; align-items: start;
 }
 .day-row:last-child { border-bottom: none; }
+.day-row-leftover { background: #f7f5f1; }
 .day-name, .day-label {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.7rem;
@@ -967,9 +968,13 @@ header h1 em {
 }
 .meal-options-row, .meal-chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .leftover-row {
-  font-size: 13px; color: var(--ink2);
-  padding: 8px 0;
-  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600;
+  color: #3a7a50;
+  padding: 8px 14px;
+  background: #eef3ee;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(58,122,80,.2);
+  display: inline-flex; align-items: center; gap: 6px;
 }
 .meal-chip-wrap {
   display: inline-flex;
@@ -3067,8 +3072,8 @@ async function buildWeekCards(cart, avoidItems){
 
     weekDays.forEach(day => {
       if(day.leftover){
-        html += `<div class="day-row"><div class="day-label">${day.dayName}</div>
-          <div class="leftover-row">♻ ♻ Leftovers from yesterday — reheat and save time</div></div>`;
+        html += `<div class="day-row day-row-leftover"><div class="day-label">${day.dayName}</div>
+          <div class="leftover-row">↻ Leftovers from yesterday — reheat and save time</div></div>`;
         return;
       }
       html += `<div class="day-row"><div class="day-label">${day.dayName}</div><div class="day-slots">`;
