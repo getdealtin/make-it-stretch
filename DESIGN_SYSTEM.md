@@ -559,12 +559,167 @@ Two locations only — both earned, neither interruptive:
 | `BLS_KEY` | Bureau of Labor Statistics | Falls back to hardcoded prices without it |
 | `CONGRESS_KEY` | api.congress.gov | Falls back gracefully |
 | `OPENSTATES_KEY` | OpenStates v3 | State bills section |
+| `SUPABASE_URL` | Supabase PostgreSQL | Format: `https://[project-id].supabase.co` — no trailing slash, no `/rest/v1/` |
+| `SUPABASE_KEY` | Supabase service role key | Use the **legacy service_role JWT** (starts with `eyJ...`), NOT the new `sb_secret_...` key — new format doesn't work with PostgREST |
+| `STATS_KEY` | Internal analytics | Any passphrase you choose — protects `/api/stats` endpoint |
 
 No `DEMO_KEY` fallback. If `CENSUS_KEY` is unset, server attempts keyless request (~500/day free).
 
 ---
 
-## 12. About Page (`/about`)
+## 12. Phase 6 — Event Logging System
+
+### Architecture
+
+Anonymous behavioral events flow: `frontend (data-event attr)` → `POST /api/event` → `server.js validates` → `Supabase REST API` → `events table`.
+
+The system is **fire-and-forget** — events never block the UI. All failures are silent to the user. All validation is server-side.
+
+### Session Token
+
+```javascript
+const SESSION_ID = Math.random().toString(36).slice(2,8) +
+                   Math.random().toString(36).slice(2,8);
+```
+
+Generated once per page load. 12 lowercase alphanumeric characters. Lives only in JS memory — gone when tab closes. Never stored in a cookie, localStorage, or sent to any third party. Links events from the same session without identifying anyone.
+
+### Auto-Capture Pattern
+
+A single delegated click listener handles most events automatically:
+
+```javascript
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('[data-event]');
+  if (!el) return;
+  logEvent(el.dataset.event, {
+    zip:      answers.zip || null,
+    item:     el.dataset.item     || null,
+    retailer: el.dataset.retailer || null,
+  });
+}, { passive: true });
+```
+
+**To track any new element:** add `data-event="event_name"` to the HTML. No JavaScript changes needed.
+
+Optional data attributes: `data-item`, `data-retailer`.
+
+### Manual `logEvent()` calls
+
+Only used when computed context is needed (budget tier, cuisine, pppd). Currently only `budget_entered` uses this — all other events use auto-capture.
+
+### Events Table Schema
+
+```sql
+CREATE TABLE events (
+  id          BIGSERIAL PRIMARY KEY,
+  event       TEXT        NOT NULL,
+  zip         CHAR(5),
+  item        TEXT,
+  retailer    TEXT,
+  budget_tier TEXT,
+  session_id  CHAR(12),
+  pppd        NUMERIC(5,2),
+  people_tier TEXT,
+  days_tier   TEXT,
+  budget      NUMERIC(8,2),
+  people      SMALLINT,
+  days        SMALLINT,
+  stores      TEXT,
+  avoid       TEXT,
+  leftover    TEXT,
+  ts          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+### All Tracked Events
+
+| Event | Trigger | Key Fields |
+|-------|---------|------------|
+| `budget_entered` | Plan generated | zip, pppd, budget, people, days, stores, avoid, leftover, cuisine (item), tiers |
+| `meal_swapped` | User clicks a meal chip | zip, item=`default` or `discover` |
+| `item_checked` | Checkbox in shopping list | zip, item (food id) |
+| `brand_clicked` | Brand comparison pill tapped | zip, item (food id) |
+| `online_alt_clicked` | Online retailer link clicked | zip, item (food id), retailer (domain) |
+| `recipe_opened` | 📖 icon on meal chip | zip |
+| `accordion_opened` | Any accordion section opened | zip, item (accordion id) |
+| `week_opened` | Week card expanded | zip, item (`week_0`, `week_1`, etc.) |
+| `preference_selected` | Store/avoid/have tag toggled | item (group: `store`/`avoid`/`have`), retailer (value: `walmart`, `gluten`, etc.) |
+| `price_correction_opened` | "Tap to correct" on brand card | zip, item (food id) |
+| `price_correction_saved` | User submits corrected price | zip, item (food id) |
+| `list_emailed` | Email list button | zip |
+| `list_shared` | Share button | zip |
+| `list_printed` | Print button | zip |
+| `snap_screener_clicked` | SNAP screener link in Get Help | zip, item=`snap` |
+| `foodbank_clicked` | Food bank link in Get Help | zip, item=`foodbank` |
+| `resource_clicked` | Other resource links (WIC, school meals, etc.) | zip, item (resource key) |
+| `restarted` | Start over button | zip |
+
+### Server-Side Validation
+
+Every field is validated against a strict allowlist before reaching the database:
+
+```javascript
+VALID_EVENTS    — 19 known event types, anything else → 400
+VALID_ITEMS     — food IDs from FOOD_DB + preference group names
+VALID_RETAILERS — store names + preference tag values (gluten, corner, etc.)
+VALID_BUDGET_TIERS — low / medium / high
+SESSION_ID_RE   — /^[a-z0-9]{12}$/ exactly
+budget          — number, 0–10000, rounded to 2 decimal places
+people          — integer, 1–20
+days            — integer, 1–365
+pppd            — rounded to nearest $0.25
+```
+
+### Rate Limiting
+
+In-memory per-IP: 60 events per 10-minute window. Resets automatically. Cleaned up every hour to prevent memory growth. Returns 429 if exceeded.
+
+### Supabase Setup
+
+Database: PostgreSQL via Supabase (Apache 2.0, open source).
+
+Row Level Security — both SELECT and INSERT blocked for anon/publishable keys. Only the service role key (server-side) can write. No client can ever read raw rows.
+
+SQL files (run in Supabase SQL Editor in order):
+1. `supabase_setup.sql` — creates events table + RLS policies
+2. `supabase_add_session.sql` — adds session_id column
+3. `supabase_add_pppd.sql` — adds pppd, people_tier, days_tier columns + rebuilds views
+4. `supabase_add_all_fields.sql` — adds budget, people, days, stores, avoid, leftover columns
+
+### Views
+
+**`event_summary`** — aggregate counts by event/zip/budget_tier/day. Safe to expose via `/api/stats`.
+
+**`session_summary`** — one row per session showing full journey: event sequence array, which resources were clicked, items checked, meals swapped, price corrections. Never exposes individual event rows.
+
+### Analytics Endpoint
+
+```
+GET /api/stats?key=YOUR_STATS_KEY
+```
+
+Returns `event_summary` rows — aggregates only, never raw events. Protected by `STATS_KEY` env var.
+
+### What Is Never Stored
+
+- IP address
+- Device ID or browser fingerprint
+- Session ID linkable across page loads (new ID every load)
+- Exact budget amount beyond $0.25 rounding on pppd
+- Any sequence linkable to a real person across sessions
+
+### Key Debugging Notes
+
+- **`sb_secret_...` key format doesn't work** with Supabase PostgREST (Data API). Must use the legacy `service_role` JWT from Settings → API Keys → Legacy tab.
+- **Supabase URL must be `.supabase.co` not `.supabase.com`** — the marketing site is `.com`, the database endpoints are `.co`.
+- **`multiSelections` must be assigned to `answers` before `logEvent`** in `runCalculation()` — otherwise `stores` and `avoid` are always null.
+- **`mealChoices[key]` must be read before being overwritten** in `chooseMeal()` — otherwise `prevChoice` is always defined and the discover/default detection breaks.
+- **`preference_selected` uses `item` for group name and `retailer` for value** — not `item` for the full `group:value` string, because `item` is validated against food IDs only.
+
+---
+
+## 13. About Page (`/about`)
 
 The about page shares the exact same header, footer, and CSS token system as `index.html`. It is a standalone HTML file served at `/about` via Express.
 
@@ -609,7 +764,7 @@ This is accurate and gives institutional credibility without describing the 4-ph
 
 ---
 
-## 13. Are.na Resource Page
+## 14. Are.na Resource Page
 
 `/resources` page pulls from Are.na API via `/api/arena-resources`. No key required for public channels. Channel slug set via `ARENA_CHANNEL_SLUG` env var.
 
@@ -627,7 +782,7 @@ Domain → category mapping in `DOMAIN_CATEGORIES` lookup — add entries as cha
 
 ---
 
-## 14. Shopping List Sticky Sidebar Layout
+## 15. Shopping List Sticky Sidebar Layout
 
 ```
 .shopping-list-container  — display:flex, gap:28px, align-items:flex-start
@@ -643,7 +798,7 @@ Print: `.list-sidebar` hidden via `@media print`.
 
 ---
 
-## 15. CSS Architecture Notes
+## 16. CSS Architecture Notes
 
 - All design tokens in `:root` at top of `<style>` block
 - Hardcoded hex values used intentionally for context-specific colors (sidebar, hover tints)
@@ -652,7 +807,7 @@ Print: `.list-sidebar` hidden via `@media print`.
 
 ---
 
-## 16. What Not To Do
+## 17. What Not To Do
 
 - Don't use Playfair Display outside the hero h1
 - Don't use Lora for meal chip names — they are user choices (Plus Jakarta Sans 700)
@@ -669,7 +824,7 @@ Print: `.list-sidebar` hidden via `@media print`.
 
 ---
 
-## 17. Phase Roadmap
+## 18. Phase Roadmap
 
 ### Done
 - Full walkthrough UI (5 steps)
