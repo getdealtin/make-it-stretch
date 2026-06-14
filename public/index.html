@@ -2311,7 +2311,6 @@ const MEAL_LIBRARY = {
     {name:'Congee (Rice Porridge)',  slot:'breakfast',needs:['rice'],                             avoid:[],          srv:2,desc:'Cook rice in extra water until creamy. Top with egg.'},
     {name:'Oat Porridge with Soy',   slot:'breakfast',needs:['oats','soy'],                      avoid:[],          srv:2,desc:'Savory oatmeal. Unusual but satisfying.'},
     {name:'Fried Egg & Rice',        slot:'breakfast',needs:['rice','eggs','oil'],                avoid:['eggs'],    srv:2,desc:'Quick protein bowl. Ready in 5 minutes.'},
-    {name:'Rice & Peanut Butter',    slot:'breakfast',needs:['rice','peanutbutter'],              avoid:['peanuts'], srv:2,desc:'High calorie, filling. Common across Southeast Asia.'},
     {name:'Egg Fried Rice',          slot:'lunch',    needs:['rice','eggs','onions','oil'],       avoid:['eggs'],    srv:2,desc:'Best use of leftover rice.'},
     {name:'Garlic Cabbage & Rice',   slot:'lunch',    needs:['cabbage','garlic','onions','oil','rice'],avoid:[],    srv:2,desc:'Fry until tender and fragrant.'},
     {name:'Lentil Dal',              slot:'lunch',    needs:['lentils','onions','garlic','oil'],  avoid:[],          srv:4,desc:'Thick spiced lentils over rice.'},
@@ -2694,8 +2693,6 @@ async function runCalculation(){
   const dayWord=answers.days===1?'day':'days';
   const plural=n=>n===1?'1 person':n+' people';
 
-  clearInterval(msgInterval);
-
   try{
   // ── SUMMARY CARD
   document.getElementById('summary-title').innerHTML='Your <span>'+answers.days+'-Day</span> Game Plan';
@@ -2736,11 +2733,6 @@ async function runCalculation(){
 
   }catch(renderErr){
     console.error('Render error:', renderErr, renderErr.stack);
-  }finally{
-    document.getElementById('walkthrough').style.display='none';
-    document.getElementById('dashboard').style.display='block';
-    initDonation();
-    setTimeout(()=>document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'}),100);
   }
 
   }catch(calcErr){
@@ -2750,6 +2742,7 @@ async function runCalculation(){
     document.getElementById('walkthrough').style.display='none';
     document.getElementById('dashboard').style.display='block';
     initDonation();
+    setTimeout(()=>document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'}),100);
   }
 }
 
