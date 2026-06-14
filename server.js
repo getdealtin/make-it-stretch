@@ -388,6 +388,12 @@ const VALID_EVENTS = new Set([
   'foodbank_clicked',
   'resource_clicked',
   'wic_clicked',
+  'accordion_opened',
+  'week_opened',
+  'price_correction_opened',
+  'price_correction_saved',
+  'restarted',
+  'preference_selected',
 ]);
 
 const VALID_ITEMS = new Set([
@@ -421,7 +427,9 @@ app.post('/api/event', async (req, res) => {
     return res.json({ ok: true, stored: false });
   }
 
-  const { event, zip, item, retailer, budget_tier, session_id } = req.body;
+  const { event, zip, item, retailer, budget_tier, session_id,
+          pppd, people_tier, days_tier,
+          budget, people, days, stores, avoid, leftover } = req.body;
 
   // Strict allowlist validation — reject anything not in our known set
   if (!VALID_EVENTS.has(event)) {
@@ -433,7 +441,16 @@ app.post('/api/event', async (req, res) => {
   const safeItem     = VALID_ITEMS.has(item) ? item : null;
   const safeRetailer = VALID_RETAILERS.has(retailer) ? retailer : null;
   const safeTier     = VALID_BUDGET_TIERS.has(budget_tier) ? budget_tier : null;
-  const safeSession  = SESSION_ID_RE.test(session_id) ? session_id : null;
+  const safeSession    = SESSION_ID_RE.test(session_id) ? session_id : null;
+  const safePppd       = (typeof pppd === 'number' && pppd >= 0 && pppd < 100) ? Math.round(pppd * 4) / 4 : null;
+  const safePeopleTier = ['single','small','family'].includes(people_tier) ? people_tier : null;
+  const safeDaysTier   = ['short','medium','long'].includes(days_tier) ? days_tier : null;
+  const safeBudget     = (typeof budget === 'number' && budget > 0 && budget < 10000) ? +budget.toFixed(2) : null;
+  const safePeople     = (Number.isInteger(people) && people > 0 && people <= 20) ? people : null;
+  const safeDays       = (Number.isInteger(days) && days > 0 && days <= 365) ? days : null;
+  const safeStores     = typeof stores === 'string' && stores.length < 100 ? stores : null;
+  const safeAvoid      = typeof avoid === 'string' && avoid.length < 100 ? avoid : null;
+  const safeLeftover   = ['yes','sometimes','no'].includes(leftover) ? leftover : null;
 
   try {
     // Parameterized insert via Supabase REST API
@@ -453,6 +470,15 @@ app.post('/api/event', async (req, res) => {
         retailer:    safeRetailer,
         budget_tier: safeTier,
         session_id:  safeSession,
+        pppd:        safePppd,
+        people_tier: safePeopleTier,
+        days_tier:   safeDaysTier,
+        budget:      safeBudget,
+        people:      safePeople,
+        days:        safeDays,
+        stores:      safeStores,
+        avoid:       safeAvoid,
+        leftover:    safeLeftover,
       }),
     });
 
