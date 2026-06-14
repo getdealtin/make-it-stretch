@@ -395,10 +395,13 @@ app.get('/api/recipes-for-cart', (req, res) => {
     scored.sort((a, b) => b.matchScore - a.matchScore);
 
     // Cap at 30 per slot for 30-day plans (3 meals/day needs good variety)
+    // STRICT: a breakfast recipe only goes in breakfast, dinner only in dinner, etc.
     const bySlot = { breakfast: [], lunch: [], dinner: [], any: [] };
     for (const r of scored) {
-      const slot = (r.slot && bySlot[r.slot] !== undefined) ? r.slot : 'any';
-      if (bySlot[slot].length < 30) bySlot[slot].push(r);
+      const rSlot = r.slot || 'any';
+      // Only put in 'any' if truly slot=any; otherwise respect the recipe's slot exactly
+      const targetSlot = (bySlot[rSlot] !== undefined) ? rSlot : 'any';
+      if (bySlot[targetSlot].length < 30) bySlot[targetSlot].push(r);
     }
 
     // If any slot is critically empty (<4 recipes), do a relaxed pass with cuisine only (no match score floor)
@@ -417,9 +420,14 @@ app.get('/api/recipes-for-cart', (req, res) => {
       if (bySlot[slot].length < 4) {
         const existingIds = new Set(bySlot[slot].map(r => r.id));
         const extras = allCuisineMatch.filter(r => {
-          const s = (r.slot && bySlot[r.slot] !== undefined) ? r.slot : 'any';
-          const notBreakfast = slot === 'breakfast' && NOT_BREAKFAST.has((r.title||'').toLowerCase());
-          return (s === slot || s === 'any') && !existingIds.has(r.id) && !notBreakfast;
+          const rSlot = r.slot || 'any';
+          // STRICT slot enforcement: breakfast dishes ONLY go to breakfast,
+          // dinner dishes ONLY go to dinner. Only slot='any' can fill any slot.
+          if (rSlot === 'breakfast' && slot !== 'breakfast') return false;
+          if (rSlot === 'dinner' && slot !== 'dinner') return false;
+          if (rSlot === 'lunch' && slot !== 'lunch') return false;
+          if (NOT_BREAKFAST.has((r.title||'').toLowerCase()) && slot === 'breakfast') return false;
+          return !existingIds.has(r.id);
         });
         bySlot[slot].push(...extras.slice(0, 30 - bySlot[slot].length));
       }
