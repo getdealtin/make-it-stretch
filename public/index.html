@@ -904,12 +904,14 @@ header h1 em {
 }
 .meal-chip-recipe-btn {
   background: none; border: none;
-  font-size: 13px; cursor: pointer;
-  padding: 0 0 0 6px;
-  opacity: 0.6; transition: opacity .15s;
+  font-size: 11px; cursor: pointer;
+  padding: 0 0 0 5px;
+  opacity: 0; transition: opacity .15s;
   flex-shrink: 0; line-height: 1;
+  display: inline;
+  pointer-events: auto;
 }
-.meal-chip:hover .meal-chip-recipe-btn { opacity: .7; }
+.meal-chip:hover .meal-chip-recipe-btn { opacity: 0.7; }
 .meal-chip-recipe-btn:hover { opacity: 1 !important; }
 .meal-chip-cuisine {
   font-family: 'IBM Plex Mono', monospace;
@@ -2889,7 +2891,6 @@ async function buildWeekCards(cart, avoidItems){
         const key = `${wi}-${weekDays.indexOf(day)}-${slot}`;
         html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
         opts.forEach((r, i) => {
-          const isSelected = i === 0;
           html += `<div class="meal-chip-wrap">
             <button class="meal-chip${isSelected?' chosen':''}"
               data-meal-key="${key}"
@@ -2897,10 +2898,10 @@ async function buildWeekCards(cart, avoidItems){
               data-slot="${slot}"
               onclick="chooseMeal(this)"
               title="${(r.title||'').replace(/"/g,'&quot;')}">
-              ${r.title||''}
-            </button><button class="meal-chip-recipe-btn"
+              ${r.title||''}<span class="meal-chip-recipe-btn"
               data-recipe-id="${r.id}"
-              onclick="openRecipeByEl(this)">📖</button>
+              onclick="event.stopPropagation();openRecipeByEl(this)">📖</span>
+            </button>
           </div>`;
         });
                 html += `</div></div>`;
