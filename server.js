@@ -311,125 +311,139 @@ app.get('/api/food-resources', async (req, res) => {
 });
 
 // ────────────────────────────────────────────────
-// API: RECIPE LOOKUP — TheMealDB proxy
-// Searches TheMealDB server-side and validates relevance
-// Cache: 7 days (recipes don't change)
+// API: RECIPE LOOKUP — Spoonacular (ingredient-based)
+// Searches by ingredients from the meal's needs array
+// Much more reliable than name-matching TheMealDB
+// Cache: 7 days
 // ────────────────────────────────────────────────
-const RECIPE_CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
+const SPOONACULAR_KEY = process.env.SPOONACULAR_KEY || '';
 
-// Meals that have no correct TheMealDB match — return not-found immediately
-// Add any meal name here that consistently returns wrong results
-const NO_SEARCH = new Set([
-  'Biscuits & Gravy', 'Fried Catfish & Grits', "Hoppin' John",
-  'Grits & Egg', 'Collard-Style Cabbage', 'Cornmeal Porridge',
-  'Bean & Cornmeal Stew', 'Cornbread & Beans', 'Sweet Potato & Chicken',
-  'Egg & Sweet Potato Hash', 'Cabbage & Potato Fry', 'Potato & Onion Fry',
-  'Garlic Cabbage & Rice', 'Oat Porridge with Soy', 'Stir-Fried Vegetables',
-  'Rice & Peanut Butter', 'Cabbage & Egg Stir Fry', 'Cabbage & Tofu Bowl',
-  'Bean & Garlic Rice', 'Tofu & Cabbage Bowl', 'Rice Noodle Bowl',
-  'Peanut Butter & Banana', 'Peanut Butter Toast', 'Bean Soup & Bread',
-  'Potato Salad Bowl', 'Pork & Bean Stew', 'Sweet Potato & Bean Bowl',
-  'Ground Beef & Rice', 'Cabbage & Potato Fry', 'Potato & Onion Fry',
-  'Rice & Beans', 'Egg Scramble', 'Simple Oatmeal', 'Bean Stew',
-  'Vegetable Soup', 'Pasta & Sauce', 'Chicken & Rice', 'Tuna Rice Bowl',
-  'Scrambled Eggs & Toast', 'Oatmeal & Banana', 'Oatmeal with Banana',
-  'Oatmeal with Applesauce', 'Congee (Rice Porridge)', 'Noodle Soup',
-  'Coconut Rice', 'Chicken & Soy Rice', 'Chicken & Cornbread',
-  'Fried Egg & Rice', 'Corn Porridge', 'Frijoles de Olla',
-  'Avena (Oatmeal)', 'Caldo de Res (Beef Soup)', 'Arroz con Huevo',
-  'Huevos con Tortilla', 'Sopa de Verduras', 'Tortillas con Frijoles',
-  'Gallo Pinto', 'Rice & Beans (Arroz y Frijoles)', 'Lentil & Tomato Stew',
-]);
+// Map our internal food IDs to ingredient names Spoonacular understands
+const INGREDIENT_MAP = {
+  eggs:          'eggs',
+  bread:         'bread',
+  oats:          'oats',
+  rice:          'rice',
+  drybeans:      'black beans',
+  lentils:       'lentils',
+  pasta:         'pasta',
+  potatoes:      'potatoes',
+  sweetpotatoes: 'sweet potatoes',
+  chicken:       'chicken',
+  groundbeef:    'ground beef',
+  porkchops:     'pork',
+  tuna:          'tuna',
+  tofu:          'tofu',
+  milk:          'milk',
+  butter:        'butter',
+  flour:         'flour',
+  cornmeal:      'cornmeal',
+  oil:           'olive oil',
+  oliveoil:      'olive oil',
+  onions:        'onion',
+  garlic:        'garlic',
+  carrots:       'carrots',
+  cabbage:       'cabbage',
+  cannedtomatoes:'canned tomatoes',
+  tortillas:     'tortillas',
+  coconutmilk:   'coconut milk',
+  soy:           'soy sauce',
+  vegbroth:      'vegetable broth',
+  peanutbutter:  'peanut butter',
+  bananas:       'banana',
+  applesauce:    'applesauce',
+  chickpeas:     'chickpeas',
+  blackbeans:    'black beans',
+  lentilsred:    'red lentils',
+  salsa:         'salsa',
+};
 
 app.get('/api/recipe', async (req, res) => {
-  const { name } = req.query;
+  const { name, needs } = req.query;
   if (!name) return res.status(400).json({ found: false });
-
-  // Check no-search list first
-  if (NO_SEARCH.has(name)) {
-    return res.json({ found: false, name, reason: 'no-match' });
-  }
 
   const cacheKey = `recipe:${name.toLowerCase()}`;
   const cached = getCached(cacheKey);
   if (cached) return res.json({ ...cached, _cached: true });
 
-  // Words too generic to use as match criteria
-  const GENERIC = new Set([
-    'with','and','the','for','from','over','slow','baked','fried','cooked',
-    'soup','stew','bowl','bread','sauce','egg','eggs','simple','easy',
-    'quick','mixed','style','meat','milk','cream','salt','spicy','sweet',
-    'savory','grilled','roasted','steamed','cake','pie'
-  ]);
-
-  const distinctive = (str) =>
-    str.toLowerCase()
-       .replace(/[^a-z\s]/g, ' ')
-       .split(/\s+/)
-       .filter(w => w.length >= 4 && !GENERIC.has(w))
-       .sort((a, b) => b.length - a.length);
-
-  // Require ALL top distinctive query words to appear in the result
-  // This prevents "Peanut Butter & Banana" matching "Peanut Butter Cookies"
-  const isRelevant = (queryName, resultName) => {
-    const qWords = distinctive(queryName).slice(0, 2);
-    if (!qWords.length) return false; // no distinctive words = no confident match
-    const rStr = resultName.toLowerCase().replace(/[^a-z\s]/g, ' ');
-    // ALL top words must match (not just one)
-    return qWords.every(w => rStr.includes(w));
-  };
+  if (!SPOONACULAR_KEY) {
+    return res.json({ found: false, name, reason: 'no-api-key' });
+  }
 
   try {
-    const clean = name
-      .replace(/\(.*?\)/g, '')
-      .replace(/[&]/g, 'and')
-      .replace(/[^a-zA-Z\s]/g, ' ')
-      .trim()
-      .split(' ').slice(0, 3).join(' ');
+    // Convert needs IDs to ingredient names
+    const needsArr = needs ? needs.split(',') : [];
+    const ingredients = needsArr
+      .map(id => INGREDIENT_MAP[id.trim()])
+      .filter(Boolean)
+      .join(',');
 
-    const r1 = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(clean)}`,
-      { headers: { 'User-Agent': 'getdealtin/1.0' } }
-    );
-    const d1 = await r1.json();
-    const match1 = (d1.meals || []).find(m => isRelevant(name, m.strMeal));
-
-    if (match1) {
-      const result = { found: true, meal: formatMeal(match1) };
+    if (!ingredients) {
+      const result = { found: false, name };
       setCache(cacheKey, result);
       return res.json(result);
     }
 
-    // No confident match
-    const result = { found: false, name };
+    // Step 1: find recipes by ingredients
+    const searchUrl = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=3&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_KEY}`;
+    const searchRes = await fetch(searchUrl, { headers: { 'User-Agent': 'getdealtin/1.0' } });
+    const searchData = await searchRes.json();
+
+    if (!searchData || !searchData.length) {
+      const result = { found: false, name };
+      setCache(cacheKey, result);
+      return res.json(result);
+    }
+
+    // Step 2: get full recipe details for the best match
+    const recipeId = searchData[0].id;
+    const detailUrl = `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_KEY}`;
+    const detailRes = await fetch(detailUrl, { headers: { 'User-Agent': 'getdealtin/1.0' } });
+    const detail = await detailRes.json();
+
+    if (!detail || detail.status === 'failure') {
+      const result = { found: false, name };
+      setCache(cacheKey, result);
+      return res.json(result);
+    }
+
+    // Format clean response
+    const ingredients_list = (detail.extendedIngredients || []).map(ing => ({
+      ingredient: ing.nameClean || ing.name,
+      measure:    `${ing.amount > 0 ? ing.amount : ''} ${ing.unit}`.trim(),
+    }));
+
+    // Strip HTML from instructions
+    const instructions = (detail.instructions || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim() || 'See full recipe for instructions.';
+
+    const result = {
+      found: true,
+      meal: {
+        id:           detail.id,
+        name:         detail.title,
+        category:     detail.dishTypes?.[0] || '',
+        area:         detail.cuisines?.[0] || '',
+        instructions,
+        image:        detail.image,
+        youtube:      null,
+        source:       detail.sourceUrl,
+        ingredients:  ingredients_list,
+        readyInMinutes: detail.readyInMinutes,
+        servings:     detail.servings,
+      }
+    };
+
     setCache(cacheKey, result);
     res.json(result);
 
   } catch (err) {
-    console.error('Recipe lookup error:', err.message);
+    console.error('Spoonacular error:', err.message);
     res.json({ found: false, name, error: err.message });
   }
 });
-
-function formatMeal(m) {
-  const ingredients = [];
-  for (let i = 1; i <= 20; i++) {
-    const ing  = (m[`strIngredient${i}`] || '').trim();
-    const meas = (m[`strMeasure${i}`]    || '').trim();
-    if (ing) ingredients.push({ ingredient: ing, measure: meas });
-  }
-  return {
-    id:           m.idMeal,
-    name:         m.strMeal,
-    category:     m.strCategory,
-    area:         m.strArea,
-    instructions: m.strInstructions,
-    image:        m.strMealThumb,
-    youtube:      m.strYoutube,
-    source:       m.strSource,
-    ingredients,
-  };
-}
 
 
 // Public API — no key required for public channels
