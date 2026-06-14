@@ -2552,11 +2552,16 @@ function chooseMeal(btn){
   document.querySelectorAll(`[data-meal-key="${key}"]`).forEach(chip => {
     chip.classList.toggle('chosen', parseInt(chip.dataset.recipeId) === recipeId);
   });
+  // Check discover BEFORE any DOM changes
   const isDiscover = btn.classList.contains('discover');
-  logEvent('meal_swapped', {
-    zip:  answers.zip,
-    item: isDiscover ? 'discover' : 'default',
-  });
+  // Only log swaps (not the initial auto-selection)
+  const prevChoice = mealChoices[key];
+  if(prevChoice !== undefined) {
+    logEvent('meal_swapped', {
+      zip:  answers.zip,
+      item: isDiscover ? 'discover' : 'default',
+    });
+  }
 }
 
 // ━━ RECIPE DRAWER — open by element data attribute ━━
@@ -2609,7 +2614,7 @@ function selectCuisine(v){
   }
 }
 function selectLeftover(v){answers.leftover=v;document.querySelectorAll('[id^="leftover-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('leftover-'+v).classList.add('selected');}
-function toggleMulti(g,v){const arr=multiSelections[g];if(v==='none'||v==='nothing'){multiSelections[g]=[];document.querySelectorAll('[id^="'+g+'-"]').forEach(b=>b.classList.remove('selected'));document.getElementById(g+'-'+v).classList.add('selected');return;}document.getElementById(g+'-none')?.classList.remove('selected');document.getElementById(g+'-nothing')?.classList.remove('selected');const i=arr.indexOf(v);if(i>-1){arr.splice(i,1);document.getElementById(g+'-'+v).classList.remove('selected');}else{arr.push(v);document.getElementById(g+'-'+v).classList.add('selected');logEvent('preference_selected',{item:g+':'+v});}}
+function toggleMulti(g,v){const arr=multiSelections[g];if(v==='none'||v==='nothing'){multiSelections[g]=[];document.querySelectorAll('[id^="'+g+'-"]').forEach(b=>b.classList.remove('selected'));document.getElementById(g+'-'+v).classList.add('selected');return;}document.getElementById(g+'-none')?.classList.remove('selected');document.getElementById(g+'-nothing')?.classList.remove('selected');const i=arr.indexOf(v);if(i>-1){arr.splice(i,1);document.getElementById(g+'-'+v).classList.remove('selected');}else{arr.push(v);document.getElementById(g+'-'+v).classList.add('selected');logEvent('preference_selected',{item:g, retailer:v});}}
 
 function nextStep(cur){
   const err=document.getElementById('err-'+cur);
@@ -2641,6 +2646,10 @@ async function runCalculation(){
   const budget_tier = pppd < 5.36 ? 'low' : pppd < 10 ? 'medium' : 'high';
   const people_tier  = answers.people === 1 ? 'single' : answers.people <= 3 ? 'small' : 'family';
   const days_tier    = answers.days <= 7 ? 'short' : answers.days <= 14 ? 'medium' : 'long';
+  // Populate answers from multiSelections BEFORE logging so all fields are available
+  answers.stores=multiSelections.store;
+  answers.avoid=multiSelections.avoid;
+  answers.have=multiSelections.have;
   const cuisine      = (answers.cuisine||[]).join(',') || 'any';
   // Round pppd to nearest $0.25 — meaningful for research, not personally identifying
   const pppd_rounded = Math.round(pppd * 4) / 4;
@@ -2654,13 +2663,10 @@ async function runCalculation(){
     budget:       answers.budget,
     people:       answers.people,
     days:         answers.days,
-    stores:       (answers.stores||[]).join(',') || null,
-    avoid:        (answers.avoid||[]).join(',') || null,
+    stores:       answers.stores.join(',') || null,
+    avoid:        answers.avoid.join(',') || null,
     leftover:     answers.leftover || null,
   });
-  answers.stores=multiSelections.store;
-  answers.avoid=multiSelections.avoid;
-  answers.have=multiSelections.have;
   answers.otherHave=document.getElementById('inp-other-have').value.trim();
   if(!answers.cuisine||answers.cuisine.length===0)answers.cuisine=[];
   if(!answers.leftover)answers.leftover='sometimes';
