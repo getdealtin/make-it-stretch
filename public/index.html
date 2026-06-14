@@ -852,6 +852,12 @@ header h1 em {
   margin-bottom: 4px;
 }
 .meal-options-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.meal-chip-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 2px 4px 2px 0;
+}
 .meal-chip {
   font-size: 13px; padding: 8px 14px;
   border: none;
@@ -2871,17 +2877,18 @@ async function buildWeekCards(cart, avoidItems){
         html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
         opts.forEach((r, i) => {
           const isSelected = i === 0;
-          html += `<button class="meal-chip${isSelected?' chosen':''}"
-            data-meal-key="${key}"
-            data-recipe-id="${r.id}"
-            data-slot="${slot}"
-            onclick="chooseMeal(this)"
-            title="${(r.title||'').replace(/"/g,'&quot;')}">
-            ${r.title||''}
-            <button class="meal-chip-recipe-btn"
+          html += `<div class="meal-chip-wrap">
+            <button class="meal-chip${isSelected?' chosen':''}"
+              data-meal-key="${key}"
               data-recipe-id="${r.id}"
-              onclick="event.stopPropagation();openRecipeByEl(this)">📖</button>
-          </button>`;
+              data-slot="${slot}"
+              onclick="chooseMeal(this)"
+              title="${(r.title||'').replace(/"/g,'&quot;')}">
+              ${r.title||''}
+            </button><button class="meal-chip-recipe-btn"
+              data-recipe-id="${r.id}"
+              onclick="openRecipeByEl(this)">📖</button>
+          </div>`;
         });
                 html += `</div></div>`;
       });
