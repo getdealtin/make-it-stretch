@@ -1751,7 +1751,7 @@
   {
     "title": "Shakshuka",
     "slot": "breakfast",
-    "cuisine": "any",
+    "cuisine": "mediterranean",
     "ingredients": [
       "eggs",
       "canned tomatoes",
@@ -1865,7 +1865,7 @@
   {
     "title": "Pasta with Sauce",
     "slot": "dinner",
-    "cuisine": "any",
+    "cuisine": "mediterranean",
     "ingredients": [
       "pasta",
       "canned tomatoes",
@@ -1916,7 +1916,7 @@
   {
     "title": "Polenta with Tomato Sauce",
     "slot": "dinner",
-    "cuisine": "any",
+    "cuisine": "mediterranean",
     "ingredients": [
       "cornmeal",
       "canned tomatoes",
@@ -2111,7 +2111,7 @@
   },
   {
     "title": "Steamed Egg Custard",
-    "slot": "lunch",
+    "slot": "dinner",
     "cuisine": "asian",
     "ingredients": [
       "eggs",
