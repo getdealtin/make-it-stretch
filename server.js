@@ -311,7 +311,120 @@ app.get('/api/food-resources', async (req, res) => {
 });
 
 // ────────────────────────────────────────────────
-// API: ARE.NA CHANNEL — MEAL PREP RESOURCES
+// API: RECIPE LOOKUP — TheMealDB proxy
+// Searches TheMealDB server-side and validates relevance
+// before returning to the client — prevents wrong matches
+// Cache: 7 days (recipes don't change)
+// ────────────────────────────────────────────────
+const RECIPE_CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
+
+app.get('/api/recipe', async (req, res) => {
+  const { name } = req.query;
+  if (!name) return res.status(400).json({ found: false });
+
+  const cacheKey = `recipe:${name.toLowerCase()}`;
+  const cached = getCached(cacheKey);
+  if (cached) return res.json({ ...cached, _cached: true });
+
+  // Words too generic to count as a meaningful match
+  const GENERIC = new Set([
+    'with','and','the','for','from','over','slow','baked','fried','cooked',
+    'bean','beans','soup','stew','bowl','bread','sauce','rice','egg','eggs',
+    'simple','easy','quick','mixed','style','meat','milk','cream','salt',
+    'spicy','sweet','savory','grilled','roasted','steamed'
+  ]);
+
+  // Extract meaningful words from a meal name
+  const distinctive = (str) =>
+    str.toLowerCase()
+       .replace(/[^a-z\s]/g, ' ')
+       .split(/\s+/)
+       .filter(w => w.length >= 3 && !GENERIC.has(w))
+       .sort((a, b) => b.length - a.length);
+
+  // A result is relevant if at least one distinctive query word
+  // appears in the result name AND the result name doesn't add
+  // unrelated distinctive words that contradict the query
+  const isRelevant = (queryName, resultName) => {
+    const qWords = distinctive(queryName);
+    const rStr = resultName.toLowerCase().replace(/[^a-z\s]/g, ' ');
+    if (!qWords.length) return true;
+    // Top 2 distinctive words — at least one must match
+    return qWords.slice(0, 2).some(w => rStr.includes(w));
+  };
+
+  try {
+    // Clean the search term
+    const clean = name
+      .replace(/\(.*?\)/g, '')   // remove parentheticals
+      .replace(/[&]/g, 'and')
+      .replace(/[^a-zA-Z\s]/g, ' ')
+      .trim()
+      .split(' ').slice(0, 3).join(' ');
+
+    // Try 1: search by full cleaned name
+    const r1 = await fetch(
+      `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(clean)}`,
+      { headers: { 'User-Agent': 'getdealtin/1.0' } }
+    );
+    const d1 = await r1.json();
+    const match1 = (d1.meals || []).find(m => isRelevant(name, m.strMeal));
+
+    if (match1) {
+      const result = { found: true, meal: formatMeal(match1) };
+      setCache(cacheKey, result);
+      return res.json(result);
+    }
+
+    // Try 2: search by the single most distinctive word
+    const topWord = distinctive(clean)[0];
+    if (topWord && topWord !== clean.toLowerCase()) {
+      const r2 = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(topWord)}`,
+        { headers: { 'User-Agent': 'getdealtin/1.0' } }
+      );
+      const d2 = await r2.json();
+      const match2 = (d2.meals || []).find(m => isRelevant(name, m.strMeal));
+
+      if (match2) {
+        const result = { found: true, meal: formatMeal(match2) };
+        setCache(cacheKey, result);
+        return res.json(result);
+      }
+    }
+
+    // No confident match found
+    const result = { found: false, name };
+    setCache(cacheKey, result);
+    res.json(result);
+
+  } catch (err) {
+    console.error('Recipe lookup error:', err.message);
+    res.json({ found: false, name, error: err.message });
+  }
+});
+
+function formatMeal(m) {
+  const ingredients = [];
+  for (let i = 1; i <= 20; i++) {
+    const ing  = (m[`strIngredient${i}`] || '').trim();
+    const meas = (m[`strMeasure${i}`]    || '').trim();
+    if (ing) ingredients.push({ ingredient: ing, measure: meas });
+  }
+  return {
+    id:           m.idMeal,
+    name:         m.strMeal,
+    category:     m.strCategory,
+    area:         m.strArea,
+    instructions: m.strInstructions,
+    image:        m.strMealThumb,
+    youtube:      m.strYoutube,
+    source:       m.strSource,
+    ingredients,
+  };
+}
+
+
 // Public API — no key required for public channels
 // Fetches blocks from the getdealtin cook on a budget channel
 // ────────────────────────────────────────────────
