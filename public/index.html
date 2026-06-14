@@ -2176,13 +2176,13 @@ footer a:hover { color: var(--gold); }
           <!-- ── LEFT STICKY SIDEBAR: actions + donation ── -->
           <aside class="list-sidebar">
             <div class="post-output-actions">
-              <button class="action-trigger" onclick="emailList()" id="action-email">
+              <button class="action-trigger" onclick="emailList()" data-event="list_emailed" id="action-email">
                 <span>✉</span> Send List
               </button>
-              <button class="action-trigger" onclick="shareList()" id="action-share">
+              <button class="action-trigger" onclick="shareList()" data-event="list_shared" id="action-share">
                 <span>⎋</span> Share
               </button>
-              <button class="action-trigger" onclick="logEvent('list_printed',{zip:answers.zip});window.print()">
+              <button class="action-trigger" onclick="window.print()" data-event="list_printed">
                 <span>⎙</span> Print / PDF
               </button>
               <a class="action-trigger" href="/resources" target="_blank">
@@ -2313,18 +2313,43 @@ footer a:hover { color: var(--gold); }
 
 <script>
 // ━━ EVENT LOGGING ━━
-// Anonymous behavioral events — no PII, no tracking, no fingerprinting.
-// Events are fire-and-forget: UI never waits on them, failures are silent.
-// All validation happens server-side — this just sends the payload.
-async function logEvent(event, extras = {}) {
+// Session token: random 12-char string, generated once per page load.
+// Lives only in memory — gone when tab closes. Never stored in cookies.
+const SESSION_ID = Math.random().toString(36).slice(2,8) +
+                   Math.random().toString(36).slice(2,8);
+
+// Core logger — fire and forget, never blocks UI
+function logEvent(event, extras = {}) {
   try {
     fetch('/api/event', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event, ...extras }),
-    }).catch(() => {}); // silent failure — never blocks UI
+      body: JSON.stringify({ event, session_id: SESSION_ID, ...extras }),
+    }).catch(() => {});
   } catch(e) {}
 }
+
+// ── AUTO-CAPTURE ──────────────────────────────────────────────
+// A single delegated click listener on the document.
+// Any element with data-event="event_name" is tracked automatically.
+// Optional data attributes: data-item, data-retailer, data-budget-tier
+// 
+// To track any new element, just add: data-event="event_name"
+// No JavaScript changes needed — ever.
+//
+// Example:
+//   <a href="..." data-event="foodbank_clicked">Find a food bank</a>
+//   <button data-event="brand_clicked" data-item="rice">Rice brands</button>
+//
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('[data-event]');
+  if (!el) return;
+  logEvent(el.dataset.event, {
+    zip:     answers.zip || null,
+    item:    el.dataset.item     || null,
+    retailer:el.dataset.retailer || null,
+  });
+}, { passive: true });
 
 // ━━ STATE ━━
 const answers = {
@@ -2535,7 +2560,6 @@ function openRecipeByEl(btn){
   const recipeId = parseInt(btn.dataset.recipeId || btn.closest('[data-recipe-id]')?.dataset.recipeId);
   const r = recipeMap[recipeId];
   if(!r) return;
-  logEvent('recipe_opened', { zip: answers.zip });
   openRecipeDrawer(r.title, (r.instructions||'').slice(0,80), r.cuisine||'', r.ingredients||[], r.instructions||'');
 }
 
@@ -2610,7 +2634,10 @@ async function runCalculation(){
   const pppd = answers.budget && answers.people && answers.days
     ? +(answers.budget / answers.days / answers.people).toFixed(2) : 0;
   const budget_tier = pppd < 5.36 ? 'low' : pppd < 10 ? 'medium' : 'high';
-  logEvent('budget_entered', { zip: answers.zip, budget_tier });
+  const people_tier = answers.people === 1 ? 'single' : answers.people <= 3 ? 'small' : 'family';
+  const days_tier   = answers.days <= 7 ? 'short' : answers.days <= 14 ? 'medium' : 'long';
+  const cuisine     = (answers.cuisine||[]).join(',') || 'any';
+  logEvent('budget_entered', { zip: answers.zip, budget_tier, item: cuisine });
   answers.stores=multiSelections.store;
   answers.avoid=multiSelections.avoid;
   answers.have=multiSelections.have;
@@ -3123,6 +3150,7 @@ async function buildWeekCards(cart, avoidItems){
               title="${(r.title||'').replace(/"/g,'&quot;')}">
               ${newPill}<span class="meal-chip-name">${r.title||''}</span>${cuisineTag}<span class="meal-chip-recipe-btn"
               data-recipe-id="${r.id}"
+              data-event="recipe_opened"
               onclick="event.stopPropagation();openRecipeByEl(this)">📖</span>
             </button>
           </div>`;
@@ -3170,7 +3198,7 @@ function buildShoppingList(cart,spent,remaining,region){
       // Split emoji from tip text for styled rendering
       const tipMatch=tip?tip.match(/^(\S+)\s+(.+)$/):null;
       html+=`<div class="shop-row" id="shopr-${item.id}">
-        <div class="shop-check" id="shopck-${item.id}" onclick="toggleCheck('${item.id}')"></div>
+        <div class="shop-check" id="shopck-${item.id}" onclick="toggleCheck('${item.id}')" data-event="item_checked" data-item="${item.id}"></div>
         <div class="shop-info">
           <div class="shop-name">${item.name} ×${item.qty}<span class="tier-badge ${tC[item.tier]}">${tL[item.tier]}</span></div>
           <div class="shop-note">${item.note}</div>
@@ -3200,6 +3228,7 @@ function toggleCheck(id){
   ck.classList.toggle('checked');
   ck.textContent=ck.classList.contains('checked')?'✓':'';
   if(row)row.classList.toggle('checked',ck.classList.contains('checked'));
+
 
   // Recalculate live totals
   const total=cart.reduce((s,i)=>s+i.subtotal,0);
@@ -3233,8 +3262,8 @@ function renderBrandPills(cartItems){
   const lbl=k=>k==='drybeans'?'dry beans':k;
   const el=document.getElementById('brand-pills');
   if(!el)return;
-  el.innerHTML=inCart.map(f=>`<button class="brand-pill${brandState.selectedFood===f?' active':''}" onclick="selectBrandFood('${f}')">${lbl(f)}</button>`).join('')+
-    notInCart.map(f=>`<button class="brand-pill" style="opacity:.5" onclick="selectBrandFood('${f}')">${lbl(f)}</button>`).join('');
+  el.innerHTML=inCart.map(f=>`<button class="brand-pill${brandState.selectedFood===f?' active':''}" onclick="selectBrandFood('${f}')" data-event="brand_clicked" data-item="${f}">${lbl(f)}</button>`).join('')+
+    notInCart.map(f=>`<button class="brand-pill" style="opacity:.5" onclick="selectBrandFood('${f}')" data-event="brand_clicked" data-item="${f}">${lbl(f)}</button>`).join('');
   const ol=document.getElementById('online-retailers-list');
   if(ol)ol.innerHTML=ONLINE_RETAILERS.map(r=>`<div class="online-row"><span class="online-emoji">${r.emoji}</span><div><div><span class="online-name">${r.name}</span><span class="online-url"> ${r.url}</span></div><div class="online-note">${r.note}</div></div></div>`).join('');
   if(inCart.length&&!brandState.selectedFood)selectBrandFood(inCart[0]);
@@ -3244,6 +3273,7 @@ function selectBrandFood(k){
   brandState.selectedFood=k;
   document.querySelectorAll('.brand-pill').forEach(p=>{const key=p.textContent.trim()==='dry beans'?'drybeans':p.textContent.trim();p.classList.toggle('active',key===k);});
   renderBrandDetail(k);
+
 }
 
 function renderBrandDetail(k){
@@ -3266,7 +3296,7 @@ function renderBrandDetail(k){
         </button>
       </div>
       <div class="bcard-note">${b.note}</div>
-      ${b.online?`<div class="bcard-online">Order: <a href="https://${b.online}" target="_blank" class="bcard-url">${b.online}</a>${b.ship?'<span class="ship-badge">ships</span>':''}</div>`:''}
+      ${b.online?`<div class="bcard-online">Order: <a href="https://${b.online}" target="_blank" class="bcard-url" data-event="online_alt_clicked" data-item="${k}" data-retailer="${b.online.split('/ ')[0]}"${b.online}</a>${b.ship?'<span class="ship-badge">ships</span>':''}</div>`:''}
     </div>`;
   });
   if(fc.length)html+=`<div style="font-size:12px;color:var(--gold);margin-top:8px;padding:10px;background:#1a1400;border-radius:6px"><strong>Your corrections:</strong><br>${fc.map(c=>`${c.brand}: ${c.userPrice} (${c.date})`).join('<br>')}</div>`;
@@ -3443,7 +3473,7 @@ async function loadResources(zip,state){
         <div class="resource-title">${r.title}</div>
         <div class="resource-desc">${r.description}</div>
         <div class="resource-note">💡 ${r.note}</div>
-        <div class="resource-links">${links.map((l,i)=>`<a href="${l}" target="_blank" class="r-link">${linkLabels[i]||'Learn more'} →</a>`).join('')}</div>
+        <div class="resource-links">${links.map((l,i)=>`<a href="${l}" target="_blank" class="r-link" data-event="\${key==='snap'?'snap_screener_clicked':key==='foodbank'?'foodbank_clicked':'resource_clicked'}" data-item="\${key}">${linkLabels[i]||'Learn more'} →</a>`).join('')}</div>
       </div>`;
     }).join('');
   }catch(e){
@@ -3551,7 +3581,6 @@ function buildListText(){
 }
 
 function emailList(){
-  logEvent('list_emailed', { zip: answers.zip });
   const btn=document.getElementById('action-email');
   const text=buildListText();
   if(!text){if(btn){const o=btn.innerHTML;btn.innerHTML='<span>○</span> No list yet';setTimeout(()=>btn.innerHTML=o,2000);}return;}
@@ -3566,7 +3595,6 @@ function emailList(){
 }
 
 function shareList(){
-  logEvent('list_shared', { zip: answers.zip });
   const btn=document.getElementById('action-share');
   const text=buildListText();
   if(!text) return;
