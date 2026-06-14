@@ -887,7 +887,7 @@ header h1 em {
   background: none; border: none;
   font-size: 13px; cursor: pointer;
   padding: 0 0 0 6px;
-  opacity: 0; transition: opacity .15s;
+  opacity: 0.6; transition: opacity .15s;
   flex-shrink: 0; line-height: 1;
 }
 .meal-chip:hover .meal-chip-recipe-btn { opacity: .7; }
@@ -2376,7 +2376,7 @@ function chooseMeal(btn){
   if(!key) return;
   mealChoices[key] = recipeId;
   document.querySelectorAll(`[data-meal-key="${key}"]`).forEach(chip => {
-    chip.classList.toggle('selected', parseInt(chip.dataset.recipeId) === recipeId);
+    chip.classList.toggle('chosen', parseInt(chip.dataset.recipeId) === recipeId);
   });
 }
 
@@ -2399,7 +2399,6 @@ function toggleWeek(wi){
   body.style.display = isOpen ? 'none' : 'block';
   if(toggle) toggle.textContent = isOpen ? '▼' : '▲';
 }
-
 
 function zipToInfoFn(zip){if(!zip||zip.length<3)return null;const p=zip.substring(0,3);if(ZIP_MAP[p]){const[s,r]=ZIP_MAP[p].split('|');return{state:s,region:r};}return null;}
 function selectPayday(k,d){paydayState.key=k;paydayState.days=d;document.querySelectorAll('[id^="pay-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('pay-'+k).classList.add('selected');}
@@ -2872,7 +2871,7 @@ async function buildWeekCards(cart, avoidItems){
         html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
         opts.forEach((r, i) => {
           const isSelected = i === 0;
-          html += `<button class="meal-chip${isSelected?' selected':''}"
+          html += `<button class="meal-chip${isSelected?' chosen':''}"
             data-meal-key="${key}"
             data-recipe-id="${r.id}"
             data-slot="${slot}"
