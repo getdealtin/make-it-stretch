@@ -1,6 +1,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -311,260 +312,141 @@ app.get('/api/food-resources', async (req, res) => {
 });
 
 // ────────────────────────────────────────────────
-// API: RECIPE LOOKUP — Spoonacular (ingredient-based)
-// Searches by ingredients from the meal's needs array
-// Much more reliable than name-matching TheMealDB
-// Cache: 7 days
+// RECIPE ENGINE — SQLite + seed-recipes.json
+// Self-hosted, zero API cost, instant matching
+// Re-seeds from JSON on every cold start (Render free tier safe)
 // ────────────────────────────────────────────────
-const SPOONACULAR_KEY = process.env.SPOONACULAR_KEY || '';
+const initSql = require('sql.js');
 
-// Map our internal food IDs to ingredient names Spoonacular understands
-const INGREDIENT_MAP = {
-  eggs:          'eggs',
-  bread:         'bread',
-  oats:          'oats',
-  rice:          'rice',
-  drybeans:      'black beans',
-  lentils:       'lentils',
-  pasta:         'pasta',
-  potatoes:      'potatoes',
-  sweetpotatoes: 'sweet potatoes',
-  chicken:       'chicken',
-  groundbeef:    'ground beef',
-  porkchops:     'pork',
-  tuna:          'tuna',
-  tofu:          'tofu',
-  milk:          'milk',
-  butter:        'butter',
-  flour:         'flour',
-  cornmeal:      'cornmeal',
-  oil:           'olive oil',
-  oliveoil:      'olive oil',
-  onions:        'onion',
-  garlic:        'garlic',
-  carrots:       'carrots',
-  cabbage:       'cabbage',
-  cannedtomatoes:'canned tomatoes',
-  tortillas:     'tortillas',
-  coconutmilk:   'coconut milk',
-  soy:           'soy sauce',
-  vegbroth:      'vegetable broth',
-  peanutbutter:  'peanut butter',
-  bananas:       'banana',
-  applesauce:    'applesauce',
-  chickpeas:     'chickpeas',
-  blackbeans:    'black beans',
-  lentilsred:    'red lentils',
-  salsa:         'salsa',
-};
+let recipeDB = null;
 
-app.get('/api/recipe', async (req, res) => {
-  const { name, needs } = req.query;
-  if (!name) return res.status(400).json({ found: false });
+async function initRecipeDB() {
+  const SQL = await initSql();
+  const db = new SQL.Database();
 
-  const cacheKey = `recipe:${name.toLowerCase()}`;
-  const cached = getCached(cacheKey);
-  if (cached) return res.json({ ...cached, _cached: true });
+  db.run(`
+    CREATE TABLE IF NOT EXISTS recipes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      slot TEXT NOT NULL,
+      cuisine TEXT NOT NULL,
+      ingredients TEXT NOT NULL,
+      instructions TEXT NOT NULL,
+      tags TEXT,
+      avoid TEXT,
+      srv INTEGER DEFAULT 2
+    )
+  `);
 
-  if (!SPOONACULAR_KEY) {
-    return res.json({ found: false, name, reason: 'no-api-key' });
+  const seedPath = path.join(__dirname, 'data', 'seed-recipes.json');
+  const seedData = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+
+  const insert = db.prepare(`
+    INSERT INTO recipes (title, slot, cuisine, ingredients, instructions, tags, avoid, srv)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  for (const r of seedData) {
+    insert.run([
+      r.title,
+      r.slot || 'any',
+      r.cuisine || 'any',
+      JSON.stringify(r.ingredients || []),
+      r.instructions || '',
+      r.tags || '',
+      JSON.stringify(r.avoid || []),
+      r.srv || 2
+    ]);
   }
+  insert.free();
 
-  try {
-    // Convert needs IDs to ingredient names
-    const needsArr = needs ? needs.split(',') : [];
-    const ingredients = needsArr
-      .map(id => INGREDIENT_MAP[id.trim()])
-      .filter(Boolean)
-      .join(',');
-
-    if (!ingredients) {
-      const result = { found: false, name };
-      setCache(cacheKey, result);
-      return res.json(result);
-    }
-
-    // Step 1: find recipes by ingredients
-    // ranking=2 maximizes used ingredients (vs minimizing missing ones)
-    // Use more ingredients for better specificity, require at least half to match
-    const searchUrl = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=5&ranking=2&ignorePantry=true&apiKey=${SPOONACULAR_KEY}`;
-    const searchRes = await fetch(searchUrl, { headers: { 'User-Agent': 'getdealtin/1.0' } });
-    const searchData = await searchRes.json();
-
-    if (!searchData || !searchData.length) {
-      const result = { found: false, name };
-      setCache(cacheKey, result);
-      return res.json(result);
-    }
-
-    // Filter: require at least half the query ingredients to be used
-    const ingredientCount = ingredients.split(',').length;
-    const minMatch = Math.max(1, Math.floor(ingredientCount / 2));
-    const goodMatch = searchData.find(r => r.usedIngredientCount >= minMatch);
-
-    if (!goodMatch) {
-      const result = { found: false, name };
-      setCache(cacheKey, result);
-      return res.json(result);
-    }
-
-    // Step 2: get full recipe details for the best match
-    const recipeId = goodMatch.id;
-    const detailUrl = `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_KEY}`;
-    const detailRes = await fetch(detailUrl, { headers: { 'User-Agent': 'getdealtin/1.0' } });
-    const detail = await detailRes.json();
-
-    if (!detail || detail.status === 'failure') {
-      const result = { found: false, name };
-      setCache(cacheKey, result);
-      return res.json(result);
-    }
-
-    // Format clean response
-    const ingredients_list = (detail.extendedIngredients || []).map(ing => ({
-      ingredient: ing.nameClean || ing.name,
-      measure:    `${ing.amount > 0 ? ing.amount : ''} ${ing.unit}`.trim(),
-    }));
-
-    // Strip HTML from instructions
-    const instructions = (detail.instructions || '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim() || 'See full recipe for instructions.';
-
-    const result = {
-      found: true,
-      meal: {
-        id:           detail.id,
-        name:         detail.title,
-        category:     detail.dishTypes?.[0] || '',
-        area:         detail.cuisines?.[0] || '',
-        instructions,
-        image:        detail.image,
-        youtube:      null,
-        source:       detail.sourceUrl,
-        ingredients:  ingredients_list,
-        readyInMinutes: detail.readyInMinutes,
-        servings:     detail.servings,
-      }
-    };
-
-    setCache(cacheKey, result);
-    res.json(result);
-
-  } catch (err) {
-    console.error('Spoonacular error:', err.message);
-    res.json({ found: false, name, error: err.message });
-  }
-});
-
-
-// Public API — no key required for public channels
-// Fetches blocks from the getdealtin cook on a budget channel
-// ────────────────────────────────────────────────
-app.get('/api/arena-resources', async (req, res) => {
-  const CHANNEL_SLUG = process.env.ARENA_CHANNEL_SLUG || 'getdealtin-cook-on-a-budget';
-  const cacheKey = `arena:${CHANNEL_SLUG}`;
-  const cached = getCached(cacheKey);
-  if (cached) return res.json({ ...cached, _cached: true });
-
-  try {
-    // Are.na public API — no auth needed for public channels
-    const url = `https://api.are.na/v2/channels/${CHANNEL_SLUG}/contents?per=100&page=1`;
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'getdealtin/1.0 (getdealtin.com)' }
-    });
-
-    if (!response.ok) {
-      return res.json({ error: 'Channel not found', slug: CHANNEL_SLUG, contents: [] });
-    }
-
-    const data = await response.json();
-
-    // Filter to Link and Image blocks only — skip text/media blocks
-    const contents = (data.contents || [])
-      .filter(block => ['Link', 'Image', 'Attachment'].includes(block.class))
-      .map(block => ({
-        id:          block.id,
-        title:       block.title || block.generated_title || 'Untitled',
-        description: block.description || '',
-        url:         block.source?.url || block.attachment?.url || null,
-        image:       block.image?.thumb?.url || block.image?.square?.url || null,
-        class:       block.class,
-        created_at:  block.created_at,
-        source_url:  block.source?.url || null,
-        domain:      block.source?.url ? new URL(block.source.url).hostname.replace('www.','') : null,
-      }))
-      .filter(block => block.url); // only keep blocks with a usable link
-
-    const result = {
-      title:   data.title || 'cook on a budget',
-      length:  contents.length,
-      contents
-    };
-
-    setCache(cacheKey, result);
-    res.json(result);
-
-  } catch (err) {
-    console.error('Are.na API error:', err.message);
-    res.json({ error: err.message, contents: [] });
-  }
-});
-
-// ────────────────────────────────────────────────
-// FALLBACK PRICES — BLS May 2025 averages
-// Used when BLS key unavailable or API call fails
-// ────────────────────────────────────────────────
-function getFallbackPrices(region) {
-  const prices = {
-    northeast: {
-      rice:2.99, drybeans:1.99, oats:3.89, eggs:3.79, potatoes:4.49, bread:2.19,
-      cabbage:1.59, onions:2.39, bananas:0.89, milk:4.39, cannedtomatoes:1.29,
-      peanutbutter:3.19, chicken:5.89, pasta:1.49, lentils:2.29, oil:4.89,
-      carrots:1.79, flour:3.49, frozenvegs:2.49, tuna:1.49, garlic:0.79,
-      sweetpotatoes:3.29, applesauce:3.89, chickpeas:1.89, corn:1.09,
-      greenbeans:1.19, sardines:1.99, cornmeal:2.49, barley:2.29,
-      splitpeas:1.79, driedmango:3.49, tortillas:2.99, coconutmilk:1.99
-    },
-    midwest: {
-      rice:2.59, drybeans:1.59, oats:3.49, eggs:3.19, potatoes:3.89, bread:1.79,
-      cabbage:1.29, onions:1.99, bananas:0.79, milk:3.79, cannedtomatoes:1.09,
-      peanutbutter:2.99, chicken:4.99, pasta:1.19, lentils:1.89, oil:4.29,
-      carrots:1.39, flour:2.79, frozenvegs:2.09, tuna:1.19, garlic:0.65,
-      sweetpotatoes:2.79, applesauce:3.29, chickpeas:1.59, corn:0.89,
-      greenbeans:0.99, sardines:1.79, cornmeal:2.09, barley:1.99,
-      splitpeas:1.49, driedmango:2.99, tortillas:2.49, coconutmilk:1.79
-    },
-    south: {
-      rice:2.49, drybeans:1.59, oats:3.39, eggs:3.09, potatoes:3.99, bread:1.79,
-      cabbage:1.29, onions:1.89, bananas:0.75, milk:3.89, cannedtomatoes:1.09,
-      peanutbutter:2.99, chicken:4.89, pasta:1.19, lentils:1.89, oil:4.19,
-      carrots:1.39, flour:2.79, frozenvegs:2.09, tuna:1.19, garlic:0.65,
-      sweetpotatoes:2.79, applesauce:3.29, chickpeas:1.59, corn:0.89,
-      greenbeans:0.99, sardines:1.79, cornmeal:1.99, barley:1.99,
-      splitpeas:1.49, driedmango:2.99, tortillas:2.29, coconutmilk:1.79
-    },
-    west: {
-      rice:2.89, drybeans:2.09, oats:3.99, eggs:3.69, potatoes:4.59, bread:2.09,
-      cabbage:1.49, onions:2.29, bananas:0.85, milk:4.19, cannedtomatoes:1.19,
-      peanutbutter:3.09, chicken:5.99, pasta:1.49, lentils:2.39, oil:5.09,
-      carrots:1.79, flour:3.49, frozenvegs:2.59, tuna:1.49, garlic:0.79,
-      sweetpotatoes:3.29, applesauce:3.79, chickpeas:1.89, corn:1.09,
-      greenbeans:1.19, sardines:1.99, cornmeal:2.49, barley:2.29,
-      splitpeas:1.79, driedmango:3.29, tortillas:2.79, coconutmilk:1.99
-    },
-    national: {
-      rice:2.69, drybeans:1.79, oats:3.69, eggs:3.39, potatoes:4.09, bread:1.89,
-      cabbage:1.39, onions:2.09, bananas:0.82, milk:3.99, cannedtomatoes:1.19,
-      peanutbutter:3.09, chicken:5.39, pasta:1.29, lentils:2.09, oil:4.49,
-      carrots:1.49, flour:2.99, frozenvegs:2.29, tuna:1.29, garlic:0.69,
-      sweetpotatoes:2.99, applesauce:3.49, chickpeas:1.69, corn:0.99,
-      greenbeans:1.09, sardines:1.89, cornmeal:2.19, barley:2.09,
-      splitpeas:1.59, driedmango:3.19, tortillas:2.59, coconutmilk:1.89
-    }
-  };
-  return prices[region] || prices.national;
+  console.log(`Recipe DB seeded: ${seedData.length} recipes`);
+  return db;
 }
+
+// ── /api/recipes-for-cart
+// Takes cart ingredient IDs + cuisine preference
+// Returns top recipes per slot scored by ingredient match
+app.get('/api/recipes-for-cart', async (req, res) => {
+  try {
+    if (!recipeDB) recipeDB = await initRecipeDB();
+
+    const { ingredients, cuisine, avoid } = req.query;
+    const cartIngredients = (ingredients || '').split(',').filter(Boolean);
+    const selectedCuisines = (cuisine || '').split(',').filter(Boolean);
+    const avoidList = (avoid || '').split(',').filter(Boolean);
+
+    if (!cartIngredients.length) {
+      return res.status(400).json({ error: 'ingredients required' });
+    }
+
+    // Pull all recipes matching cuisine filter
+    let query = 'SELECT * FROM recipes WHERE 1=1';
+    const params = [];
+
+    if (selectedCuisines.length > 0 && !selectedCuisines.includes('any')) {
+      const placeholders = selectedCuisines.map(() => '?').join(',');
+      query += ` AND (cuisine IN (${placeholders}) OR cuisine = 'any' OR slot = 'any')`;
+      params.push(...selectedCuisines);
+    }
+
+    const stmt = recipeDB.prepare(query);
+    stmt.bind(params);
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free();
+
+    // Score each recipe by ingredient overlap with cart
+    const scored = rows.map(r => {
+      const recipeIngs = JSON.parse(r.ingredients || '[]');
+      const avoidTags = JSON.parse(r.avoid || '[]');
+
+      // Skip if user has avoided ingredients
+      if (avoidList.some(a => avoidTags.includes(a))) return null;
+
+      // Count how many cart ingredients appear in recipe ingredients
+      const matchScore = cartIngredients.filter(cartIng =>
+        recipeIngs.some(recipeIng =>
+          recipeIng.toLowerCase().includes(cartIng.toLowerCase()) ||
+          cartIng.toLowerCase().includes(recipeIng.toLowerCase())
+        )
+      ).length;
+
+      if (matchScore < 2) return null; // must use at least 2 cart ingredients
+
+      return {
+        id: r.id,
+        title: r.title,
+        slot: r.slot,
+        cuisine: r.cuisine,
+        ingredients: recipeIngs,
+        instructions: r.instructions,
+        tags: r.tags,
+        avoid: JSON.parse(r.avoid || '[]'),
+        srv: r.srv,
+        matchScore
+      };
+    }).filter(Boolean);
+
+    // Sort by match score descending
+    scored.sort((a, b) => b.matchScore - a.matchScore);
+
+    // Bucket by slot — return top 12 per slot for variety
+    const bySlot = { breakfast: [], lunch: [], dinner: [], any: [] };
+    for (const r of scored) {
+      const slot = r.slot === 'any' ? 'any' : r.slot;
+      if (bySlot[slot] && bySlot[slot].length < 12) {
+        bySlot[slot].push(r);
+      }
+    }
+
+    res.json({ found: true, bySlot, total: scored.length });
+
+  } catch (err) {
+    console.error('Recipe engine error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Make It Stretch running on port ${PORT}`));
