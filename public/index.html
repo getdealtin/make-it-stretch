@@ -2642,7 +2642,16 @@ async function buildWeekCards(cart, avoidItems){
   try {
     const url = `/api/recipes-for-cart?ingredients=${encodeURIComponent(cartIds)}&cuisine=${encodeURIComponent(cuisineStr)}&avoid=${encodeURIComponent(avoidStr)}`;
     const res = await fetch(url);
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(parseErr) {
+      console.error('Server returned non-JSON:', text.slice(0, 200));
+      wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Server error — check console.</div>';
+      return;
+    }
+    console.log('Recipe API response:', data.found, 'total:', data.total, 'breakfast:', data.bySlot?.breakfast?.length, 'lunch:', data.bySlot?.lunch?.length, 'dinner:', data.bySlot?.dinner?.length);
     if(data.found) bySlot = data.bySlot;
   } catch(e) {
     console.error('Recipe fetch error:', e);
@@ -2786,7 +2795,12 @@ async function buildWeekCards(cart, avoidItems){
     html += `</div></div>`;
   });
 
+  try {
   wrap.innerHTML = html;
+  } catch(renderErr) {
+    console.error('Render error:', renderErr);
+    wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Error building meal plan. See console.</div>';
+  }
 
   // Trigger shopping list rebuild with current choices
   // Shopping list is already built by runCalculation - no need to rebuild here
