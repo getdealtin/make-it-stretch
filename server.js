@@ -380,39 +380,41 @@ app.get('/api/recipes-for-cart', async (req, res) => {
       return res.status(400).json({ error: 'ingredients required' });
     }
 
-    // Pull all recipes matching cuisine filter
-    let query = 'SELECT * FROM recipes WHERE 1=1';
-    const params = [];
-
-    if (selectedCuisines.length > 0 && !selectedCuisines.includes('any')) {
-      const placeholders = selectedCuisines.map(() => '?').join(',');
-      query += ` AND (cuisine IN (${placeholders}) OR cuisine = 'any' OR slot = 'any')`;
-      params.push(...selectedCuisines);
-    }
-
-    const stmt = recipeDB.prepare(query);
-    stmt.bind(params);
+    // Pull ALL recipes — filter in JS to avoid sql.js bind issues
+    const stmt = recipeDB.prepare('SELECT * FROM recipes');
     const rows = [];
     while (stmt.step()) rows.push(stmt.getAsObject());
     stmt.free();
 
-    // Score each recipe by ingredient overlap with cart
-    const scored = rows.map(r => {
-      const recipeIngs = JSON.parse(r.ingredients || '[]');
-      const avoidTags = JSON.parse(r.avoid || '[]');
+    // Filter by cuisine in JS
+    const cuisineFiltered = rows.filter(r => {
+      if (!selectedCuisines.length || selectedCuisines.includes('any')) return true;
+      return selectedCuisines.includes(r.cuisine) || r.cuisine === 'any' || r.slot === 'any';
+    });
 
-      // Skip if user has avoided ingredients
+    // Score each recipe by ingredient overlap with cart
+    const scored = cuisineFiltered.map(r => {
+      let recipeIngs, avoidTags;
+      try {
+        recipeIngs = typeof r.ingredients === 'string' ? JSON.parse(r.ingredients) : (r.ingredients || []);
+        avoidTags = typeof r.avoid === 'string' ? JSON.parse(r.avoid || '[]') : (r.avoid || []);
+      } catch(e) {
+        return null;
+      }
+
+      // Skip avoided ingredients
       if (avoidList.some(a => avoidTags.includes(a))) return null;
 
-      // Count how many cart ingredients appear in recipe ingredients
+      // Count cart ingredient matches
       const matchScore = cartIngredients.filter(cartIng =>
-        recipeIngs.some(recipeIng =>
-          recipeIng.toLowerCase().includes(cartIng.toLowerCase()) ||
-          cartIng.toLowerCase().includes(recipeIng.toLowerCase())
-        )
+        recipeIngs.some(recipeIng => {
+          if (typeof recipeIng !== 'string' || typeof cartIng !== 'string') return false;
+          return recipeIng.toLowerCase().includes(cartIng.toLowerCase()) ||
+                 cartIng.toLowerCase().includes(recipeIng.toLowerCase());
+        })
       ).length;
 
-      if (matchScore < 2) return null; // must use at least 2 cart ingredients
+      if (matchScore < 2) return null;
 
       return {
         id: r.id,
@@ -422,31 +424,26 @@ app.get('/api/recipes-for-cart', async (req, res) => {
         ingredients: recipeIngs,
         instructions: r.instructions,
         tags: r.tags,
-        avoid: JSON.parse(r.avoid || '[]'),
+        avoid: avoidTags,
         srv: r.srv,
         matchScore
       };
     }).filter(Boolean);
 
-    // Sort by match score descending
     scored.sort((a, b) => b.matchScore - a.matchScore);
 
-    // Bucket by slot — return top 12 per slot for variety
     const bySlot = { breakfast: [], lunch: [], dinner: [], any: [] };
     for (const r of scored) {
-      const slot = r.slot === 'any' ? 'any' : r.slot;
-      if (bySlot[slot] && bySlot[slot].length < 12) {
-        bySlot[slot].push(r);
-      }
+      const slot = (r.slot === 'any' || !bySlot[r.slot]) ? 'any' : r.slot;
+      if (bySlot[slot] && bySlot[slot].length < 12) bySlot[slot].push(r);
     }
 
     res.json({ found: true, bySlot, total: scored.length });
 
   } catch (err) {
-    console.error('Recipe engine error:', err.message);
-    res.status(500).json({ error: err.message });
+    console.error('Recipe match error:', err.message, err.stack);
+    res.status(500).json({ found: false, error: err.message });
   }
 });
-
 
 app.listen(PORT, () => console.log(`Make It Stretch running on port ${PORT}`));
