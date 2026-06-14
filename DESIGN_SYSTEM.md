@@ -1,106 +1,141 @@
 # Make It Stretch — Design System Reference
 **getdealtin · Margin Ventures LLC · 2026**
 
-This document captures every intentional design decision made during the UI build. Read this before adding any new feature so the visual language stays consistent.
+This document captures every intentional design decision made during the UI build. Read this before adding any new feature so the visual language stays consistent. If building a similar tool, start here.
 
 ---
 
-## 1. The Design Philosophy
+## 1. Design Philosophy
 
-The tool serves two emotional states simultaneously:
+The layout tells two stories simultaneously:
 
-- **Left/main column:** Stability, dignity, immediate utility — a workspace for someone stressed about money
-- **Right/sidebar column:** Intellectual weight, data-driven authority — editorial journalism about why the crisis exists
+- **Left/main column:** Stability, dignity, immediate utility — a workspace for someone managing a tight budget. Cream tones, warm typography, no judgment.
+- **Right sidebar:** Editorial weight, civic data, political accountability. Dark forest green, high contrast, journalistic. "Where You Stand."
 
 Every design choice is in service of this split. The user manages their survival on the left. The right tells them the truth about why they're in that position.
+
+**Tone rule:** The app speaks to a difficult *moment*, not a permanent condition. Use "right now," "this budget," "this plan" — never "you are poor." The civic section assigns systemic blame, not personal failure.
 
 ---
 
 ## 2. Color Palette — "Grounded Resilience"
 
-### CSS Custom Properties (defined in `:root`)
+### CSS Custom Properties (`:root`)
 
 | Token | Value | Role |
 |-------|-------|------|
 | `--ink` | `#1B3624` | Deep Forest — primary text, hierarchy |
-| `--ink2` | `#3E4A42` | Slate Grey — secondary text, data |
+| `--ink2` | `#3E4A42` | Slate Grey — secondary text, data, borders |
 | `--ink3` | `#6b7a70` | Muted Sage — tertiary/hint text |
 | `--ink4` | `#9aaa9f` | Faint Sage — disabled/placeholder |
 | `--bg` | `#FAF8F5` | Warm Cream — page canvas |
-| `--bg2` | `#F3F0EB` | Deeper Cream — card surfaces |
+| `--bg2` | `#F3F0EB` | Deeper Cream — card surfaces, week card header |
 | `--bg3` | `#EAE6DF` | Hover/pressed state |
 | `--border` | `#DDD9D1` | Warm grey border |
-| `--border2` | `#C8C4BC` | Stronger border |
+| `--border2` | `#C8C4BC` | Stronger border — week card edges, day-row dividers |
 | `--gold` | `#D9822B` | **Warm Ochre — THE accent. Use sparingly.** |
 | `--green` | `#1B3624` | Forest green — confirmed/positive |
-| `--green-bg` | `#EEF3EE` | Soft green tint |
+| `--green-bg` | `#EEF3EE` | Soft green tint — chosen chip, leftover chip, have tags |
 | `--red` | `#b83c2b` | Terracotta — alerts, warnings |
 | `--blue` | `#2a5c8a` | Slate blue — links only |
 
-### Named Values (used directly in CSS, not via tokens)
+Full token list also includes: `--green-border: #B8CDB8`, `--red-dim: #fdf0ec`, `--red-border: #f0c4b8`, `--blue-dim: #eaf0f7`, `--blue-border: #b8d0e8`, `--gold-dim: #fdf0e4`, `--amber-border: #f0c898`, `--purple: #6b4e8a`, `--purple-bg: #f4f0f8`, `--purple-border: #d4c8e8`.
+
+### Named Values (hardcoded, context-specific)
 
 | Value | Where used |
 |-------|-----------|
-| `#25332B` | Midnight Juniper — sidebar/pulse card background |
+| `#25332B` | Midnight Juniper — sidebar background exclusively |
 | `#35473D` | Sidebar internal borders/dividers |
-| `#5A6E61` | Form section label color (step-label) |
-| `#4A5D50` | Soft juniper — form section anchors |
-| `#718276` | Muted grey-green — stat labels, meal slot labels |
-| `#EDE8DF` | Hover tint for interactive elements on cream |
-| `#eef3ee` | Selected "have" tag, chosen meal chip |
-| `#3a7a50` | Active forest green border |
+| `#E8922F` | Sidebar chapter labels (brighter gold, 5.4:1 contrast on dark) |
+| `#5db87a` | VOTED NO label on senator cards (4.7:1 on dark card bg) |
+| `#f87171` | VOTED YES label on senator cards (4.8:1 on dark card bg) |
+| `#5A6E61` | Form section label, shopping tips |
+| `#4A5D50` | Soft juniper — discover chip text |
+| `#718276` | Muted grey-green — slot labels (BREAKFAST/LUNCH/DINNER) |
+| `#EDE8DF` | Open week card header background, hover tint |
+| `#eef3ee` | Chosen chip bg, leftover chip bg, have tags |
+| `#3a7a50` | Active forest green — chosen chip border ring |
+| `#f7f5f1` | Leftover day-row background tint |
 
 ### Application Rules
 
-- **Warm Ochre `#D9822B`** is the system alert color. Used for: progress bar, CTA buttons, WEEK tags, selected store tags, live data highlights in sidebar. Never use it decoratively.
-- **Deep Forest `#1B3624`** anchors text hierarchy. Selected food tradition cards go full `#1B3624` background with white text — a declaration, not a highlight.
-- **Midnight Juniper `#25332B`** is *exclusively* for the political/systemic context column (desktop sidebar + mobile pulse card). Nothing else on the light canvas should use it.
-- **Pure white (`#fff`)** appears only on meal chips (lifted card effect) and button text on dark backgrounds.
+- **Warm Ochre `#D9822B`** is the system accent. Used for: progress bar, CTA buttons, WEEK labels, gold stat values. Never decorative.
+- **Deep Forest `#1B3624`** anchors text hierarchy. Selected food tradition cards go full `#1B3624` bg with white text.
+- **Midnight Juniper `#25332B`** is *exclusively* for the sidebar. Nothing on the cream canvas should use it.
+- **Pure white `#fff`** appears only on meal chips (lifted card effect) and button text on dark backgrounds.
+- **`--border2` (#C8C4BC)** is used for week card outer borders and day-row dividers — stronger than `--border` to give the meal plan section visual structure.
+
+### Sidebar WCAG-Verified Colors
+
+| Element | Color | Contrast | Grade |
+|---------|-------|----------|-------|
+| Panel background | `#25332B` | — | — |
+| Lead text | `rgba(250,248,245,.95)` | 11.6:1 | AAA |
+| Body text | `rgba(250,248,245,.65)` | 5.9:1 | AA |
+| Chapter labels | `#E8922F` | 5.4:1 | AA |
+| VOTED NO (green) | `#5db87a` | 4.7:1 | AA |
+| VOTED YES (red) | `#f87171` | 4.8:1 | AA |
+| Gold stat values | `#D9822B` | 4.5:1 | AA |
+| Senator names | `rgba(250,248,245,.95)` | 10.8:1 | AAA |
+| Muted italic footer | `rgba(250,248,245,.30)` | 3.6:1 | AA-Large* |
+
+*Decorative/supplementary text — exempt from 4.5:1 requirement. All meaningful and interactive text meets AA minimum.
 
 ---
 
-## 3. Typography System
+## 3. Typography — The Three-Brain Rule
 
-### Font Stack
+Each font plays a specific cognitive role. Don't swap them.
 
 | Font | Role | Never use for |
 |------|------|---------------|
-| **Playfair Display** | Header title only ("Make It Stretch") | Anything outside the hero header |
-| **Lora** | Editorial serif — section headings, question text, impact summaries, political content | UI controls, data, labels |
-| **Plus Jakarta Sans** | UI Anchor — buttons, labels, tags, body copy, navigation signposts | Section headings, emotional moments |
-| **IBM Plex Mono** | Data only — budget numbers, prices, stat values, monospace codes | Any flowing text |
+| **Playfair Display** | Header title only ("Make It Stretch") | Anything outside the hero h1 |
+| **Lora** | Editorial serif — section headings, step questions, summary titles, political content | UI controls, chip labels, data |
+| **Plus Jakarta Sans** | UI Anchor — buttons, labels, tags, body copy, chip names, navigation | Section headings, emotional moments |
+| **IBM Plex Mono** | Data only — prices, stats, percentages, codes | Any flowing text |
 
 ### The Three-Brain Rule
 
-The user's brain reads each font differently:
-
-1. **Uppercase tracked Plus Jakarta Sans** → "Where am I in the system" (step trackers, WEEK 1, BREAKFAST, tier badges)
-2. **Sentence-case Plus Jakarta Sans** → "My data, my choices" (button labels, item names, body copy)
+1. **Uppercase tracked Plus Jakarta Sans** → "Where am I in the system" (STEP 3 OF 5, WEEK 1, BREAKFAST, tier badges)
+2. **Sentence-case Plus Jakarta Sans** → "My data, my choices" (button labels, **meal chip names**, body copy)
 3. **Lora serif** → "The truth about what's happening outside" (section headers, Know Your System, vote impact summaries)
 
-### Type Scale Reference
+**Note:** Meal chip dish names use Plus Jakarta Sans 700 bold (not Lora) — they are user choices, not editorial content.
 
-| Element | Font | Size | Weight | Transform | Tracking |
-|---------|------|------|--------|-----------|---------|
-| Step eyebrow ("STEP 3 OF 5") | Plus Jakarta Sans | 0.75rem | 700 | uppercase | 0.14em |
-| Step question | Lora | 22px | 700 | none | -0.3px |
-| Section heading (h2) | Lora | 22px | 700 | none | -0.3px |
-| Accordion title | Lora | 16px | 700 | none | -0.2px |
-| Summary/game plan title | Lora | 1.75rem | 600 | Title Case | -0.01em |
-| Sidebar headline ("Why Your Groceries...") | Lora | 1.05rem | 600 | none | normal |
-| WEEK label | Plus Jakarta Sans | 0.8rem | 800 | uppercase | 0.1em |
-| DAY name (MON, TUE) | Plus Jakarta Sans | 0.7rem | 800 | uppercase | 0.1em |
-| BREAKFAST/LUNCH/DINNER | Plus Jakarta Sans | 0.7rem | 700 | uppercase | 0.08em |
-| Form section label | Plus Jakarta Sans | 0.75rem | 700 | uppercase | 0.12em |
-| Stat value ($0.72) | IBM Plex Mono | 22px | 500 | none | — |
-| Stat label (PER MEAL) | Plus Jakarta Sans | 0.65rem | 700 | uppercase | 0.05em |
-| Tier badges (ESSENTIAL) | Plus Jakarta Sans | 0.65rem | 700 | uppercase | 0.06em |
-| Shop price | IBM Plex Mono | 15px | 700 | none | — |
-| Rep name | Lora | 18px | 700 | none | -0.3px |
-| Vote pill (VOTED YES) | Plus Jakarta Sans | 0.65rem | 800 | uppercase | 0.08em |
-| Vote impact line | Lora | 13px | 400 | italic | — |
-| Sidebar body text | Lora | 15px | 400 | italic | — |
-| Eyebrow tag ("◆ CIVIC BUDGET TOOL") | Plus Jakarta Sans | 0.85rem | 700 | uppercase | 0.12em |
+### Google Fonts Import
+
+```html
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+```
+
+DM Sans has been fully removed. Do not re-add it.
+
+### Type Scale
+
+| Element | Font | Size | Weight | Notes |
+|---------|------|------|--------|-------|
+| Page hero h1 | Playfair Display | ~100px | 900 italic | Header only |
+| Section h2 | Lora | 22px | 700 | letter-spacing: -.3px |
+| Accordion title | Lora | 16px | 700 | letter-spacing: -.2px |
+| Summary/game plan title | Lora | 1.75rem | 600 | letter-spacing: -0.01em |
+| Step question | Lora | 22px | 700 | letter-spacing: -.3px |
+| WEEK label | Plus Jakarta Sans | 0.8rem | 800 | uppercase, 0.1em tracking |
+| Week title (Mon–Sun) | Plus Jakarta Sans | 16px | 700 | **no font-family set — inherits body** |
+| DAY name (MON, TUE) | Plus Jakarta Sans | 0.7rem | 800 | uppercase, 0.1em tracking |
+| BREAKFAST/LUNCH/DINNER | Plus Jakarta Sans | 0.7rem | 700 | uppercase, 0.08em, color: #718276 |
+| Meal chip name | Plus Jakarta Sans | 13px | **700** | `.meal-chip-name` span, bold |
+| Cuisine tag on discover chip | IBM Plex Mono | 10px | 400 | opacity .55 |
+| NEW badge on discover chip | Plus Jakarta Sans | 9px | 700 | uppercase, `.discover-pill` |
+| Stat value | IBM Plex Mono | 22px | 500 | — |
+| Stat label | Plus Jakarta Sans | 0.65rem | 700 | uppercase |
+| Shop price | IBM Plex Mono | 15px | 700 | — |
+| Sidebar chapter label | Plus Jakarta Sans | 10px | 800 | uppercase, color: #E8922F |
+| Sidebar lead text | Lora | 14px | 400/600 | color: rgba(250,248,245,.95) |
+| Sidebar body text | Plus Jakarta Sans | 12–13px | 400 | color: rgba(250,248,245,.65) |
+| Senator role | Plus Jakarta Sans | 9px | 700 | uppercase, muted |
+| Senator name | Plus Jakarta Sans | 12px | 700 | color: rgba(250,248,245,.95) |
+| Senator vote label | IBM Plex Mono | varies | 700 | green #5db87a or red #f87171 |
 
 ---
 
@@ -110,34 +145,35 @@ The user's brain reads each font differently:
 
 ```
 +----------------------------------------------+------------------+
-|  LEFT/CENTER: SURVIVAL TOOLS                 | RIGHT: SYSTEM    |
-|  (Warm Cream #FAF8F5)                        | (Juniper #25332B)|
-|                                              |                  |
-|  Summary Dashboard                           | Why Your         |
-|  Meal Game Plan                              | Groceries Cost   |
-|  ↓ Accordion: Shopping List                  | This Much        |
+|  LEFT/CENTER: SURVIVAL TOOLS                 | RIGHT: WHERE     |
+|  (Warm Cream #FAF8F5)                        | YOU STAND        |
+|                                              | (Juniper #25332B)|
+|  Summary Dashboard                           |                  |
+|  Meal Game Plan (week cards)                 | YOUR COMMUNITY   |
+|  ↓ Accordion: Shopping List                  | Census zip data  |
 |  ↓ Accordion: Brand Comparisons              |                  |
-|  ↓ Accordion: Know Your System               | Pulse stats      |
-|  ↓ Accordion: Get Help                       | Policy alert     |
-|                                              | Local realities  |
-|                                              | → CTA button     |
+|  ↓ Accordion: Know Your System               | WHO VOTED ON     |
+|  ↓ Accordion: Get Help                       | YOUR GROCERIES   |
+|                                              | Senator cards    |
 +----------------------------------------------+------------------+
 ```
 
-CSS: `.dash-grid { display: grid; grid-template-columns: 1fr 340px; }`
+CSS: `.dash-grid { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }`
 
-Breakpoint: `@media(max-width:900px)` — sidebar hides, mobile System Pulse card appears inline after meal plan.
+Sidebar: `position: sticky; top: 24px` — scrolls with page until it reaches top.
 
-### Mobile: Trojan Horse Scroll (3-Act)
+Breakpoint: `@media(max-width:900px)` — sidebar hides, mobile pulse card appears inline after meal plan.
+
+### Mobile: Trojan Horse Scroll
 
 1. **Act I — Dashboard** (summary card + stats)
 2. **Act II — Meals** (week cards, interactive)
-3. **Subversive pivot** — Mobile System Pulse dark card slides in
-4. **Act IV — Utility accordions** (shopping list open by default, rest collapsed)
+3. **Subversive pivot** — Mobile dark card slides in with community + vote data
+4. **Act III — Utility accordions** (shopping list open by default, rest collapsed)
 
-### Intake Form: Max-Width 780px (centered)
+### Intake Form
 
-The intake lives in `.intake-wrap { max-width: 780px; margin: 0 auto; }` — narrower than the dashboard grid.
+`.intake-wrap { max-width: 780px; margin: 0 auto; }` — narrower than dashboard grid.
 
 ---
 
@@ -145,160 +181,268 @@ The intake lives in `.intake-wrap { max-width: 780px; margin: 0 auto; }` — nar
 
 ### Buttons
 
-**Primary CTA (`btn-primary`):** Warm Ochre `#D9822B`, white text, Plus Jakarta Sans 700, UPPERCASE, `0.08em` tracking. Used for: Continue →, Build My Game Plan, Save, Full voting record.
+**Primary CTA (`btn-primary`):** Warm Ochre `#D9822B`, white text, Plus Jakarta Sans 700, uppercase, 0.08em tracking.
 
-**Back button (`btn-back`):** No background, `--ink2` text. Never styled as a primary action.
+**Back button (`btn-back`):** No background, `--ink2` text. Never styled as primary.
 
 ### Food Tradition Cards (`option-btn`)
 
-Large 2-column grid. Unselected: `--bg2` background, `--border` border. **Selected: solid `#1B3624` background, white text.** This is the strongest selected state in the app — identity-level choices get a full commitment visual.
+Large 2-column grid. Unselected: `--bg2` bg, `--border` border. **Selected: solid `#1B3624` background, white text** — strongest selected state in the app.
 
-### Pill Tags (`tag-btn`) — Store / Avoid / Have
+### Pill Tags (`tag-btn`)
 
-Flex-wrap, `border-radius: 20px` pills. Three distinct selected states by semantic type:
-- **Store tags** → Ochre `#D9822B`, white text ("active tool choice")
-- **Avoid tags** → Deep Forest `#1B3624`, white text ("hard filter/constraint")
-- **Have tags** → Sage `#eef3ee`, forest green text/border ("adding to pantry")
-
-Have tags use `+` prefix in label text (e.g., `+ Rice`) to signal additive action.
+`border-radius: 20px` pills. Three selected states:
+- **Store tags** → Ochre `#D9822B`, white text
+- **Avoid tags** → Deep Forest `#1B3624`, white text
+- **Have tags** → Sage `#eef3ee`, forest green text/border
 
 ### Meal Chips (`meal-chip`)
 
-No border. White background with soft shadow (`0 1px 4px` + `1px ring`). Lifts off the cream canvas. On hover: slight translateY(-1px). Chosen: solid green ring (`0 0 0 2px #3a7a50`).
+White `#fff` background. Soft shadow: `0 1px 4px rgba(27,54,36,.1), 0 0 0 1px rgba(27,54,36,.06)`. Hover: `translateY(-1px)`. Chosen: `box-shadow: 0 0 0 2px #3a7a50`, background: `#eef3ee`.
 
-**Discover chips** (new cuisine option): Muted sage `#f0f4f1` / `#4A5D50` — reads as "interesting" not "clickable link." NOT blue.
+**Chip anatomy:**
+```html
+<div class="meal-chip-wrap">
+  <button class="meal-chip [chosen] [discover]" ...>
+    [<span class="discover-pill">NEW</span>]   ← only on i===1
+    <span class="meal-chip-name">Dish Name</span>  ← font-weight:700
+    [<span class="meal-chip-cuisine">Cuisine</span>]  ← only on discover, IBM Plex Mono 10px
+    <span class="meal-chip-recipe-btn" ...>📖</span>  ← hidden until hover
+  </button>
+</div>
+```
 
-**Leftover chip:** Sage `#eef3ee` background, solid (no dashes), `↻` icon via CSS `::before`, 700 weight. Celebrates leftovers as smart, not placeholder.
+**Two chips per slot:** First chip (i===0) = default, gets `.chosen`. Second chip (i===1) = discover option, gets `.discover` class + `NEW` pill + cuisine tag. No third chip.
+
+**Discover chip:** Background `#f0f4f1`, text `#4A5D50`, shadow `0 0 0 1px rgba(74,93,80,.15)`. Chosen discover: background `#e4ece6`, shadow `0 0 0 2px #3a7a50`.
+
+**Recipe button (📖):** `opacity: 0` by default, `0.7` on chip hover, `1` on icon hover. `event.stopPropagation()` prevents chip selection.
+
+**`meal-chip-name`:** Always a `<span>` with `font-weight: 700`. This is what makes chip text bold. Without it chips look thin/light.
+
+### Leftover Row
+
+Leftover days get a distinct visual treatment — not a meal slot, but a chip:
+
+```css
+.leftover-row {
+  font-size: 13px; font-weight: 600; color: #3a7a50;
+  padding: 8px 14px; background: #eef3ee;
+  border-radius: 6px; box-shadow: 0 0 0 1px rgba(58,122,80,.2);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.day-row-leftover { background: #f7f5f1; }  /* subtle tint on the row itself */
+```
+
+HTML: `↻ Leftovers from yesterday — reheat and save time`
+
+### Week Cards
+
+```css
+.week-card {
+  border: 1px solid var(--border2);    /* stronger border */
+  border-radius: 10px; overflow: hidden;
+  background: var(--bg2);
+  box-shadow: 0 1px 4px rgba(27,54,36,.06);
+}
+.week-header {
+  background: var(--bg2);
+  border-bottom: 1px solid transparent;  /* becomes visible when open */
+}
+.week-card.open .week-header {
+  background: #EDE8DF;                   /* darker header when open */
+  border-bottom: 2px solid var(--border2);  /* strong divider header/body */
+}
+.week-body {
+  background: var(--bg);               /* lighter than header — creates depth */
+}
+.day-row {
+  border-bottom: 1px solid var(--border2);  /* darker row dividers */
+}
+```
+
+**Critical:** `week-body` must have `background: var(--bg)` (not inherit from card's `--bg2`) to create the visual contrast that makes day rows feel enclosed. Without this the whole card reads as flat.
+
+**Critical:** `week-title` (Mon–Sun) has **no explicit font-family** — it inherits Plus Jakarta Sans from body. Do not add Lora here. The week title is a user-data label, not editorial content.
 
 ### Accordions
 
-`.accordion-section` — collapsed by default (`.accordion-body { display: none }`). Shopping list opens automatically after results load. Civic accordion is visible on all screen sizes — `acc-civic` on desktop gives the full rep/vote detail that the sidebar CTA links to.
+Collapsed by default. Shopping list opens automatically after results load.
 
-### Policy Micro-Cards (`means-item`)
+### Senator Cards (`.pulse-senator`)
 
-Left border only (4px), zero right border. Three states:
-- `item-against`: `#b83c2b` border, `#fdf0ec` background
-- `item-for`: `#3a7a50` border, `#f0f5f1` background
-- `item-neutral`: `--border2` border, `--bg2` background
+```css
+.pulse-senator {
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  border-radius: 6px; padding: 10px 12px;
+}
+.pulse-senator.vote-protect {   /* voted NO — protect SNAP */
+  border-color: rgba(93,184,122,.5);
+  background: rgba(58,122,80,.12);
+}
+.pulse-senator.vote-cut {       /* voted YES — cut SNAP */
+  border-color: rgba(248,113,113,.4);
+  background: rgba(184,60,43,.12);
+}
+```
 
-Tag badge: Plus Jakarta Sans 800, UPPERCASE. Bill name: Plus Jakarta Sans 700. Impact text: Lora italic. This is the typography split between official action and human consequence.
-
-### Vote Pills (`vote-pill`)
-
-**Solid filled, not outline:** `VOTED YES` = `#b83c2b` background, white text. `VOTED NO` = `#3a7a50` background, white text. No ambiguity.
-
-### Shopping List Tips
-
-Tips live **inline** under relevant items (`.shop-tip`), not in a standalone block. The `ALL_TIPS` array maps via `needs[]` arrays to `item.id` values. Each tip's emoji is split into `.shop-tip-icon` span. Color: `#5A6E61`.
-
-### Stat Cards
-
-Five metrics in `.stats-row`. Desktop: flex-wrap. Tablet (≤900px): 3-column CSS grid. Mobile (≤480px): 2-column grid. Labels use Plus Jakarta Sans 700 uppercase `#718276` so numbers dominate.
-
----
-
-## 6. The System Pulse Sidebar
-
-The dark column is a self-contained visual universe. Everything inside uses this palette:
-
-| Element | Value |
-|---------|-------|
-| Background | `#25332B` Midnight Juniper |
-| Internal borders | `#35473D` |
-| Section headers | `#FFFFFF` pure white (Lora serif) |
-| Body text | `rgba(250,248,245,.9)` |
-| Data highlights | `#D9822B` Warm Ochre |
-| Policy alert bg | `rgba(184,60,43,.12)` |
-
-The `pulse-hook` (italic Lora quote) sets the editorial tone before the data. The CTA button uses `rgba(217,130,43,.18)` background with ochre border — glows on the dark surface.
-
-On mobile, the same exact color story applies to `.mobile-system-pulse` — same `#25332B`, same `#35473D` borders, same typography.
+Card anatomy (top to bottom):
+1. `.pulse-sen-role` — "SENATOR · REPUBLICAN" — 9px uppercase, muted
+2. `.pulse-sen-name` — senator name — 12px bold
+3. `.pulse-sen-vote` — vote label — IBM Plex Mono, `#5db87a` or `#f87171`
 
 ---
 
-## 7. CSS Architecture Notes
+## 6. Sidebar: "Where You Stand"
 
-- All design tokens live in `:root` at the top of the `<style>` block
-- Hardcoded hex values are used *intentionally* when they're context-specific (sidebar colors, hover tints) and shouldn't inherit from the global token system
-- The `--gold-mid` token referenced in `.week-badge` doesn't resolve — safe to ignore (badge rarely renders)
-- Hover tint for interactive elements on cream canvas: `#EDE8DF`
-- `overflow: hidden` on `.intake-card` and `.system-pulse` is intentional (prevents border-radius clipping)
+Replaced the old "Why Your Groceries Cost This Much" section (hardcoded 47M+, $6, 13% stats). Now two sections populated dynamically from real data.
+
+### Structure
+
+```
+WHERE YOU STAND                    ← .pulse-hdr (dark header, Lora)
+
+YOUR COMMUNITY                     ← .pulse-chapter-label (#E8922F)
+[zip SNAP households count + %]    ← .pulse-chapter-lead (Lora)
+[1 in X poverty rate]              ← .pulse-chapter-body
+[food % of median income]          ← .pulse-chapter-body
+[hardship flag if >30%]
+[italic structural note]           ← muted, decorative
+
+WHO VOTED ON YOUR GROCERIES · AR   ← .pulse-chapter-label
+[Congress controls SNAP...]        ← .pulse-chapter-lead
+[Senator card] [Senator card]      ← .pulse-senate-row
+[on H.R.1 context line]            ← .pulse-senate-context
+[See full vote breakdown →]        ← .pulse-cta
+```
+
+### Community Data Logic (`loadCensusData`)
+
+1. Called with `zip`, `state`, `people`, `pppd` after calculation completes
+2. Fetches `/api/census?zip=` → Census ACS 5-year data
+3. **Every code path calls `populateSystemPulse()`** — success, not-found, and error. No silent failures.
+4. Passes `d.zip = zip` through so sidebar can display the zip
+5. Falls back to national framing if Census returns no data — never prompts user to enter zip again (they already did)
+6. Errors logged to console: `console.error('Census API error:', e)`
+
+### Senator Vote Attribution
+
+Votes attributed by party-line roll call. `STATE_REPS` object maps all 50 states to `{ s1: {name, party}, s2: {name, party} }`. Party → vote lookup in `KEY_VOTES[0].votes`.
 
 ---
 
-## 8. What to Build Next
+## 7. Recipe Engine — Implementation Reference
 
-### Phase 1c — Context Page *(remaining from Phase 1c)*
+### Database (`data/seed-recipes.json`)
 
-A dedicated `/context` or `/why` page linked from the sidebar CTA. Explains:
-- What SNAP is and what the current cuts mean
-- Why the USDA survey was discontinued
-- Where getdealtin's data comes from
-- How to read the voting records
-
-Design: same cream canvas, Lora headings, editorial tone.
-
-### Are.na Resource Page (Phase 4)
-
-A `/resources` page pulling from the Are.na API. Each link renders as a card — same `.resource-card` pattern already in the Get Help section. Add to the post-output "Meal Prep Resources" CTA (already linked to `are.na/erin-relford/make-it-stretch-recipes`).
-
-### Zip Code Behavioral Logging (Phase 6)
-
-When the PostgreSQL/Supabase event database is stood up, the frontend needs to fire anonymous events. The event shape is already defined in the build plan:
+**161 recipes** across 6 cuisines. Each entry:
 
 ```json
-{ "zip": "78745", "event": "online_alt_click", "item": "rice", "retailer": "amazon" }
+{
+  "title": "Garlic Cabbage with Rice",
+  "slot": "lunch",
+  "cuisine": "asian",
+  "ingredients": ["cabbage", "garlic", "onions", "oil", "rice", "soy sauce"],
+  "instructions": "...",
+  "avoid": [],
+  "srv": 2
+}
 ```
 
-Events to track: budget tier entered, food items in cart, brand comparisons clicked, online vs. local selections, post-output actions taken (email/share/print/recipe).
+**Slot values:** `breakfast`, `lunch`, `dinner`. No `any` slot — use `cuisine: "any"` for universal dishes.
 
-Design impact: none visible to user. Add a `logEvent(type, data)` helper function in the script block.
+**`cuisine: "any"`** is reserved for ~8 genuinely universal dishes only (Simple Oatmeal, Basic Egg Scramble, etc.). Do not add `any` cuisine to dishes with cultural specificity.
 
-### Live Context Sidebar (Phase 7)
+**Side dishes are excluded.** No standalone sides (potato salad, cornbread, collard greens, etc.) — every recipe must be a complete meal.
 
-The sidebar pulse stats are currently hardcoded (`47M+`, `$6`, `13%`). When the PostgreSQL database has real data, replace with a `/api/pulse-stats` endpoint that returns live values. The `populateSystemPulse()` function already accepts these as parameters — just swap the hardcoded array.
+### Recipe Counts by Cuisine/Slot
+
+| Cuisine | Breakfast | Lunch | Dinner | Total |
+|---------|-----------|-------|--------|-------|
+| American | ~10 | ~9 | ~10 | ~29 |
+| Latin | ~7 | ~11 | ~12 | ~30 |
+| Asian | ~7 | ~10 | ~17 | ~34 |
+| Southern | ~8 | ~8 | ~11 | ~27 |
+| Mediterranean | ~8 | ~10 | ~14 | ~32 |
+| Any | ~4 | ~1 | ~4 | ~9 |
+| **Total** | **~44** | **~49** | **~68** | **161** |
+
+### Server-Side Filtering (`/api/recipes-for-cart`)
+
+```javascript
+// 1. Filter by cuisine (case-insensitive)
+if (!selectedCuisines.includes(r.cuisine.toLowerCase())) skip;
+
+// 2. Filter by avoid items
+if (r.avoid.some(a => avoidItems.includes(a))) skip;
+
+// 3. Strict slot enforcement (raised cap: 30 per slot)
+// Slot: breakfast | lunch | dinner
+// any-cuisine recipes go to breakfast pool only if they match BREAKFAST_ANY_KEYWORDS
+
+// 4. Side dish blocklist — never serve as standalone meal
+const SIDE_DISH_BLOCKLIST = new Set(['potato salad', 'succotash', ...]);
+
+// 5. NOT_BREAKFAST blocklist — dinner-only dishes that slip through
+const NOT_BREAKFAST = new Set(['gallo pinto', 'congee', ...]);
+```
+
+**Critical bug that was fixed:** The old server used `r.name` but the JSON uses `r.title`. Blocklists must reference `r.title`.
+
+**Critical bug that was fixed:** Cuisine filter was case-sensitive — `r.cuisine` must be lowercased before comparing.
+
+### Client-Side Deduplication (`buildWeekCards`)
+
+```javascript
+// Per-week tracking
+const weeklyUsed = {};  // Set per week index
+
+// Scoring (lower = preferred)
+score = (weekUse * 10000) + (globalUse * 5000) + (position + day * PRIME) % poolSize
+
+// Title-similarity check — first two words
+// Prevents "Congee" + "Congee with Toppings" in same week
+```
+
+Penalty weights:
+- Same dish same week: **10,000 points**
+- Same dish across weeks: **5,000 points**
+
+### Leftover Logic
+
+| Setting | Behavior |
+|---------|----------|
+| `yes` | Leftover day every other day (`d % 2 === 1`) |
+| `sometimes` | Leftover day every 3rd day (`d % 3 === 2`) |
+| `no` | No leftover days — fresh meal every slot |
+
+### Breakfast Pool Split
+
+`cuisine: "any"` recipes are split before pool assignment:
+- If recipe title matches `BREAKFAST_ANY_KEYWORDS` (`['oatmeal','oats','porridge','scramble','egg','banana','potato breakfast']`) → goes into breakfast-any pool
+- Otherwise → goes into dinner/lunch pool
+
+This prevents oatmeal showing up at dinner and congee at breakfast.
 
 ---
 
-## 9. Fonts Reference (Google Fonts Import)
+## 8. Cart & Meal Logic — Implementation Reference
 
-```html
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-```
+### 4-Phase Budget Optimizer
 
-DM Sans has been fully removed. Do not re-add it.
-
----
-
-## 10. Cart & Meal Logic — Implementation Reference
-
-This section documents the full interactive logic layer. Read before modifying anything in the shopping list, meal plan, or cart.
-
----
-
-### 10.1 The 4-Phase Budget Optimizer
-
-The cart is built once at calculation time using four sequential phases. **Do not collapse these into a single loop** — the phase separation is what gives the tool its philosophical coherence.
+Built once at calculation time. **Do not collapse into a single loop** — phase separation is intentional.
 
 ```
-Phase 1 → Survival floor      (40% budget cap)
-Phase 2 → Cuisine boost        (10% budget cap)
-Phase 3 → USDA weighted fill   (remaining budget)
-Phase 4 → Staple scale-up      (every remaining dollar)
+Phase 1 → Survival floor      (40% budget cap)   rice, drybeans, oil, oats
+Phase 2 → Cuisine boost        (10% budget cap)   culturally coherent flavor base
+Phase 3 → USDA weighted fill   (remaining budget) proportional by food category
+Phase 4 → Staple scale-up      (every remaining dollar ≥ $0.50)
 ```
 
-#### Phase 1 — Nutritional Floor (40% of budget max)
+**Phase 1 floor items:** `rice`, `drybeans`, `oil`, `oats`. If budget exhausted here, Phases 2–3 skipped (survival mode).
 
-Buys `rice`, `drybeans`, `oil`, `oats` first, unconditionally. Guarantees a calorie-safe baseline regardless of cuisine or budget size. These four together cover the minimum survival requirement the tool is built around.
-
-**Edge case:** If Phase 1 exhausts the full budget (tiny budget, e.g. $10), Phases 2 and 3 are skipped entirely. The tool defaults to pure survival mode. Gate: `if(remaining > 0.50)`.
-
-**Dietary restrictions:** `getFood(id)` calls `foods.find()` on a pre-filtered array. If a floor item is excluded by `avoidItems` (e.g. oats for gluten-free), it returns `undefined` and is silently skipped. No additional filter needed.
-
-#### Phase 2 — Cuisine Boost Package (10% of budget max)
-
-Locks in a culturally coherent flavor base before general filling. Maps to the user's intake form selection:
-
+**Phase 2 cuisine boosts:**
 ```javascript
 const CUISINE_BOOSTS = {
   american:      ['eggs','bread','potatoes','butter','milk'],
@@ -310,316 +454,244 @@ const CUISINE_BOOSTS = {
 };
 ```
 
-Items already in cart from Phase 1 are skipped (`!cart.find(c=>c.id===id)` check). Dietary restrictions respected automatically — `getFood()` returns `undefined` for restricted items.
-
-#### Phase 3 — USDA Thrifty Food Plan Weighted Fill
-
-Allocates remaining budget proportionally across food categories using actual USDA market-basket breakdown:
-
+**Phase 3 USDA weights:**
 ```javascript
 const USDA_WEIGHTS = {
-  grain:     0.20,
-  protein:   0.23,
-  vegetable: 0.14,
-  fruit:     0.10,
-  dairy:     0.16,
-  fat:       0.07,
-  pantry:    0.10,
+  grain: 0.20, protein: 0.23, vegetable: 0.14,
+  fruit: 0.10, dairy: 0.16, fat: 0.07, pantry: 0.10,
 };
 ```
 
-This mirrors the proportions used to calculate SNAP benefits — gives the tool institutional credibility. Items already in cart are skipped. All `avoidItems` restrictions respected via the pre-filtered `foods` array.
+### Meal Chip Swap System
 
-#### Phase 4 — Staple Scale-Up
-
-Spends every remaining dollar (≥ $0.50) on tier-1 items, scaled to timeline. `daysMultiplier = Math.max(1, Math.floor(days/7))`. Max quantities: `tier-1: max(8, multiplier*4)`, `tier-2: max(4, multiplier*2)`. Loops up to 200 iterations.
-
----
-
-### 10.2 Meal Chip Swap System
-
-Meal chips are fully interactive — selecting a different chip updates the shopping list in real time.
-
-#### Global State Variables
-
+Global state:
 ```javascript
-const mealChoices = {};  // key: "dayIdx-slot" → currently chosen chip DOM id
-const mealPlan    = {};  // key: "dayIdx-slot" → full meal object currently active
-const mealOptions = {};  // key: "dayIdx-slot" → { 0: mealObj, 1: mealObj, 'd': discoverObj }
-let   activePrices = {}; // resolved regional prices — populated in runCalculation, used by swap
+const mealChoices = {};   // "weekIdx-dayIdx-slot" → chip id
+const mealPlan    = {};   // "weekIdx-dayIdx-slot" → active meal object
+const mealOptions = {};   // "weekIdx-dayIdx-slot" → { 0: meal, 1: discover }
+let   activePrices = {};  // regional prices from BLS, used for swap add
 ```
 
-#### On Initial Render (`buildWeekCards`)
+`swapMealIngredients(oldMeal, newMeal)` runs on every chip click:
+1. Builds `mealFoods` cache (all ingredient IDs referenced by any meal)
+2. Counts `refCount` across active plan
+3. Adds new meal ingredients to cart if not present
+4. Audits cart — removes meal-dependent items with zero references
 
-For every day/slot, the first chip is pre-selected as default:
-- `mealOptions[key]` stores all available meal objects indexed by chip position
-- `mealPlan[key]` is set to `slotData.opts[0]` (first option)
-- `mealChoices[key]` is set to the first chip's DOM id
-- First chip gets `.chosen` class in HTML
+**Known limitation:** Deselecting a meal doesn't reallocate the freed dollar value. Accepted trade-off to avoid cart thrashing.
 
-#### On Chip Click (`chooseMeal`)
+### Post-Output Actions
 
-**Deselect (clicking already-chosen chip):**
-```javascript
-oldMeal = mealPlan[key];
-mealPlan[key] = null;
-swapMealIngredients(oldMeal, null);  // runs full audit with slot now empty
-```
+| Button | Mechanism |
+|--------|-----------|
+| ✉ Send List | `emailList()` — hidden `<a>` with `mailto:` href |
+| ⎋ Share | `shareList()` — `navigator.share()` with clipboard fallback |
+| ⎙ Print | `window.print()` — `@media print` hides sidebar, expands cards |
+| 🗂 Resources | Static link to `/resources` |
 
-**Select new chip:**
-```javascript
-newMeal = mealOptions[key][optIdx];  // integer or 'd' for discover
-oldMeal = mealPlan[key];
-mealPlan[key] = newMeal;
-swapMealIngredients(oldMeal, newMeal);
-```
+### Shopping List Checkbox Live Totals
 
-#### The Swap Audit (`swapMealIngredients`)
-
-Runs on every chip interaction. Three operations in order:
-
-**1. Build `mealFoods` cache (once)**
-Set of every food ID referenced by any meal in `MEAL_LIBRARY` or `DISCOVER_MEALS`. Determines which cart items are "meal-dependent" vs pure budget staples.
-
-**2. Count `refCount` across entire active plan**
-Iterates all `Object.values(mealPlan)`, counting how many active meals reference each food ID. `mealPlan[key]` is already updated before this runs, so counts are always current.
-
-**3. Add new meal's ingredients (if selecting)**
-For each ID in `newMeal.needs`: if not in cart, look up in `FOOD_DB` and add using `activePrices[id] || food.price || 1.00` as price fallback chain.
-
-**4. Full cart audit (always)**
-```javascript
-cart = cart.filter(item => {
-  if (!mealFoods.has(item.id)) return true;   // pure budget staple — always keep
-  if (haveIds.has(item.id))    return true;   // user said they have it — keep
-  return (refCount[item.id] || 0) > 0;        // meal-dependent — keep only if referenced
-});
-```
-
-`haveIds` is built from `answers.have` mapped through `FOOD_DB.hasProp` — prevents removing items the user declared they already own.
-
-#### Known Limitation
-
-When a meal is deselected and an ingredient drops to zero references, that dollar value is **not reallocated**. The cart total becomes cheaper. The optimizer does not re-run on swaps — forcing a re-run would reset all quantities and create cart thrashing. This is an accepted trade-off.
-
----
-
-### 10.3 Post-Output Actions
-
-Four action buttons sit above the shopping list items inside the `acc-shopping` accordion body (`.post-output-actions`).
-
-| Button | Function | Mechanism |
-|--------|----------|-----------|
-| ✉ Send List | `emailList()` | Creates hidden `<a>`, sets `href=mailto:?subject=...&body=...`, clicks it, removes it |
-| ⎋ Share | `shareList()` | `navigator.share()` on mobile; clipboard fallback on desktop with `✓ Copied!` flash |
-| ⎙ Print / PDF | `window.print()` | `@media print` stylesheet hides sidebar, intake, accordions; expands week cards |
-| 🗂 Meal Prep Resources | Static `<a>` | Links to `are.na/erin-relford/make-it-stretch-recipes` |
-
-`buildListText()` generates the plain-text list from `cart` — categorized, with quantities and prices. Always call this function to get current list state; do not read from the DOM.
-
----
-
-### 10.4 Shopping List Checkbox Live Totals
-
-Checkboxes update the total row in real time via `toggleCheck(id)`.
-
-```javascript
-// DOM ids
-shop-total-val  → always shows full plan total
-shop-total-sub  → hidden by default; shows "X in cart · Y left" when items are checked
-```
-
-States:
-- Nothing checked → sub-line hidden, total shows full amount
-- Some checked → `$X.XX in cart` (forest green, bold) `· $Y.YY left` (muted)
+- Nothing checked → full total only
+- Some checked → `$X.XX in cart · $Y.YY left`
 - All checked → `✓ All items in cart` (forest green)
 
 ---
 
-## 11. Donation Infrastructure — Implementation Reference
+## 9. Data Sources
 
-### 11.1 Placement Philosophy
+| Source | What | Endpoint |
+|--------|------|---------|
+| BLS Average Retail Food Prices | Regional grocery prices | `api.bls.gov/publicAPI/v2/timeseries/data/` |
+| Census ACS 5-Year (2022) | SNAP households, poverty rate, median income by zip | `api.census.gov/data/2022/acs/acs5` |
+| USDA Thrifty Food Plan | $5.36/person/day poverty threshold | Reference value |
+| USDA FNS | $6.22/person/day max SNAP benefit (FY2024) | Reference value |
+| Congress.gov API | Senate member roster by state | `api.congress.gov/v3/member` |
+| OpenStates v3 | State-level food/SNAP bills | `v3.openstates.org/bills` |
+| Internal recipe DB | 161 curated recipes | `data/seed-recipes.json` |
 
-The donation ask appears in **two locations** — both earned, neither interruptive:
+### Tracked Legislation
 
-1. **Header** — a small pill button "Support This Tool" top-right of the hero, present from the moment the page loads but understated enough not to demand attention before the person has used the tool.
-2. **Shopping List sidebar** — below the four utility action buttons, above the grocery items. By the time someone opens the shopping list, they've received the full value of the tool. The ask is contextually earned.
+| Bill | D | R | Effect |
+|------|---|---|--------|
+| H.R.1 "One Big Beautiful Bill" | NO | YES | ~3M households lose SNAP |
+| SNAP Work Requirement Expansion | NO | YES | Requirements to age 64 |
+| FY2025 CR — TEFAP Food Assistance | YES | YES | Maintained food bank supply |
 
-**Never** surface the donation request between the dashboard and the meal plan. That's the worst moment — the person came to feed their family, not to be asked for money before seeing their plan.
+---
 
-### 11.2 Stripe Integration
+## 10. Donation Infrastructure
 
-**SDK:** Loaded in `<head>` with `defer` — `https://js.stripe.com/v3/`
+### Placement Philosophy
 
-**Keys (live, wired in):**
-- Publishable key: `pk_live_51Thuf...` — safe in frontend, identifies Stripe account only
-- Price ID: `price_1ThuuEPo7HmLEBd46gDEuDma` — one-time $5 contribution
-- Payment link: `https://buy.stripe.com/28EcN7giU7JS6LM53kfQI00` — fallback when SDK unavailable
+Two locations only — both earned, neither interruptive:
+1. **Header** — quiet pill button, present from load but understated
+2. **Shopping list sidebar** — below utility action buttons, after full value delivered
 
-**`initDonation()`** — called once when the dashboard reveals. Shows the donation card (hidden by default via `display:none`) and initializes `_stripe` with the publishable key.
+**Never** surface donation between dashboard and meal plan.
 
-**`launchStripe()`** — called by both the header button and the shopping list button. If `_stripe` is initialized and starts with `pk_`, opens Stripe Checkout via `redirectToCheckout` with the Price ID. Falls back to opening the Payment Link in a new tab if SDK isn't loaded.
+### Stripe Integration
 
-**No PayPal** — removed entirely. Peter Thiel involvement conflicts with the values of this project.
+- SDK: `https://js.stripe.com/v3/` loaded with `defer`
+- Publishable key: `pk_live_51Thuf...` — safe in frontend
+- Price ID: `price_1ThuuEPo7HmLEBd46gDEuDma` — one-time $5
+- Payment link fallback: `https://buy.stripe.com/28EcN7giU7JS6LM53kfQI00`
+- **No PayPal** — removed. Peter Thiel involvement conflicts with project values.
+- Apple Pay / Google Pay activate automatically via Stripe.
 
-**Apple Pay / Google Pay** activate automatically through Stripe — no separate configuration. Stripe detects what the user's browser/device supports.
-
-### 11.3 Stripe Account Notes
-
-- Account registered fresh under getdealtin, not Margin Ventures LLC
-- Stripe holds payouts until identity verification clears (1-2 business days after account creation)
-- The publishable key is safe in frontend HTML — it cannot charge anyone or access account data
-- Secret key (`sk_live_...`) must never appear in frontend code — server only
-
-### 11.4 Donation Card CSS
+### Donation CSS
 
 ```
-.donation-card    — hidden by default (display:none), shown by initDonation()
-.donation-eyebrow — Plus Jakarta Sans 700 uppercase 0.1em tracking, #5A6E61
-.donation-headline — Lora 600, 1rem, forest green italic on <em>
-.donation-body    — Plus Jakarta Sans 0.82rem, var(--ink3)
-.stripe-btn       — #635BFF Stripe purple (intentionally off-brand — signals payment processor)
-.stripe-btn-main  — Plus Jakarta Sans 700 uppercase
-.stripe-btn-sub   — Plus Jakarta Sans 400 0.6rem (Apple Pay · Google Pay · CashApp)
+.donation-eyebrow  — Plus Jakarta Sans 700 uppercase, #5A6E61
+.donation-headline — Lora 600, forest green, italic on <em>
+.donation-body     — Plus Jakarta Sans 0.82rem, var(--ink3)
+.stripe-btn        — #635BFF Stripe purple (intentionally off-brand — signals payment processor)
 ```
 
-The Stripe purple `#635BFF` is the only place in the UI where a non-brand color is used intentionally. It signals "third-party payment processor" — users recognize it as Stripe's color. Do not replace it with Warm Ochre or Deep Forest.
+`#635BFF` is the **only** non-brand color used intentionally. Do not replace with gold or forest green.
 
-### 11.5 Header Donate Button
+---
+
+## 11. API Keys (Render Environment Variables)
+
+| Variable | Service | Notes |
+|----------|---------|-------|
+| `CENSUS_KEY` | Census Bureau ACS | Must activate via email after signup at api.census.gov/data/key_signup.html |
+| `BLS_KEY` | Bureau of Labor Statistics | Falls back to hardcoded prices without it |
+| `CONGRESS_KEY` | api.congress.gov | Falls back gracefully |
+| `OPENSTATES_KEY` | OpenStates v3 | State bills section |
+
+No `DEMO_KEY` fallback. If `CENSUS_KEY` is unset, server attempts keyless request (~500/day free).
+
+---
+
+## 12. About Page (`/about`)
+
+The about page shares the exact same header, footer, and CSS token system as `index.html`. It is a standalone HTML file served at `/about` via Express.
+
+### Matches index.html exactly
+
+- Same `<header>` — Benjamin Franklin image, Playfair Display h1, "Make It Stretch" with italic em, the Franklin quote, eyebrow nav, "Support This Tool" pill (links directly to Stripe payment link since `launchStripe()` is not available outside index.html)
+- Same `<footer>` — IBM Plex Mono, `--bg2` background, same link hover → gold
+- Same full `:root` CSS variable block
+- Same Google Fonts import (Playfair / Lora / Jakarta / Mono)
+
+### Page-specific styles
 
 ```css
-.header-nav         — flex row, space-between, wraps eyebrow + donate button
-.header-donate-btn  — pill shape (border-radius: 20px), semi-transparent white bg,
-                      forest green border, Plus Jakarta Sans 700 uppercase
+.page-eyebrow   — IBM Plex Mono 10px uppercase, var(--ink3) — "Make It Stretch · getdealtin.com"
+h1.page-title   — Lora 36px 700, var(--ink) — "About & Data Sources"
+.page-lead      — Lora 16px, var(--ink2), border-left: 3px solid var(--gold)
+h2              — IBM Plex Mono 10px 700 uppercase, var(--gold) — section labels
+h3              — Plus Jakarta Sans 16px 700, var(--ink) — source card titles
+.source-card    — border: 1px solid var(--border2), border-radius: 10px, background: var(--bg2)
+.source-meta    — IBM Plex Mono 10px uppercase, var(--ink3) — source attribution line
+.callout-warning — background: var(--gold-dim), border: 1px solid var(--amber-border)
+.callout-info   — background: var(--green-bg), border: 1px solid #B8CDB8
+.divider        — 1px solid var(--border2)
 ```
 
-The button calls `launchStripe()` directly. Styled to sit within the header's color story — not Stripe purple, not Ochre, just a quiet pill that fits the `#f5f0e8` header background.
+### Content sections
+
+1. **Food Prices** — BLS Average Retail Food Prices, regional breakdown, limitation callout
+2. **Meal Plan & Recipes** — Two paragraphs: (1) USDA Thrifty Food Plan food group proportions as the basis for ingredient selection and budget allocation — same proportions used to calculate SNAP; (2) 161-recipe curated database, six cuisines, rule-based matching, no AI
+3. **Community Data** — Census ACS 5-year variables listed by code (B22010, B17001, B19013, etc.), limitation callout (2018–2022 vintage, ZCTA vs USPS mismatch)
+4. **Federal Poverty Benchmarks** — USDA Thrifty Food Plan $5.36/day, USDA FNS SNAP max $6.22/day
+5. **Legislative Votes** — Three bills explained, Congress.gov source, vote attribution note, OpenStates
+6. **Food Assistance Resources** — Six official federal/national links
+7. **What We Don't Do** — No AI, no data storage, no advertising
+
+### Key content decision — recipes section
+
+The recipe section explains the *why* behind ingredient choices without exposing implementation. The framing is:
+> "The ingredients and food categories are grounded in the USDA Thrifty Food Plan — the same food group proportions used to calculate SNAP benefit amounts."
+
+This is accurate and gives institutional credibility without describing the 4-phase optimizer in user-facing copy.
 
 ---
 
-### 11.6 Shopping List Sticky Sidebar Layout
+## 13. Are.na Resource Page
 
-The shopping list accordion body uses a two-column layout instead of a single stacked column:
+`/resources` page pulls from Are.na API via `/api/arena-resources`. No key required for public channels. Channel slug set via `ARENA_CHANNEL_SLUG` env var.
 
-```
-.shopping-list-container  — display:flex, gap:28px, align-items:flex-start (critical for sticky)
-.list-sidebar             — position:sticky, top:20px, width:260px, flex-shrink:0
-.list-content             — flex:1, min-width:0 (prevents overflow on long item names)
-```
+Fallback: 10 hardcoded resources if API unavailable.
 
-**Inside `.list-sidebar`:** action buttons (stacked vertically, full-width) → donation card.
+Domain → category mapping in `DOMAIN_CATEGORIES` lookup — add entries as channel grows.
 
-**`align-items: flex-start` on the container is non-negotiable** — without it the sidebar stretches to full list height and sticky has no room to scroll within.
+### Resource Card Anatomy
 
-**Mobile breakpoint (≤780px):** collapses to single column. Sidebar goes `position:static`, action buttons go `flex-direction:row` wrapping, donation card sits below them full-width. Sticky behavior is disabled on mobile — viewport too narrow to be useful.
-
-**Print:** `.list-sidebar` is hidden via `@media print` — only the grocery items print.
-
----
-
-## 12. Are.na Resource Page — Implementation Reference
-
-### 12.1 How It Works
-
-The resources page (`/resources`) pulls from a public Are.na channel via `/api/arena-resources` on the server. No API key required — Are.na's channel API is public for open channels.
-
-**Server route:** `GET /api/arena-resources` → proxies `https://api.are.na/v2/channels/{slug}/contents` → filters to Link/Image/Attachment blocks → maps to clean card objects → caches 24 hours.
-
-**Channel slug:** set via `ARENA_CHANNEL_SLUG` env variable in Render. Defaults to `getdealtin-cook-on-a-budget`. Must match the slug in your Are.na URL exactly.
-
-**Are.na channel requirements:** must be set to **Open** (public) visibility. Add resources by pasting URLs directly into the channel — Are.na fetches title, description, and thumbnail automatically. No code changes or deploys needed when adding new resources.
-
-**Fallback:** if the Are.na API is unavailable or the channel has fewer than 3 items, the page renders 10 hardcoded resources (Budget Bytes, Joshua Weissman, Ethan Chlebowski, USDA MyPlate Kitchen, etc.) so the page is never empty.
-
-### 12.2 Domain → Category Mapping
-
-Filter buttons (All / YouTube / Blogs & Substacks / Tools & Guides) use a `DOMAIN_CATEGORIES` lookup:
-
-```javascript
-const DOMAIN_CATEGORIES = {
-  'youtube.com': 'youtube', 'youtu.be': 'youtube',
-  'budgetbytes.com': 'blog', 'thekitchn.com': 'blog',
-  'seriouseats.com': 'blog', 'simplyrecipes.com': 'blog',
-  'substack.com': 'blog', 'medium.com': 'blog',
-  'notion.so': 'tool', 'airtable.com': 'tool',
-};
-```
-
-Add entries here as the channel grows. Unknown domains default to `'blog'`.
-
-### 12.3 Resource Page Design
-
-Matches `index.html` exactly — same CSS variables, same header (Benjamin Franklin engraving, Playfair Display title, Plus Jakarta Sans eyebrow), same footer, same cream canvas. The header donate button links directly to the Stripe payment link since `launchStripe()` is not available outside index.html.
-
-Card anatomy:
-- `.card-thumb` — 156px tall, `object-fit:cover`, placeholder shown if no image
-- `.card-domain` — IBM Plex Mono 9px uppercase tracking
+- `.card-thumb` — 156px tall, `object-fit: cover`
+- `.card-domain` — IBM Plex Mono 9px uppercase
 - `.card-title` — Lora 700 15px
 - `.card-desc` — Plus Jakarta Sans 13px `var(--ink2)`
 - `.card-footer` — "Visit →" in Warm Ochre
 
-Skeleton loading state shown while fetch is in flight — 6 placeholder cards with shimmer animation matching the card grid layout.
+---
 
-### 12.4 Resource Discovery Card (in Meal Plan)
+## 14. Shopping List Sticky Sidebar Layout
 
-A clickable card injected at the end of `buildWeekCards()`, after the last week card. Appears naturally in the meal plan flow — right after the user has seen their full schedule and is thinking about how to actually cook these meals.
-
-```javascript
-// Appended to html string before setting weeks-wrap innerHTML
-html += `<div class="resource-discovery-card" onclick="window.open('/resources','_blank')">...`
+```
+.shopping-list-container  — display:flex, gap:28px, align-items:flex-start
+.list-sidebar             — position:sticky, top:20px, width:260px, flex-shrink:0
+.list-content             — flex:1, min-width:0
 ```
 
-CSS classes:
-```
-.resource-discovery-card   — border:1px solid var(--border), border-radius:10px, cursor:pointer
-.resource-discovery-card:hover — border-color:var(--gold), background:#EDE8DF, translateY(-1px)
-.resource-discovery-eyebrow — Plus Jakarta Sans 700 uppercase, var(--gold)
-.resource-discovery-title   — Lora 700 16px, var(--ink)
-.resource-discovery-sub     — Plus Jakarta Sans 13px, var(--ink2)
-.resource-discovery-btn     — Plus Jakarta Sans 700 uppercase, var(--gold), right-aligned
-```
+**`align-items: flex-start` is non-negotiable** — without it sticky has no room to scroll.
 
-Layout: flex row, space-between — text left, CTA right. Collapses to column on mobile ≤600px.
+Mobile (≤780px): single column, `list-sidebar` goes `position:static`.
+
+Print: `.list-sidebar` hidden via `@media print`.
 
 ---
 
-## 13. Miscellaneous Updates
+## 15. CSS Architecture Notes
 
-**Donation button copy:** "Contribute via Stripe" → **"Contribute"** everywhere (button label, JS reset handlers). Cleaner, less corporate.
-
-**Meal Prep Resources link:** updated from direct Are.na URL to `/resources` (the new page). Applied in both the shopping list sidebar action bar and any other references.
-
-**GitHub repo structure:** files must live in `public/` folder — `index.html`, `resources.html`, `about.html` all go inside `public/`. `server.js` and `package.json` at root. Render serves static files from `path.join(__dirname, 'public')`.
+- All design tokens in `:root` at top of `<style>` block
+- Hardcoded hex values used intentionally for context-specific colors (sidebar, hover tints)
+- `overflow: hidden` on `.intake-card` and `.system-pulse` intentional (prevents border-radius clipping)
+- `--gold-mid` token referenced in `.week-badge` doesn't resolve — safe to ignore (badge rarely renders)
 
 ---
 
-## 14. What to Build Next
+## 16. What Not To Do
 
-### Remaining from Phase 1c — Context Page `/why`
+- Don't use Playfair Display outside the hero h1
+- Don't use Lora for meal chip names — they are user choices (Plus Jakarta Sans 700)
+- Don't add `font-family: Lora` to `.week-title` (Mon–Sun) — it should inherit Plus Jakarta Sans
+- Don't use gold (`#D9822B`) as a background color
+- Don't use the raw dark red/green (`--red`/`--green`) for vote labels on dark sidebar cards — use `#f87171`/`#5db87a`
+- Don't add `cuisine: "any"` unless the dish genuinely works across all cuisine contexts
+- Don't add side dishes as standalone meal slots
+- Don't use "you are" language in copy — use "this budget," "this plan," "right now"
+- Don't omit the `<span class="meal-chip-name">` wrapper — plain chip text will look thin/light
+- Don't set `week-body` without `background: var(--bg)` — the card will look flat
+- Don't use `--border` for week card edges or day-row dividers — use `--border2`
+- Don't let `catch(e){}` swallow Census API errors silently — always call `populateSystemPulse()` in every code path
 
-A dedicated page explaining the political and economic context. Linked from the sidebar "See Who Votes on Your Food →" CTA. Content:
-- What SNAP is and what current cuts mean in dollar terms
-- Why the USDA discontinued its annual food security survey
-- Where getdealtin's price data comes from (BLS)
-- How to read the voting records
+---
 
-Design: same cream canvas, Lora headings, editorial tone. Same header/footer as resources.html.
+## 17. Phase Roadmap
 
-### Phase 3 — Substack
+### Done
+- Full walkthrough UI (5 steps)
+- 4-phase budget optimizer
+- Regional BLS price fetching
+- Meal plan generator (161 recipes, 6 cuisines, slot enforcement, deduplication)
+- Recipe drawer with ingredients + instructions
+- Shopping list with brand comparisons and price corrections
+- "You're Not Alone" solidarity section (Census data)
+- Civic accordion: senator vote cards, bill details, OpenStates
+- "Where You Stand" sticky sidebar — community data + senator votes
+- WCAG AA contrast compliance throughout sidebar
+- Leftover day logic (yes/sometimes/no)
+- Mobile responsive layout
+- About page (`/about`) with full data methodology
+- Resources page (`/resources`) via Are.na API
 
-Two registers: practical posts for families, deeper policy/data pieces for funders. One good post every two weeks. A program officer who reads three issues should understand getdealtin before you ever pitch them.
-
-### Phase 6 — PostgreSQL Event Database
-
-Stand up Supabase. Add `logEvent(type, data)` helper. Log: budget tier entered, food items in cart, brand comparisons clicked, online vs. local selections, post-output actions taken. Wire sidebar pulse stats to `/api/pulse-stats` when live.
-
-```json
-{ "zip": "78745", "event": "online_alt_click", "item": "rice", "retailer": "amazon" }
-```
-
-### Phase 7 — Community Intelligence & Na Formalization
-
-Surface aggregate zip-level insights back to users. Package data for food bank partners. Grant narrative around the USDA data gap. Native 501(c)(3) or fiscal sponsorship. Price-gouging monitoring.
+### Up Next
+- PostgreSQL/Supabase event logging — `logEvent(type, data)` helper, events table with RLS
+- `/why` context page — what SNAP is, what cuts mean, how to read vote records
+- Substack — two registers (practical posts for families, policy pieces for funders)
+- Community intelligence — surface aggregate zip-level insights back to users
 
 ---
 
