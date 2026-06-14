@@ -2891,6 +2891,7 @@ async function buildWeekCards(cart, avoidItems){
         const key = `${wi}-${weekDays.indexOf(day)}-${slot}`;
         html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
         opts.forEach((r, i) => {
+          const isSelected = i === 0;
           html += `<div class="meal-chip-wrap">
             <button class="meal-chip${isSelected?' chosen':''}"
               data-meal-key="${key}"
