@@ -2552,7 +2552,11 @@ function chooseMeal(btn){
   document.querySelectorAll(`[data-meal-key="${key}"]`).forEach(chip => {
     chip.classList.toggle('chosen', parseInt(chip.dataset.recipeId) === recipeId);
   });
-  logEvent('meal_swapped', { zip: answers.zip });
+  const isDiscover = btn.classList.contains('discover');
+  logEvent('meal_swapped', {
+    zip:  answers.zip,
+    item: isDiscover ? 'discover' : 'default',
+  });
 }
 
 // ━━ RECIPE DRAWER — open by element data attribute ━━
@@ -2573,6 +2577,7 @@ function toggleWeek(wi){
   const isOpen = body.style.display !== 'none';
   body.style.display = isOpen ? 'none' : 'block';
   if(toggle) toggle.textContent = isOpen ? '▼' : '▲';
+  if(!isOpen) logEvent('week_opened', {zip:answers.zip, item:`week_${wi}`});
 }
 
 function zipToInfoFn(zip){if(!zip||zip.length<3)return null;const p=zip.substring(0,3);if(ZIP_MAP[p]){const[s,r]=ZIP_MAP[p].split('|');return{state:s,region:r};}return null;}
@@ -2604,7 +2609,7 @@ function selectCuisine(v){
   }
 }
 function selectLeftover(v){answers.leftover=v;document.querySelectorAll('[id^="leftover-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('leftover-'+v).classList.add('selected');}
-function toggleMulti(g,v){const arr=multiSelections[g];if(v==='none'||v==='nothing'){multiSelections[g]=[];document.querySelectorAll('[id^="'+g+'-"]').forEach(b=>b.classList.remove('selected'));document.getElementById(g+'-'+v).classList.add('selected');return;}document.getElementById(g+'-none')?.classList.remove('selected');document.getElementById(g+'-nothing')?.classList.remove('selected');const i=arr.indexOf(v);if(i>-1){arr.splice(i,1);document.getElementById(g+'-'+v).classList.remove('selected');}else{arr.push(v);document.getElementById(g+'-'+v).classList.add('selected');}}
+function toggleMulti(g,v){const arr=multiSelections[g];if(v==='none'||v==='nothing'){multiSelections[g]=[];document.querySelectorAll('[id^="'+g+'-"]').forEach(b=>b.classList.remove('selected'));document.getElementById(g+'-'+v).classList.add('selected');return;}document.getElementById(g+'-none')?.classList.remove('selected');document.getElementById(g+'-nothing')?.classList.remove('selected');const i=arr.indexOf(v);if(i>-1){arr.splice(i,1);document.getElementById(g+'-'+v).classList.remove('selected');}else{arr.push(v);document.getElementById(g+'-'+v).classList.add('selected');logEvent('preference_selected',{item:g+':'+v});}}
 
 function nextStep(cur){
   const err=document.getElementById('err-'+cur);
@@ -2634,10 +2639,25 @@ async function runCalculation(){
   const pppd = answers.budget && answers.people && answers.days
     ? +(answers.budget / answers.days / answers.people).toFixed(2) : 0;
   const budget_tier = pppd < 5.36 ? 'low' : pppd < 10 ? 'medium' : 'high';
-  const people_tier = answers.people === 1 ? 'single' : answers.people <= 3 ? 'small' : 'family';
-  const days_tier   = answers.days <= 7 ? 'short' : answers.days <= 14 ? 'medium' : 'long';
-  const cuisine     = (answers.cuisine||[]).join(',') || 'any';
-  logEvent('budget_entered', { zip: answers.zip, budget_tier, item: cuisine });
+  const people_tier  = answers.people === 1 ? 'single' : answers.people <= 3 ? 'small' : 'family';
+  const days_tier    = answers.days <= 7 ? 'short' : answers.days <= 14 ? 'medium' : 'long';
+  const cuisine      = (answers.cuisine||[]).join(',') || 'any';
+  // Round pppd to nearest $0.25 — meaningful for research, not personally identifying
+  const pppd_rounded = Math.round(pppd * 4) / 4;
+  logEvent('budget_entered', {
+    zip:          answers.zip,
+    budget_tier,
+    item:         cuisine,
+    pppd:         pppd_rounded,
+    people_tier,
+    days_tier,
+    budget:       answers.budget,
+    people:       answers.people,
+    days:         answers.days,
+    stores:       (answers.stores||[]).join(',') || null,
+    avoid:        (answers.avoid||[]).join(',') || null,
+    leftover:     answers.leftover || null,
+  });
   answers.stores=multiSelections.store;
   answers.avoid=multiSelections.avoid;
   answers.have=multiSelections.have;
@@ -3309,11 +3329,13 @@ function openCorrection(id,brand,food){
   document.getElementById('corr-input').value='';
   document.getElementById('corr-overlay').classList.add('open');
   setTimeout(()=>document.getElementById('corr-input').focus(),60);
+  logEvent('price_correction_opened', {zip:answers.zip, item:food});
 }
 function saveCorrection(){
   const val=document.getElementById('corr-input').value.trim();
   if(!val||!brandState.correcting)return;
   brandState.corrections[brandState.correcting.id]={userPrice:val,brand:brandState.correcting.brand,food:brandState.correcting.food,date:new Date().toLocaleDateString()};
+  logEvent('price_correction_saved', {zip:answers.zip, item:brandState.correcting.food});
   document.getElementById('corr-overlay').classList.remove('open');
   brandState.correcting=null;
   renderBrandDetail(brandState.selectedFood);
@@ -3617,6 +3639,7 @@ function toggleAccordion(id){
   const el=document.getElementById(id);
   if(!el)return;
   el.classList.toggle('open');
+  if(el.classList.contains('open')) logEvent('accordion_opened', {zip:answers.zip, item:id});
 }
 
 // ━━ SCROLL TO SYSTEM ━━
@@ -3779,6 +3802,7 @@ async function launchStripe(){
 
 // ━━ RESTART ━━
 function restart(){
+  logEvent('restarted', {zip:answers.zip});
   document.getElementById('dashboard').style.display='none';
   document.getElementById('walkthrough').style.display='block';
   document.getElementById('solidarity').classList.remove('visible');
