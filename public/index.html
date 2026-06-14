@@ -2789,7 +2789,7 @@ async function buildWeekCards(cart, avoidItems){
   wrap.innerHTML = html;
 
   // Trigger shopping list rebuild with current choices
-  buildShoppingList(cart, +(answers.budget - remaining).toFixed(2), remaining, answers.region);
+  // Shopping list is already built by runCalculation - no need to rebuild here
 }
 
 
