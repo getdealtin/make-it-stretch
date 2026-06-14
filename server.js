@@ -371,7 +371,7 @@ app.get('/api/recipes-for-cart', (req, res) => {
       if (avoidList.some(a => recipeAvoids.includes(a))) return null;
 
       // Filter side dishes that shouldn't be standalone meals
-      const nameLower = (r.name || '').toLowerCase();
+      const nameLower = (r.title || '').toLowerCase();
       if (SIDE_DISH_BLOCKLIST.has(nameLower)) return null;
 
       // Filter breakfast slot: block known non-breakfast dishes
@@ -404,7 +404,7 @@ app.get('/api/recipes-for-cart', (req, res) => {
     // If any slot is critically empty (<4 recipes), do a relaxed pass with cuisine only (no match score floor)
     const allCuisineMatch = recipes.filter(r => {
       const rc = (r.cuisine || '').toLowerCase();
-      const nameLower = (r.name || '').toLowerCase();
+      const nameLower = (r.title || '').toLowerCase();
       if (SIDE_DISH_BLOCKLIST.has(nameLower)) return false;
       if (selectedCuisines.length && !selectedCuisines.includes('any')) {
         const cl = selectedCuisines.map(c => c.toLowerCase());
@@ -418,7 +418,7 @@ app.get('/api/recipes-for-cart', (req, res) => {
         const existingIds = new Set(bySlot[slot].map(r => r.id));
         const extras = allCuisineMatch.filter(r => {
           const s = (r.slot && bySlot[r.slot] !== undefined) ? r.slot : 'any';
-          const notBreakfast = slot === 'breakfast' && NOT_BREAKFAST.has((r.name||'').toLowerCase());
+          const notBreakfast = slot === 'breakfast' && NOT_BREAKFAST.has((r.title||'').toLowerCase());
           return (s === slot || s === 'any') && !existingIds.has(r.id) && !notBreakfast;
         });
         bySlot[slot].push(...extras.slice(0, 30 - bySlot[slot].length));
