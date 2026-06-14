@@ -2366,7 +2366,21 @@ const ALL_TIPS=[
   {text:'🫘 Canned beans are pre-cooked — open and eat, no stove needed. Best for rushed days.',needs:['chickpeas','blackbeans','kidneybean']},
 ];
 
-// ━━ STEP CONTROLS ━━
+// ━━ MEAL CHIP SELECTION ━━
+// Cart is fixed by budget optimizer — chip selection is visual only
+// Recipes are suggestions for what to cook with what's in the cart
+function chooseMeal(key, recipeId, title, slot){
+  // Update choice state
+  mealChoices[key] = recipeId;
+
+  // Update visual selection — deselect siblings, select clicked chip
+  const chipsInSlot = document.querySelectorAll(`[data-meal-key="${key}"]`);
+  chipsInSlot.forEach(chip => {
+    chip.classList.toggle('selected', parseInt(chip.dataset.recipeId) === recipeId);
+  });
+}
+
+
 function zipToInfoFn(zip){if(!zip||zip.length<3)return null;const p=zip.substring(0,3);if(ZIP_MAP[p]){const[s,r]=ZIP_MAP[p].split('|');return{state:s,region:r};}return null;}
 function selectPayday(k,d){paydayState.key=k;paydayState.days=d;document.querySelectorAll('[id^="pay-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('pay-'+k).classList.add('selected');}
 function selectWho(k,p){document.querySelectorAll('[id^="who-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('who-'+k).classList.add('selected');document.getElementById('inp-people').value=p;}
@@ -2832,15 +2846,18 @@ async function buildWeekCards(cart, avoidItems){
         html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
         opts.forEach((r, i) => {
           const isSelected = i === 0;
-          const safeTitle = r.title.replace(/'/g, "\'");
-          const safeDesc = r.instructions.slice(0,80).replace(/'/g, "\'");
-          const safeIngs = JSON.stringify(r.ingredients).replace(/'/g,"\'");
+          const safeTitle = (r.title||'').replace(/'/g, "\'");
+          const safeDesc = (r.instructions||'').slice(0,80).replace(/'/g,"\'").replace(/\n/g,' ');
+          const safeInstr = (r.instructions||'').replace(/'/g,"\'").replace(/\n/g,' ');
+          const safeIngs = JSON.stringify(r.ingredients||[]);
           html += `<button class="meal-chip${isSelected?' selected':''}"
+            data-meal-key="${key}"
+            data-recipe-id="${r.id}"
             onclick="chooseMeal('${key}',${r.id},'${safeTitle}','${slot}')"
             title="${r.title}">
             ${r.title}
             <button class="meal-chip-recipe-btn"
-              onclick="event.stopPropagation();openRecipeDrawer('${safeTitle}','${safeDesc}','${r.cuisine}',${JSON.stringify(r.ingredients)},'${r.instructions.replace(/'/g,"\'")}')">📖</button>
+              onclick="event.stopPropagation();openRecipeDrawer('${safeTitle}','${safeDesc}','${r.cuisine||''}',${safeIngs},'${safeInstr}')">📖</button>
           </button>`;
         });
         html += `</div></div>`;
