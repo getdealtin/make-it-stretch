@@ -3078,14 +3078,21 @@ async function buildWeekCards(cart, avoidItems){
         html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
         opts.forEach((r, i) => {
           const isSelected = i === 0;
+          const isDiscover = i === 1;
+          const cuisineTag = isDiscover && r.cuisine && r.cuisine !== 'any'
+            ? `<span class="meal-chip-cuisine">${r.cuisine.charAt(0).toUpperCase()+r.cuisine.slice(1)}</span>`
+            : '';
+          const newPill = isDiscover
+            ? `<span class="discover-pill">NEW</span>`
+            : '';
           html += `<div class="meal-chip-wrap">
-            <button class="meal-chip${isSelected?' chosen':''}"
+            <button class="meal-chip${isSelected?' chosen':''}${isDiscover?' discover':''}"
               data-meal-key="${key}"
               data-recipe-id="${r.id}"
               data-slot="${slot}"
               onclick="chooseMeal(this)"
               title="${(r.title||'').replace(/"/g,'&quot;')}">
-              ${r.title||''}<span class="meal-chip-recipe-btn"
+              ${newPill}${r.title||''}${cuisineTag}<span class="meal-chip-recipe-btn"
               data-recipe-id="${r.id}"
               onclick="event.stopPropagation();openRecipeByEl(this)">📖</span>
             </button>
