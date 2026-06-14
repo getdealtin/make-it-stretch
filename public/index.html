@@ -2788,12 +2788,21 @@ async function buildWeekCards(cart, avoidItems){
     return;
   }
 
-  // Merge 'any' slot recipes into all slots
+  // Merge 'any' slot recipes into slots — but split by appropriateness
+  // Breakfast-appropriate 'any' dishes: oatmeal, eggs, porridge
+  // Dinner-appropriate 'any' dishes: stews, fries
   const allAny = bySlot.any || [];
+  const BREAKFAST_ANY_KEYWORDS = ['oatmeal','oats','porridge','scramble','egg','banana','potato breakfast'];
+  const anyForBreakfast = allAny.filter(r => 
+    BREAKFAST_ANY_KEYWORDS.some(kw => (r.title||'').toLowerCase().includes(kw))
+  );
+  const anyForDinnerLunch = allAny.filter(r => 
+    !BREAKFAST_ANY_KEYWORDS.some(kw => (r.title||'').toLowerCase().includes(kw))
+  );
   const pools = {
-    breakfast: [...(bySlot.breakfast||[]), ...allAny],
-    lunch:     [...(bySlot.lunch||[]),     ...allAny],
-    dinner:    [...(bySlot.dinner||[]),    ...allAny],
+    breakfast: [...(bySlot.breakfast||[]), ...anyForBreakfast],
+    lunch:     [...(bySlot.lunch||[]),     ...anyForDinnerLunch],
+    dinner:    [...(bySlot.dinner||[]),    ...anyForDinnerLunch],
   };
 
   // Safety: if any pool is too thin, fill from other slots — but NEVER cross cuisines
