@@ -2279,158 +2279,6 @@ const FALLBACK_PRICES = {
 };
 
 // ━━ MEAL LIBRARY BY CUISINE ━━
-const MEAL_LIBRARY = {
-  american:[
-    {name:'Scrambled Eggs & Toast',     slot:'breakfast',needs:['eggs','bread'],          avoid:['eggs','gluten'],  srv:2,desc:'5 minutes, high protein start.'},
-    {name:'Oatmeal & Banana',            slot:'breakfast',needs:['oats','bananas'],         avoid:[],                 srv:2,desc:'Add peanut butter for extra protein.'},
-    {name:'Peanut Butter Toast',         slot:'breakfast',needs:['bread','peanutbutter'],   avoid:['peanuts','gluten'],srv:1,desc:'300 cal, 8g protein per slice. Fast.'},
-    {name:'Pancakes',                    slot:'breakfast',needs:['flour','eggs','milk'],     avoid:['eggs','gluten'],  srv:4,desc:'Cheap crowd-pleaser. Big batch on weekends.'},
-    {name:'Oat Porridge',                slot:'breakfast',needs:['oats'],                   avoid:[],                 srv:2,desc:'Thick and warming. Add any fruit on top.'},
-    {name:'Potato Soup',                 slot:'lunch',    needs:['potatoes','onions'],       avoid:[],                 srv:4,desc:'Simmer with salt until soft. Add milk for cream.'},
-    {name:'Bean Soup & Bread',           slot:'lunch',    needs:['drybeans','cannedtomatoes','onions','bread'],avoid:['gluten'],srv:4,desc:'Thick, filling, cheap.'},
-    {name:'Tuna Rice Bowl',              slot:'lunch',    needs:['tuna','rice','onions'],    avoid:['fish','meat'],    srv:2,desc:'Fast protein-rich meal.'},
-    {name:'Peanut Butter & Banana',      slot:'lunch',    needs:['bread','peanutbutter','bananas'],avoid:['peanuts','gluten'],srv:1,desc:'No cooking. Great on the go.'},
-    {name:'Chicken & Rice',              slot:'dinner',   needs:['chicken','rice','onions'], avoid:['meat'],           srv:4,desc:'Chicken flavors the whole dish.'},
-    {name:'Pasta with Tomato Sauce',     slot:'dinner',   needs:['pasta','cannedtomatoes','onions'],avoid:['gluten'], srv:3,desc:'15-minute meal. Add garlic for depth.'},
-    {name:'Cabbage & Potato Fry',        slot:'dinner',   needs:['cabbage','potatoes','onions','oil'],avoid:[],        srv:3,desc:'Fry until golden. Season generously.'},
-    {name:'Ground Beef & Rice',          slot:'dinner',   needs:['groundbeef','rice','onions'],avoid:['meat'],         srv:4,desc:'Brown the beef, season with garlic and salt.'},
-  ],
-  latin:[
-    {name:'Huevos con Tortilla',         slot:'breakfast',needs:['eggs','tortillas','onions'],avoid:['eggs','gluten'],srv:2,desc:'Scrambled eggs with warm tortillas.'},
-    {name:'Avena (Oatmeal)',             slot:'breakfast',needs:['oats','milk'],              avoid:['dairy'],          srv:2,desc:'Creamy, sweet. Latin breakfast staple.'},
-    {name:'Arroz con Huevo',             slot:'breakfast',needs:['rice','eggs'],              avoid:['eggs'],           srv:2,desc:'Fried egg over rice. Simple and filling.'},
-    {name:'Rice & Beans (Arroz y Frijoles)',slot:'lunch', needs:['rice','drybeans','onions'], avoid:[],                 srv:4,desc:'Most complete plant protein meal in the world.'},
-    {name:'Sopa de Verduras',            slot:'lunch',    needs:['potatoes','carrots','onions'],avoid:[],               srv:4,desc:'Hearty vegetable soup. Add garlic.'},
-    {name:'Tortillas con Frijoles',      slot:'lunch',    needs:['tortillas','drybeans'],     avoid:['gluten'],         srv:2,desc:'Bean burritos. Add salsa or cheese.'},
-    {name:'Arroz con Pollo',             slot:'dinner',   needs:['chicken','rice','onions','cannedtomatoes'],avoid:['meat'],srv:4,desc:'One pan. Classic comfort.'},
-    {name:'Frijoles de Olla',            slot:'dinner',   needs:['drybeans','onions','garlic'],avoid:[],                srv:6,desc:'Slow-simmered whole beans. Foundation of the kitchen.'},
-    {name:'Caldo de Res (Beef Soup)',    slot:'dinner',   needs:['groundbeef','potatoes','carrots','onions'],avoid:['meat'],srv:4,desc:'Hearty broth with vegetables.'},
-    {name:'Lentil & Tomato Stew',        slot:'dinner',   needs:['lentils','cannedtomatoes','onions','garlic'],avoid:[],srv:4,desc:'20 minutes, packed with protein.'},
-  ],
-  asian:[
-    {name:'Congee (Rice Porridge)',  slot:'breakfast',needs:['rice'],                             avoid:[],          srv:2,desc:'Cook rice in extra water until creamy. Top with egg.'},
-    {name:'Oat Porridge with Soy',   slot:'breakfast',needs:['oats','soy'],                      avoid:[],          srv:2,desc:'Savory oatmeal. Unusual but satisfying.'},
-    {name:'Fried Egg & Rice',        slot:'breakfast',needs:['rice','eggs','oil'],                avoid:['eggs'],    srv:2,desc:'Quick protein bowl. Ready in 5 minutes.'},
-    {name:'Egg Fried Rice',          slot:'lunch',    needs:['rice','eggs','onions','oil'],       avoid:['eggs'],    srv:2,desc:'Best use of leftover rice.'},
-    {name:'Garlic Cabbage & Rice',   slot:'lunch',    needs:['cabbage','garlic','onions','oil','rice'],avoid:[],    srv:2,desc:'Fry until tender and fragrant.'},
-    {name:'Lentil Dal',              slot:'lunch',    needs:['lentils','onions','garlic','oil'],  avoid:[],          srv:4,desc:'Thick spiced lentils over rice.'},
-    {name:'Rice Noodle Bowl',        slot:'lunch',    needs:['pasta','carrots','onions','soy'],   avoid:['gluten'],  srv:2,desc:'Light and fast. Add any vegetable you have.'},
-    {name:'Cabbage & Egg Stir Fry',  slot:'lunch',    needs:['cabbage','eggs','garlic','oil'],    avoid:['eggs'],    srv:2,desc:'5 minutes, hot pan. Season with soy or salt.'},
-    {name:'Stir-Fried Vegetables',   slot:'dinner',   needs:['carrots','cabbage','onions','oil','rice'],avoid:[],   srv:3,desc:'High heat, fast, colorful.'},
-    {name:'Khichdi (Rice & Lentils)',slot:'dinner',   needs:['rice','lentils','onions','oil'],    avoid:[],          srv:4,desc:'One-pot South Asian comfort food.'},
-    {name:'Chicken & Soy Rice',      slot:'dinner',   needs:['chicken','rice','soy','garlic'],    avoid:['meat'],    srv:4,desc:'Marinate chicken in soy. Pan or oven.'},
-    {name:'Coconut Rice',            slot:'dinner',   needs:['rice','coconutmilk'],               avoid:[],          srv:4,desc:'Creamy, fragrant. Pairs with anything.'},
-    {name:'Noodle Soup',             slot:'dinner',   needs:['pasta','carrots','onions','vegbroth'],avoid:['gluten'],srv:3,desc:'Simple broth with vegetables and noodles.'},
-    {name:'Bean & Garlic Rice',      slot:'dinner',   needs:['drybeans','rice','garlic','oil'],   avoid:[],          srv:4,desc:'Garlicky beans over rice. Simple and filling.'},
-    {name:'Tofu & Cabbage Bowl',     slot:'dinner',   needs:['tofu','cabbage','soy','garlic','oil'],avoid:[],       srv:3,desc:'Pan-fry tofu until golden. Serve over rice.'},
-  ],
-  southern:[
-    {name:'Grits & Egg',             slot:'breakfast',needs:['cornmeal','eggs'],                 avoid:['eggs'],    srv:2,desc:'Southern classic. Creamy base, protein on top.'},
-    {name:'Biscuits & Gravy',        slot:'breakfast',needs:['flour','milk','butter'],            avoid:['dairy','gluten'],srv:4,desc:'Weekend staple. Rich and filling.'},
-    {name:'Oatmeal with Banana',     slot:'breakfast',needs:['oats','bananas'],                  avoid:[],          srv:2,desc:'Warm morning bowl.'},
-    {name:'Cornmeal Porridge',       slot:'breakfast',needs:['cornmeal','milk'],                 avoid:['dairy'],   srv:2,desc:'Creamy hot cereal. Sweeten with anything you have.'},
-    {name:'Egg & Sweet Potato Hash', slot:'breakfast',needs:['sweetpotatoes','eggs','onions','oil'],avoid:['eggs'], srv:2,desc:'Dice and fry until crispy. Southern diner staple.'},
-    {name:'Cabbage & Potato Fry',    slot:'lunch',    needs:['cabbage','potatoes','onions','oil'],avoid:[],         srv:3,desc:'Fry until golden. Southern kitchen staple.'},
-    {name:'Sweet Potato & Bean Bowl',slot:'lunch',    needs:['sweetpotatoes','drybeans','onions'],avoid:[],         srv:3,desc:'Filling and naturally sweet.'},
-    {name:'Pork & Bean Stew',        slot:'lunch',    needs:['porkchops','drybeans','onions'],   avoid:['meat'],    srv:4,desc:'Low and slow. Rich Southern flavor.'},
-    {name:'Cornbread & Beans',       slot:'lunch',    needs:['cornmeal','drybeans','onions'],    avoid:[],          srv:4,desc:'Classic pairing. Make a skillet of cornbread.'},
-    {name:'Potato Salad Bowl',       slot:'lunch',    needs:['potatoes','onions','oil'],         avoid:[],          srv:4,desc:'Boil potatoes, dress simply. Filling cold or warm.'},
-    {name:'Chicken & Cornbread',     slot:'dinner',   needs:['chicken','cornmeal','eggs','milk'],avoid:['meat','eggs'],srv:4,desc:'Bake cornbread while chicken cooks.'},
-    {name:"Hoppin' John",            slot:'dinner',   needs:['drybeans','rice','onions'],        avoid:[],          srv:6,desc:'Black-eyed peas and rice. Southern soul.'},
-    {name:'Fried Catfish & Grits',   slot:'dinner',   needs:['tuna','cornmeal','oil'],           avoid:['fish','meat'],srv:2,desc:'Pan-fry fish in seasoned cornmeal.'},
-    {name:'Collard-Style Cabbage',   slot:'dinner',   needs:['cabbage','onions','garlic','oil'], avoid:[],          srv:4,desc:'Slow-cooked greens with garlic. Classic sides.'},
-    {name:'Sweet Potato & Chicken',  slot:'dinner',   needs:['sweetpotatoes','chicken','onions','oil'],avoid:['meat'],srv:4,desc:'Roast together. Simple, filling, naturally sweet.'},
-    {name:'Bean & Cornmeal Stew',    slot:'dinner',   needs:['drybeans','cornmeal','onions','oil'],avoid:[],        srv:4,desc:'Thick, hearty, deeply Southern.'},
-  ],
-  mediterranean:[
-    {name:'Egg & Potato Skillet',        slot:'breakfast',needs:['eggs','potatoes','onions','oil'],avoid:['eggs'],      srv:2,desc:'Dice and fry together. Add garlic.'},
-    {name:'Oatmeal with Applesauce',     slot:'breakfast',needs:['oats','applesauce'],         avoid:[],                 srv:2,desc:'Naturally sweet, no sugar needed.'},
-    {name:'Bread with Olive Oil',        slot:'breakfast',needs:['bread','oliveoil','garlic'], avoid:['gluten'],         srv:2,desc:'Mediterranean classic. Toast and dip.'},
-    {name:'Lentil Soup',                 slot:'lunch',    needs:['lentils','onions','cannedtomatoes','garlic'],avoid:[],  srv:4,desc:'20 minutes. Packed with protein and iron.'},
-    {name:'Bean & Tomato Stew',          slot:'lunch',    needs:['chickpeas','cannedtomatoes','garlic','onions'],avoid:[],srv:4,desc:'Hearty, no meat needed.'},
-    {name:'Carrot & Lentil Soup',        slot:'lunch',    needs:['lentils','carrots','onions','garlic'],avoid:[],        srv:4,desc:'Thick and nourishing. Blends smooth.'},
-    {name:'Pasta with Garlic & Oil',     slot:'dinner',   needs:['pasta','garlic','oliveoil'], avoid:['gluten'],         srv:3,desc:'Italian classic. 10 minutes.'},
-    {name:'Mujaddara (Lentils & Rice)',  slot:'dinner',   needs:['lentils','rice','onions','oil'],avoid:[],              srv:4,desc:'Crispy onions over spiced lentils and rice.'},
-    {name:'Baked Fish with Lemon',       slot:'dinner',   needs:['tuna','garlic','oliveoil'],  avoid:['fish','meat'],    srv:2,desc:'Bake canned or fresh fish with seasoning.'},
-    {name:'Vegetable & Bean Soup',       slot:'dinner',   needs:['drybeans','carrots','onions','garlic','cannedtomatoes'],avoid:[],srv:6,desc:'Full pot of nutrition.'},
-  ],
-  any:[
-    {name:'Rice & Beans',                slot:'any',      needs:['rice','drybeans'],          avoid:[],                 srv:4,desc:'Universal comfort. Add any spice you have.'},
-    {name:'Egg Scramble',                slot:'breakfast',needs:['eggs','onions'],             avoid:['eggs'],           srv:2,desc:'Basic but filling. Add whatever veg you have.'},
-    {name:'Simple Oatmeal',              slot:'breakfast',needs:['oats'],                     avoid:[],                 srv:2,desc:'Foundation breakfast. Top with anything.'},
-    {name:'Potato & Onion Fry',          slot:'any',      needs:['potatoes','onions','oil'],  avoid:[],                 srv:3,desc:'Universal side or main. Always works.'},
-    {name:'Pasta & Sauce',               slot:'dinner',   needs:['pasta','cannedtomatoes'],   avoid:['gluten'],         srv:3,desc:'Quick, filling, cheap.'},
-    {name:'Vegetable Soup',              slot:'dinner',   needs:['carrots','onions','potatoes'],avoid:[],               srv:4,desc:'Throw everything in a pot.'},
-    {name:'Bean Stew',                   slot:'dinner',   needs:['drybeans','onions'],        avoid:[],                 srv:4,desc:'Simmer until thick. Serve over rice.'},
-  ]
-};
-
-// Discover meals (cross-cultural options)
-const DISCOVER_MEALS = [
-  {name:'Shakshuka',       cuisine:'North African', slot:'breakfast',needs:['eggs','cannedtomatoes','onions','oil'], avoid:['eggs'],   srv:2, desc:'Eggs poached in spiced tomato sauce. Impressive for the price.', discover:true},
-  {name:'Gallo Pinto',     cuisine:'Central American',slot:'any',   needs:['drybeans','rice','onions','oil'],        avoid:[],          srv:4, desc:'Fried rice and beans together. Smoky and rich.', discover:true},
-  {name:'Khichdi',         cuisine:'South Asian',   slot:'dinner',   needs:['rice','lentils','onions','oil'],        avoid:[],          srv:4, desc:'Rice and lentils cooked together. Original one-pot meal.', discover:true},
-  {name:'Mujaddara',       cuisine:'Middle Eastern',slot:'dinner',   needs:['lentils','rice','onions','oil'],        avoid:[],          srv:4, desc:'Lentils and rice with crispy caramelized onions.', discover:true},
-  {name:'Aloo Sabzi',      cuisine:'South Asian',   slot:'dinner',   needs:['potatoes','onions','garlic','oil'],     avoid:[],          srv:3, desc:'Spiced potato stir fry. Bold and filling.', discover:true},
-  {name:'Congee',          cuisine:'East Asian',    slot:'breakfast',needs:['rice'],                                 avoid:[],          srv:2, desc:'Rice cooked thick and creamy. Top with egg.', discover:true},
-  {name:'Sweet Potato Stew',cuisine:'West African', slot:'dinner',   needs:['sweetpotatoes','blackbeans','cannedtomatoes','onions'],avoid:[],srv:4,desc:'Rich, hearty, naturally sweet.', discover:true},
-  {name:'Polenta & Sauce', cuisine:'Italian',       slot:'dinner',   needs:['cornmeal','cannedtomatoes','onions'],  avoid:[],          srv:4, desc:'Creamy polenta with tomato sauce. No pasta needed.', discover:true},
-];
-
-// ━━ SENATOR DATA ━━
-const STATE_REPS={AL:{s1:{name:'Tommy Tuberville',party:'R',since:'2021'},s2:{name:'Katie Britt',party:'R',since:'2023'}},AK:{s1:{name:'Lisa Murkowski',party:'R',since:'2002'},s2:{name:'Dan Sullivan',party:'R',since:'2015'}},AZ:{s1:{name:'Mark Kelly',party:'D',since:'2020'},s2:{name:'Ruben Gallego',party:'D',since:'2025'}},AR:{s1:{name:'John Boozman',party:'R',since:'2011'},s2:{name:'Tom Cotton',party:'R',since:'2015'}},CA:{s1:{name:'Adam Schiff',party:'D',since:'2024'},s2:{name:'Alex Padilla',party:'D',since:'2021'}},CO:{s1:{name:'Michael Bennet',party:'D',since:'2009'},s2:{name:'John Hickenlooper',party:'D',since:'2021'}},CT:{s1:{name:'Chris Murphy',party:'D',since:'2013'},s2:{name:'Richard Blumenthal',party:'D',since:'2011'}},DE:{s1:{name:'Tom Carper',party:'D',since:'2001'},s2:{name:'Chris Coons',party:'D',since:'2010'}},FL:{s1:{name:'Marco Rubio',party:'R',since:'2011'},s2:{name:'Rick Scott',party:'R',since:'2019'}},GA:{s1:{name:'Jon Ossoff',party:'D',since:'2021'},s2:{name:'Raphael Warnock',party:'D',since:'2021'}},HI:{s1:{name:'Brian Schatz',party:'D',since:'2012'},s2:{name:'Mazie Hirono',party:'D',since:'2013'}},ID:{s1:{name:'Mike Crapo',party:'R',since:'1999'},s2:{name:'Jim Risch',party:'R',since:'2009'}},IL:{s1:{name:'Dick Durbin',party:'D',since:'1997'},s2:{name:'Tammy Duckworth',party:'D',since:'2017'}},IN:{s1:{name:'Todd Young',party:'R',since:'2017'},s2:{name:'Mike Braun',party:'R',since:'2019'}},IA:{s1:{name:'Chuck Grassley',party:'R',since:'1981'},s2:{name:'Joni Ernst',party:'R',since:'2015'}},KS:{s1:{name:'Jerry Moran',party:'R',since:'2011'},s2:{name:'Roger Marshall',party:'R',since:'2021'}},KY:{s1:{name:'Mitch McConnell',party:'R',since:'1985'},s2:{name:'Rand Paul',party:'R',since:'2011'}},LA:{s1:{name:'Bill Cassidy',party:'R',since:'2015'},s2:{name:'John Kennedy',party:'R',since:'2017'}},ME:{s1:{name:'Susan Collins',party:'R',since:'1997'},s2:{name:'Angus King',party:'I',since:'2013'}},MD:{s1:{name:'Ben Cardin',party:'D',since:'2007'},s2:{name:'Chris Van Hollen',party:'D',since:'2017'}},MA:{s1:{name:'Elizabeth Warren',party:'D',since:'2013'},s2:{name:'Ed Markey',party:'D',since:'2013'}},MI:{s1:{name:'Debbie Stabenow',party:'D',since:'2001'},s2:{name:'Gary Peters',party:'D',since:'2015'}},MN:{s1:{name:'Amy Klobuchar',party:'D',since:'2007'},s2:{name:'Tina Smith',party:'D',since:'2018'}},MS:{s1:{name:'Roger Wicker',party:'R',since:'2007'},s2:{name:'Cindy Hyde-Smith',party:'R',since:'2018'}},MO:{s1:{name:'Josh Hawley',party:'R',since:'2019'},s2:{name:'Eric Schmitt',party:'R',since:'2023'}},MT:{s1:{name:'Jon Tester',party:'D',since:'2007'},s2:{name:'Steve Daines',party:'R',since:'2015'}},NE:{s1:{name:'Deb Fischer',party:'R',since:'2013'},s2:{name:'Pete Ricketts',party:'R',since:'2023'}},NV:{s1:{name:'Catherine Cortez Masto',party:'D',since:'2017'},s2:{name:'Jacky Rosen',party:'D',since:'2019'}},NH:{s1:{name:'Jeanne Shaheen',party:'D',since:'2009'},s2:{name:'Maggie Hassan',party:'D',since:'2017'}},NJ:{s1:{name:'Bob Menendez',party:'D',since:'2006'},s2:{name:'Cory Booker',party:'D',since:'2013'}},NM:{s1:{name:'Martin Heinrich',party:'D',since:'2013'},s2:{name:"Ben Ray Luján",party:'D',since:'2021'}},NY:{s1:{name:'Chuck Schumer',party:'D',since:'1999'},s2:{name:'Kirsten Gillibrand',party:'D',since:'2009'}},NC:{s1:{name:'Thom Tillis',party:'R',since:'2015'},s2:{name:'Ted Budd',party:'R',since:'2023'}},ND:{s1:{name:'John Hoeven',party:'R',since:'2011'},s2:{name:'Kevin Cramer',party:'R',since:'2019'}},OH:{s1:{name:'Sherrod Brown',party:'D',since:'2007'},s2:{name:'JD Vance',party:'R',since:'2023'}},OK:{s1:{name:'James Lankford',party:'R',since:'2015'},s2:{name:'Markwayne Mullin',party:'R',since:'2023'}},OR:{s1:{name:'Ron Wyden',party:'D',since:'1996'},s2:{name:'Jeff Merkley',party:'D',since:'2009'}},PA:{s1:{name:'Bob Casey',party:'D',since:'2007'},s2:{name:'John Fetterman',party:'D',since:'2023'}},RI:{s1:{name:'Jack Reed',party:'D',since:'1997'},s2:{name:'Sheldon Whitehouse',party:'D',since:'2007'}},SC:{s1:{name:'Lindsey Graham',party:'R',since:'2003'},s2:{name:'Tim Scott',party:'R',since:'2013'}},SD:{s1:{name:'John Thune',party:'R',since:'2005'},s2:{name:'Mike Rounds',party:'R',since:'2015'}},TN:{s1:{name:'Marsha Blackburn',party:'R',since:'2019'},s2:{name:'Bill Hagerty',party:'R',since:'2021'}},TX:{s1:{name:'John Cornyn',party:'R',since:'2002'},s2:{name:'Ted Cruz',party:'R',since:'2013'}},UT:{s1:{name:'Mike Lee',party:'R',since:'2011'},s2:{name:'Mitt Romney',party:'R',since:'2019'}},VT:{s1:{name:'Bernie Sanders',party:'I',since:'2007'},s2:{name:'Peter Welch',party:'D',since:'2023'}},VA:{s1:{name:'Mark Warner',party:'D',since:'2009'},s2:{name:'Tim Kaine',party:'D',since:'2013'}},WA:{s1:{name:'Patty Murray',party:'D',since:'1993'},s2:{name:'Maria Cantwell',party:'D',since:'2001'}},WV:{s1:{name:'Joe Manchin',party:'D',since:'2010'},s2:{name:'Shelley Moore Capito',party:'R',since:'2015'}},WI:{s1:{name:'Ron Johnson',party:'R',since:'2011'},s2:{name:'Tammy Baldwin',party:'D',since:'2013'}},WY:{s1:{name:'John Barrasso',party:'R',since:'2007'},s2:{name:'Cynthia Lummis',party:'R',since:'2021'}}};
-
-const KEY_VOTES=[
-  {bill:'H.R.1 — "One Big Beautiful Bill" (2025)',bluf:(n,v)=>v==='Y'?`${n} <strong>VOTED YES</strong> — cutting SNAP benefits for millions of low-income households.`:v==='N'?`${n} <strong>VOTED NO</strong> — against cutting SNAP benefits.`:`${n}'s vote was <strong>not recorded</strong>.`,whatItDoes:'SNAP gives low-income families a monthly amount to buy groceries. This bill cuts overall funding, adds restrictions on who qualifies, and shifts costs to states. The CBO estimated approximately 3 million households would lose eligibility.',whatYesMeans:'A YES vote was a vote to pass these SNAP cuts into law.',whatNoMeans:'A NO vote was a vote against cutting food assistance.',url:'https://www.congress.gov/bill/119th-congress/house-bill/1',votes:{D:'N',R:'Y',I:'NV'}},
-  {bill:'SNAP Work Requirement Expansion',bluf:(n,v)=>v==='Y'?`${n} <strong>VOTED YES</strong> — expanding mandatory work requirements for SNAP recipients up to age 64.`:v==='N'?`${n} <strong>VOTED NO</strong> — against expanding work requirements.`:`${n}'s vote was <strong>not recorded</strong>.`,whatItDoes:'Extends work requirements to adults ages 18–64. People who cannot find qualifying work or job training may lose SNAP benefits even with no other income source.',whatYesMeans:'A YES vote expanded work requirements to a larger age group.',whatNoMeans:'A NO vote was against expanding those requirements.',url:'https://www.congress.gov/bill/119th-congress/house-bill/1',votes:{D:'N',R:'Y',I:'NV'}},
-  {bill:'FY2025 Continuing Resolution — Emergency Food Assistance',bluf:(n,v)=>v==='Y'?`${n} <strong>VOTED YES</strong> — maintaining TEFAP funding that supplies food banks nationwide.`:v==='N'?`${n} <strong>VOTED NO</strong> — on the bill that kept food bank supply funding.`:`${n}'s vote was <strong>not recorded</strong>.`,whatItDoes:'TEFAP provides food commodities to food banks, food pantries, and soup kitchens. This vote kept that funding in place at existing levels.',whatYesMeans:'A YES vote kept food bank supply funding active.',whatNoMeans:'A NO vote was against maintaining that funding.',url:'https://www.congress.gov/bill/119th-congress/house-bill/1968',votes:{D:'Y',R:'Y',I:'Y'}},
-];
-
-// ━━ BRAND DATA (sorted cheapest first) ━━
-const BRAND_DATA={
-  eggs:{volatile:true,baseline:'Historically $2–$4/dz. Bird flu outbreaks can spike prices significantly.',brands:[
-    {id:'eg2',brand:'Aldi / Lidl brand',    price:'$2.99/dz',where:'Aldi / Lidl',  online:null,         ship:false,note:'Almost always the cheapest in-store option.'},
-    {id:'eg1',brand:'Great Value (Walmart)',price:'$3.48/dz',where:'Walmart',       online:'walmart.com', ship:true, note:'Pickup option avoids in-store markup.'},
-    {id:'eg3',brand:'Kirkland (Costco)',    price:'$3.79/18ct',where:'Costco',       online:'costco.com',  ship:false,note:'Cheapest per egg when buying in bulk.'},
-    {id:'eg4',brand:'Store brand / generic',price:'$3.99/dz',where:'Most grocers',  online:null,         ship:false,note:'Always cheaper than name brands.'},
-  ]},
-  chicken:{volatile:true,baseline:'Historically $3–$5/lb. Spikes with feed costs and supply issues.',brands:[
-    {id:'cb4',brand:'Store brand (Aldi/Lidl)',price:'$3.29/lb',where:'Aldi / Lidl', online:null,         ship:false,note:'Best value per lb — Aldi nearly always wins.'},
-    {id:'cb1',brand:'Kirkland (Costco)',      price:'$3.49/lb',where:'Costco',       online:'costco.com',  ship:false,note:'Buy in bulk, freeze what you don\'t use.'},
-    {id:'cb3',brand:'Tyson',                 price:'$4.29/lb',where:'Major grocers', online:'walmart.com', ship:true, note:'Often on sale — watch weekly flyers.'},
-    {id:'cb2',brand:'Perdue',                price:'$4.49/lb',where:'Major grocers', online:'walmart.com', ship:true, note:'Widely available.'},
-  ]},
-  rice:{volatile:false,baseline:'Very stable. Rarely spikes more than 10–15%.',brands:[
-    {id:'ri2',brand:'Kirkland (Costco 25lb)', price:'$0.05/oz',where:'Costco',       online:'costco.com',  ship:false,note:'Best bulk value overall.'},
-    {id:'ri1',brand:'Great Value (Walmart)',  price:'$0.07/oz',where:'Walmart',       online:'walmart.com', ship:true, note:'Solid everyday option.'},
-    {id:'ri3',brand:'Mahatma',               price:'$0.08/oz',where:'Most grocers',  online:'amazon.com',  ship:true, note:'Subscribe & Save saves 15%.'},
-    {id:'ri4',brand:'Minute Rice',           price:'$0.19/oz',where:'Most grocers',  online:'walmart.com', ship:true, note:'Skip — 3x premium for 5 minutes.'},
-  ]},
-  drybeans:{volatile:false,baseline:'Extremely stable. Most reliable budget protein available.',brands:[
-    {id:'bn4',brand:'Aldi brand canned',     price:'$0.79/can',where:'Aldi',          online:null,          ship:false,note:'Lowest canned price if Aldi is near you.'},
-    {id:'bn1',brand:'Great Value dry (2lb)', price:'$1.68/bag',where:'Walmart',       online:'walmart.com',  ship:true, note:'Dry beans go further than canned.'},
-    {id:'bn2',brand:'Goya canned',           price:'$1.09/can',where:'Most grocers',  online:'amazon.com',   ship:true, note:'Subscribe & Save option available.'},
-    {id:'bn3',brand:"Bush's canned",         price:'$1.89/can',where:'Most grocers',  online:'amazon.com',   ship:true, note:'Brand premium not worth it vs store brand.'},
-  ]},
-  pasta:{volatile:false,baseline:'Stable. Wheat price changes take months to hit shelves.',brands:[
-    {id:'pa3',brand:'Aldi brand',            price:'$0.89/lb', where:'Aldi',           online:null,          ship:false,note:'Great price if Aldi is near you.'},
-    {id:'pa1',brand:'Great Value (5lb)',     price:'$0.05/oz', where:'Walmart',        online:'walmart.com',  ship:true, note:'Best value, period.'},
-    {id:'pa2',brand:'Barilla (Costco bulk)', price:'$0.06/oz', where:'Costco',         online:'costco.com',   ship:false,note:'Quality bulk option.'},
-    {id:'pa4',brand:'Ronzoni',               price:'$1.99/lb', where:'Most grocers',   online:'amazon.com',   ship:true, note:'Overpriced vs. any store brand.'},
-  ]},
-  oats:{volatile:false,baseline:'Very stable staple. Prices move very slowly.',brands:[
-    {id:'oa3',brand:'Aldi Millville (42oz)', price:'$3.29',    where:'Aldi',           online:null,          ship:false,note:'Cheapest option if you have an Aldi.'},
-    {id:'oa2',brand:'Great Value (42oz)',    price:'$3.98',    where:'Walmart',        online:'walmart.com',  ship:true, note:'Best value — same product, no brand markup.'},
-    {id:'oa1',brand:'Quaker (42oz)',         price:'$5.49',    where:'Most stores',    online:'amazon.com',   ship:true, note:'Subscribe & Save saves ~15%.'},
-    {id:'oa4',brand:"Bob's Red Mill",        price:'$7.99',    where:'Natural stores', online:'amazon.com',   ship:true, note:'Premium — skip for budget buying.'},
-  ]},
-  milk:{volatile:true,baseline:'Historically $3–$4.50/gal. Dairy market fluctuates seasonally.',brands:[
-    {id:'mk2',brand:'Aldi brand',            price:'$3.19/gal',where:'Aldi',           online:null,          ship:false,note:'Often the lowest — check Aldi first.'},
-    {id:'mk1',brand:'Great Value (Walmart)', price:'$3.48/gal',where:'Walmart',        online:'walmart.com',  ship:false,note:'Use pickup to avoid impulse buys.'},
-    {id:'mk3',brand:'Kroger brand',          price:'$3.79/gal',where:'Kroger',         online:'kroger.com',   ship:false,note:'Use their digital coupons.'},
-    {id:'mk4',brand:'Organic Valley',        price:'$8.99/gal',where:'Whole Foods',    online:'thrivemarket.com',ship:true,note:'Premium — skip for budget buying.'},
-  ]},
-};
 
 const ONLINE_RETAILERS=[
   {emoji:'🏪',name:'Aldi / Lidl',    url:'aldi.us',        note:'Consistently cheapest store for most staples. No online, but prices beat everyone in-store.'},
@@ -2710,7 +2558,7 @@ async function runCalculation(){
   loadCensusData(answers.zip,answers.state,answers.people,pppd);
 
   // ── GAME PLAN
-  buildWeekCards(cart,avoidItems);
+  await buildWeekCards(cart,avoidItems);
 
   // ── SHOPPING LIST
   buildShoppingList(cart,spent,remaining,answers.region);
@@ -2779,308 +2627,172 @@ async function loadCensusData(zip,state,people,pppd){
 }
 
 // ━━ WEEK CARDS ━━
-function buildWeekCards(cart,avoidItems){
-  const cartSet=new Set(cart.map(c=>c.id));
-  const cuisine=Array.isArray(answers.cuisine)?answers.cuisine:[];
-  const useLeftover=answers.leftover!=='no';
+async function buildWeekCards(cart, avoidItems){
+  const wrap = document.getElementById('weeks-wrap');
+  if(!wrap) return;
+  wrap.innerHTML = '<div style="padding:20px;color:var(--ink3);text-align:center">Building your meal plan...</div>';
 
-  // When no cuisine selected, pull from ALL cuisines for maximum variety
-  // When specific cuisines chosen, merge meals from all selected + 'any' as supplement
-  let allCuisineMeals=(cuisine.length===0
-    ? Object.values(MEAL_LIBRARY).flat()
-    : [...new Set([
-        ...cuisine.flatMap(c=>MEAL_LIBRARY[c]||[]),
-        ...(MEAL_LIBRARY.any||[])
-      ])]
-  ).filter(m=>{
-    if(m.avoid&&m.avoid.some(a=>avoidItems.includes(a)))return false;
-    return m.needs.filter(n=>cartSet.has(n)).length>=Math.min(2,m.needs.length);
-  }).filter((m,i,arr)=>arr.findIndex(x=>x.name===m.name)===i);
+  const cuisine = Array.isArray(answers.cuisine) ? answers.cuisine : [];
+  const cartIds = cart.map(c => c.id).join(',');
+  const avoidStr = avoidItems.join(',');
+  const cuisineStr = cuisine.join(',');
 
-  // Safety fallback: if cuisine + needs filtering left fewer than 3 meals,
-  // expand to all cuisines so the meal plan can always populate
-  if(allCuisineMeals.length < 3){
-    allCuisineMeals = Object.values(MEAL_LIBRARY).flat()
-      .filter(m=>!(m.avoid&&m.avoid.some(a=>avoidItems.includes(a))))
-      .filter((m,i,arr)=>arr.findIndex(x=>x.name===m.name)===i);
-    // If allergy filters are so tight it STILL has fewer than 3,
-    // bypass all restrictions entirely to prevent a hard freeze
-    if(allCuisineMeals.length < 3){
-      allCuisineMeals = Object.values(MEAL_LIBRARY).flat()
-        .filter((m,i,arr)=>arr.findIndex(x=>x.name===m.name)===i);
-    }
-  }
+  let bySlot = { breakfast:[], lunch:[], dinner:[], any:[] };
 
-  const allDiscoverMeals=DISCOVER_MEALS.filter(m=>{
-    if(m.avoid&&m.avoid.some(a=>avoidItems.includes(a)))return false;
-    return m.needs.filter(n=>cartSet.has(n)).length>=Math.min(2,m.needs.length);
-  });
-
-  const discPool = {
-    breakfast: allDiscoverMeals.filter(m=>m.slot==='breakfast'||m.slot==='any'),
-    lunch:     allDiscoverMeals.filter(m=>m.slot==='lunch'||m.slot==='any'),
-    dinner:    allDiscoverMeals.filter(m=>m.slot==='dinner'||m.slot==='any'),
-  };
-  // Fallback chain: discover meals → cuisine meals by slot → any available meal
-  ['breakfast','lunch','dinner'].forEach(s=>{
-    if(!discPool[s].length) discPool[s]=[...allDiscoverMeals];
-    if(!discPool[s].length) discPool[s]=allCuisineMeals.filter(m=>m.slot===s||m.slot==='any');
-    if(!discPool[s].length) discPool[s]=[...allCuisineMeals];
-  });
-
-  // Pre-assign ALL days up front so we can spread meals evenly
-  const dayNames=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const numWeeks=Math.ceil(answers.days/7);
-  const totalDays=answers.days;
-
-  // Build a rotating index per slot across the WHOLE plan (not per week)
-  const slotIdx={breakfast:0, lunch:0, dinner:0};
-  const discIdx={breakfast:0, lunch:0, dinner:0};
-
-  // Assign meals per day with genuine variety
-  // Key insight: slot-specific meals first, 'any' meals only as supplement
-  // Use a prime-step rotation so patterns don't repeat on short cycles
-  const mealUse={};
-  const pickTwo=(slot, globalDay)=>{
-    const slotSpecific = allCuisineMeals.filter(m =>
-      m.slot === slot &&
-      !(m.avoid && m.avoid.some(a => avoidItems.includes(a))) &&
-      m.needs.filter(n=>cartSet.has(n)).length >= Math.min(2, m.needs.length)
-    );
-    const anySlot = allCuisineMeals.filter(m =>
-      m.slot === 'any' &&
-      !(m.avoid && m.avoid.some(a => avoidItems.includes(a))) &&
-      m.needs.filter(n=>cartSet.has(n)).length >= Math.min(2, m.needs.length)
-    );
-    // Combine: slot-specific first, then 'any' as supplement
-    const combined = [...slotSpecific, ...anySlot];
-    if(!combined.length) return{opts:[],discover:null};
-
-    // Score each meal: penalize recent uses heavily, use prime rotation for tiebreak
-    // Higher penalty multiplier = more variety across weeks
-    const PRIME = 7;
-    const maxUse = Math.max(1, ...Object.values(mealUse));
-    const scored = combined.map((m, idx) => ({
-      m,
-      score: (mealUse[m.name]||0) * 2000 + ((idx + globalDay * PRIME) % combined.length)
-    }));
-    scored.sort((a,b) => a.score - b.score);
-
-    // Pick 2 that are different from each other
-    const picked = [];
-    for(const {m} of scored){
-      if(picked.length >= 2) break;
-      if(!picked.find(x => x.name === m.name)) picked.push(m);
-    }
-    picked.forEach(m => { mealUse[m.name] = (mealUse[m.name]||0) + 1; });
-
-    // Discover: rotate through discover pool, different each day
-    const dp = discPool[slot];
-    const disc = dp.length ? dp[globalDay % dp.length] : null;
-
-    return{opts:picked, discover:disc};
-  };
-
-  // Build weeks
-  const weeks=[];
-  let dayCount=0;
-
-  for(let w=0;w<numWeeks;w++){
-    const weekDays=[];
-    for(let d=0;d<7&&dayCount<totalDays;d++,dayCount++){
-      const dayName=dayNames[d];
-      const isLeftover=useLeftover&&d%2===1&&dayCount>0;
-      weekDays.push({
-        name:dayName, index:dayCount, isLeftover,
-        breakfast: isLeftover ? null : pickTwo('breakfast', dayCount),
-        lunch:     isLeftover ? null : pickTwo('lunch',     dayCount),
-        dinner:    isLeftover ? null : pickTwo('dinner',    dayCount),
-      });
-    }
-    weeks.push({index:w,days:weekDays});
-  }
-
-  // Reset plan state
-  Object.keys(mealChoices).forEach(k=>delete mealChoices[k]);
-  Object.keys(mealPlan).forEach(k=>delete mealPlan[k]);
-  Object.keys(mealOptions).forEach(k=>delete mealOptions[k]);
-
-  // Build HTML
-  let html='';
-  weeks.forEach((wk,wi)=>{
-    const weekLabel='Week '+(wi+1);
-    const dateRange=wk.days[0].name+' – '+wk.days[wk.days.length-1].name;
-    const keyMeals=allCuisineMeals.slice(wi*2,(wi+1)*2).map(m=>m.name).join(', ')||'varied meals';
-    html+=`<div class="week-card${wi===0?' open':''}" id="week-card-${wi}">
-      <div class="week-card-hdr" onclick="toggleWeek(${wi})">
-        <div class="week-card-left">
-          <div class="week-label">${weekLabel}</div>
-          <div class="week-title">${dateRange}</div>
-          <div class="week-subtitle">${wk.days.length} days · ${cuisine.length===0?'Mixed cuisine':cuisine.map(c=>c.charAt(0).toUpperCase()+c.slice(1)).join(' & ')} style</div>
-        </div>
-        <div class="week-card-right">
-          <span class="week-badge">${wk.days.length} days</span>
-          <span class="week-chevron">▾</span>
-        </div>
-      </div>
-      <div class="week-body">`;
-
-    wk.days.forEach(day=>{
-      html+=`<div class="day-row">
-        <div class="day-name">${day.name}</div>
-        <div class="day-meals">`;
-
-      if(day.isLeftover){
-        html+=`<div class="leftover-chip">♻ Leftovers from yesterday — reheat and save time</div>`;
-      } else {
-        ['breakfast','lunch','dinner'].forEach(slot=>{
-          const slotData=day[slot];
-          const key=day.index+'-'+slot;
-          // Store full meal objects for swap logic
-          mealOptions[key]={};
-          slotData.opts.forEach((m,mi)=>{ mealOptions[key][mi]=m; });
-          if(slotData.discover) mealOptions[key]['d']=slotData.discover;
-          // Pre-select first option as the default active meal
-          if(slotData.opts.length){
-            mealPlan[key]=slotData.opts[0];
-            mealChoices[key]='mc-'+day.index+'-'+slot+'-0';
-          }
-          html+=`<div class="meal-slot">
-            <div class="meal-slot-label">${slot}</div>
-            <div class="meal-options-row">`;
-          slotData.opts.forEach((m,mi)=>{
-            const isFirst=mi===0;
-            html+=`<div class="meal-chip${isFirst?' chosen':''}" id="mc-${day.index}-${slot}-${mi}" onclick="chooseMeal(${day.index},'${slot}',${mi},'${m.name.replace(/'/g,"\\'")}')">
-              <span class="meal-chip-name">${m.name}</span>
-              <button class="meal-chip-recipe-btn" onclick="event.stopPropagation();openRecipeDrawer('${m.name.replace(/'/g,"\\'")}','${(m.desc||'').replace(/'/g,"\\'")}','')" title="View recipe">📖</button>
-            </div>`;
-          });
-          if(slotData.discover){
-            const dm=slotData.discover;
-            html+=`<div class="meal-chip discover" id="mc-${day.index}-${slot}-d" onclick="chooseMeal(${day.index},'${slot}','d','${dm.name.replace(/'/g,"\\'")}')">
-              <span class="discover-pill">new</span><span class="meal-chip-name">${dm.name}</span><span class="meal-chip-cuisine">${dm.cuisine}</span>
-              <button class="meal-chip-recipe-btn" onclick="event.stopPropagation();openRecipeDrawer('${dm.name.replace(/'/g,"\\'")}','${(dm.desc||'').replace(/'/g,"\\'")}','${dm.cuisine}')" title="View recipe">📖</button>
-            </div>`;
-          }
-          html+=`</div></div>`;
-        });
-      }
-      html+=`</div></div>`;
-    });
-
-    html+=`</div></div>`;
-  });
-
-  // ── Resource discovery card — appears after the last week ──
-  html+=`<div class="resource-discovery-card" onclick="window.open('/resources','_blank')">
-    <div class="resource-discovery-inner">
-      <div class="resource-discovery-text">
-        <span class="resource-discovery-eyebrow">Curated by getdealtin</span>
-        <h3 class="resource-discovery-title">Need recipe ideas for these meals?</h3>
-        <p class="resource-discovery-sub">YouTube channels, recipe blogs, and budget cooking guides — curated for real families on real budgets. No sponsored content.</p>
-      </div>
-      <div class="resource-discovery-cta">
-        <span class="resource-discovery-btn">Meal Prep Resources →</span>
-      </div>
-    </div>
-  </div>`;
-
-  document.getElementById('weeks-wrap').innerHTML=html;
-
-  // Tips
-  const cartSet2=new Set(cart.map(c=>c.id));
-  const tips=[...ALL_TIPS.filter(t=>t.needs.some(n=>cartSet2.has(n))),...ALL_TIPS.filter(t=>!t.needs.some(n=>cartSet2.has(n)))].slice(0,8);
-  document.getElementById('tips-list').innerHTML='';
-}
-
-function toggleWeek(wi){
-  const card=document.getElementById('week-card-'+wi);
-  card.classList.toggle('open');
-}
-
-const mealChoices={};
-const mealPlan={};   // key: "dayIdx-slot" → full meal object currently active
-const mealOptions={}; // key: "dayIdx-slot" → array of full meal objects available
-
-function chooseMeal(dayIdx,slot,optIdx,name){
-  const key=dayIdx+'-'+slot;
-  const id='mc-'+dayIdx+'-'+slot+'-'+optIdx;
-
-  // Already chosen — deselect
-  if(mealChoices[key]===id){
-    mealChoices[key]=null;
-    document.getElementById(id)?.classList.remove('chosen');
-    const oldMeal=mealPlan[key]||null;
-    mealPlan[key]=null;
-    swapMealIngredients(oldMeal, null);  // audit cart with this slot now empty
+  try {
+    const url = `/api/recipes-for-cart?ingredients=${encodeURIComponent(cartIds)}&cuisine=${encodeURIComponent(cuisineStr)}&avoid=${encodeURIComponent(avoidStr)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.found) bySlot = data.bySlot;
+  } catch(e) {
+    console.error('Recipe fetch error:', e);
+    wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Could not load recipes. Please try again.</div>';
     return;
   }
 
-  // Deselect previously chosen chip for this slot
-  if(mealChoices[key]) document.getElementById(mealChoices[key])?.classList.remove('chosen');
-  mealChoices[key]=id;
-  document.getElementById(id)?.classList.add('chosen');
+  // Merge 'any' slot recipes into all slots
+  const allAny = bySlot.any || [];
+  const pools = {
+    breakfast: [...(bySlot.breakfast||[]), ...allAny],
+    lunch:     [...(bySlot.lunch||[]),     ...allAny],
+    dinner:    [...(bySlot.dinner||[]),    ...allAny],
+  };
 
-  const newMeal=mealOptions[key]?.[optIdx==='d'?'d':parseInt(optIdx)];
-  if(!newMeal) return;
-
-  const oldMeal=mealPlan[key]||null;
-  mealPlan[key]=newMeal;
-
-  // Swap ingredients in cart
-  swapMealIngredients(oldMeal, newMeal);
-}
-
-function swapMealIngredients(oldMeal, newMeal){
-  // Build cached set of every food ID referenced by any meal in the library.
-  // These are "meal-dependent" — their presence in cart should track meal choices.
-  // Foods that never appear in any meal's needs are pure budget staples and always stay.
-  if(!swapMealIngredients._mealFoods){
-    const s=new Set();
-    [...Object.values(MEAL_LIBRARY).flat(),...DISCOVER_MEALS].forEach(m=>m.needs.forEach(id=>s.add(id)));
-    swapMealIngredients._mealFoods=s;
-  }
-  const mealFoods=swapMealIngredients._mealFoods;
-
-  // Count references across the ENTIRE active plan (all slots, all days)
-  const refCount={};
-  Object.values(mealPlan).forEach(meal=>{
-    if(!meal) return;
-    meal.needs.forEach(id=>{ refCount[id]=(refCount[id]||0)+1; });
+  // Safety: if any pool is empty, fill with any available recipes
+  const allRecipes = [...(bySlot.breakfast||[]),...(bySlot.lunch||[]),...(bySlot.dinner||[]),...allAny];
+  ['breakfast','lunch','dinner'].forEach(s => {
+    if(!pools[s].length) pools[s] = [...allRecipes];
   });
 
-  // Add any foods the new meal needs that aren't in cart yet
-  if(newMeal){
-    newMeal.needs.forEach(id=>{
-      if(!cart.find(c=>c.id===id)){
-        const food=FOOD_DB.find(f=>f.id===id);
-        if(food){
-          const price=activePrices[id]||food.price||1.00;
-          cart.push({...food,price,qty:1,subtotal:+price.toFixed(2)});
-        }
+  if(!allRecipes.length){
+    wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">No recipes found for your cart. Try a different cuisine or budget.</div>';
+    return;
+  }
+
+  const numWeeks = Math.ceil(answers.days / 7);
+  const totalDays = answers.days;
+  const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const useLeftover = answers.leftover !== 'no';
+  const mealUse = {};
+
+  const pickTwo = (slot, globalDay) => {
+    const pool = pools[slot] || allRecipes;
+    if(!pool.length) return { opts:[], discover:null };
+
+    const PRIME = 7;
+    const scored = pool.map((r, idx) => ({
+      r,
+      score: (mealUse[r.id]||0) * 2000 + ((idx + globalDay * PRIME) % pool.length)
+    }));
+    scored.sort((a,b) => a.score - b.score);
+
+    const picked = [];
+    for(const {r} of scored){
+      if(picked.length >= 2) break;
+      if(!picked.find(x => x.id === r.id)) picked.push(r);
+    }
+    picked.forEach(r => { mealUse[r.id] = (mealUse[r.id]||0) + 1; });
+    return { opts: picked };
+  };
+
+  // Store meal options globally for swap and recipe drawer
+  Object.keys(mealOptions).forEach(k => delete mealOptions[k]);
+  Object.keys(mealChoices).forEach(k => delete mealChoices[k]);
+
+  const weeks = [];
+  let dayCount = 0;
+
+  for(let w = 0; w < numWeeks; w++){
+    const weekDays = [];
+    for(let d = 0; d < 7 && dayCount < totalDays; d++, dayCount++){
+      const dayName = dayNames[d];
+      const isLeftover = useLeftover && d % 2 === 1 && dayCount > 0;
+      if(isLeftover){
+        weekDays.push({ dayName, leftover:true });
+        continue;
       }
-    });
+      const globalDay = dayCount;
+      const bfOpts = pickTwo('breakfast', globalDay);
+      const luOpts = pickTwo('lunch', globalDay + 100);
+      const diOpts = pickTwo('dinner', globalDay + 200);
+      weekDays.push({ dayName, leftover:false,
+        breakfast: bfOpts.opts, lunch: luOpts.opts, dinner: diOpts.opts });
+
+      // Store in mealOptions for swap system
+      ['breakfast','lunch','dinner'].forEach((slot, si) => {
+        const opts = [bfOpts, luOpts, diOpts][si].opts;
+        const key = `${w}-${d}-${slot}`;
+        mealOptions[key] = opts;
+        if(opts.length) mealChoices[key] = opts[0].id;
+      });
+    }
+    weeks.push(weekDays);
   }
 
-  // Full cart audit: remove any meal-dependent food with zero active plan references.
-  // Exempt: pure budget staples (not in any meal's needs) and items the user said they have.
-  const haveIds=new Set((answers.have||[]).map(h=>
-    FOOD_DB.find(f=>f.hasProp===h)?.id
-  ).filter(Boolean));
+  // Build HTML
+  const cuisineLabel = cuisine.length === 0 ? 'Mixed cuisine'
+    : cuisine.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ') + ' style';
 
-  cart=cart.filter(item=>{
-    if(!mealFoods.has(item.id)) return true;   // pure budget staple — always keep
-    if(haveIds.has(item.id)) return true;        // user said they already have it — keep
-    return (refCount[item.id]||0) > 0;           // meal-dependent — keep only if referenced
+  let html = '';
+  weeks.forEach((weekDays, wi) => {
+    const activeDays = weekDays.filter(d => !d.leftover);
+    const weekStart = weekDays[0]?.dayName || 'Mon';
+    const weekEnd = weekDays[weekDays.length-1]?.dayName || 'Sun';
+    const isOpen = wi === 0;
+
+    html += `<div class="week-card" id="week-${wi}">
+      <div class="week-header" onclick="toggleWeek(${wi})">
+        <div>
+          <div class="week-label">WEEK ${wi+1}</div>
+          <div class="week-title">${weekStart} – ${weekEnd}</div>
+          <div class="week-subtitle">${activeDays.length} days · ${cuisineLabel}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="week-day-count" style="color:var(--gold);font-size:13px;font-weight:600">${answers.days} days</span>
+          <span class="week-toggle">▲</span>
+        </div>
+      </div>
+      <div class="week-body" style="display:${isOpen?'block':'none'}">`;
+
+    weekDays.forEach(day => {
+      if(day.leftover){
+        html += `<div class="day-row"><div class="day-label">${day.dayName}</div>
+          <div class="leftover-row">♻ ♻ Leftovers from yesterday — reheat and save time</div></div>`;
+        return;
+      }
+      html += `<div class="day-row"><div class="day-label">${day.dayName}</div><div class="day-slots">`;
+      ['breakfast','lunch','dinner'].forEach(slot => {
+        const opts = day[slot] || [];
+        const key = `${wi}-${weekDays.indexOf(day)}-${slot}`;
+        html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
+        opts.forEach((r, i) => {
+          const isSelected = i === 0;
+          const safeTitle = r.title.replace(/'/g, "\'");
+          const safeDesc = r.instructions.slice(0,80).replace(/'/g, "\'");
+          const safeIngs = JSON.stringify(r.ingredients).replace(/'/g,"\'");
+          html += `<button class="meal-chip${isSelected?' selected':''}"
+            onclick="chooseMeal('${key}',${r.id},'${safeTitle}','${slot}')"
+            title="${r.title}">
+            ${r.title}
+            <button class="meal-chip-recipe-btn"
+              onclick="event.stopPropagation();openRecipeDrawer('${safeTitle}','${safeDesc}','${r.cuisine}',${JSON.stringify(r.ingredients)},'${r.instructions.replace(/'/g,"\'")}')">📖</button>
+          </button>`;
+        });
+        html += `</div></div>`;
+      });
+      html += `</div></div>`;
+    });
+
+    html += `</div></div>`;
   });
 
-  // Recalculate and re-render
-  const spent=cart.reduce((s,i)=>s+i.subtotal,0);
-  const remaining=+(answers.budget-spent).toFixed(2);
-  buildShoppingList(cart,spent,remaining,answers.region);
+  wrap.innerHTML = html;
+
+  // Trigger shopping list rebuild with current choices
+  buildShoppingList(cart, +(answers.budget - remaining).toFixed(2), remaining, answers.region);
 }
 
-// ━━ SHOPPING LIST ━━
+
 function buildShoppingList(cart,spent,remaining,region){
   const cats={grain:'Grains & Bread',protein:'Protein',vegetable:'Vegetables',fruit:'Fruit',dairy:'Dairy',fat:'Oils & Fats',pantry:'Pantry'};
   const tC={1:'tb-1',2:'tb-2',3:'tb-3'};
@@ -3386,47 +3098,41 @@ async function loadResources(zip,state){
 }
 
 // ━━ RECIPE DRAWER ━━
-function openRecipeDrawer(mealName, mealDesc, cuisine, needsStr){
+function openRecipeDrawer(mealName, mealDesc, cuisine, ingredients, instructions){
   const drawer=document.getElementById('recipe-drawer');
   const overlay=document.getElementById('drawer-overlay');
   const titleEl=document.getElementById('drawer-title');
   const eyebrowEl=document.getElementById('drawer-eyebrow');
   const bodyEl=document.getElementById('recipe-drawer-body');
 
-  // Look up needs from mealOptions if not passed directly
-  let needs = needsStr || '';
-  if(!needs){
-    // Search all mealOptions slots for this meal name
-    for(const key of Object.keys(mealOptions)){
-      const opts = mealOptions[key];
-      for(const opt of Object.values(opts)){
-        if(opt && opt.name === mealName && opt.needs){
-          needs = opt.needs.join(',');
-          break;
-        }
-      }
-      if(needs) break;
-    }
-    // Also check MEAL_LIBRARY and DISCOVER_MEALS directly
-    if(!needs){
-      const all = [...Object.values(MEAL_LIBRARY).flat(), ...DISCOVER_MEALS];
-      const found = all.find(m => m.name === mealName);
-      if(found && found.needs) needs = found.needs.join(',');
-    }
-  }
-
-  // Open immediately with loading state
-  titleEl.textContent=mealName;
-  eyebrowEl.textContent=cuisine?cuisine+' · Recipe':'Recipe';
-  bodyEl.innerHTML=`<div class="drawer-loading">
-    <div class="drawer-loading-pulse"><span></span><span></span><span></span></div>
-    Looking up recipe...
-  </div>`;
+  titleEl.textContent = mealName;
+  eyebrowEl.textContent = cuisine ? cuisine + ' · Recipe' : 'Recipe';
   drawer.classList.add('open');
   overlay.classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 
-  fetchMealRecipe(mealName, mealDesc, needs, bodyEl);
+  // Recipe data is passed directly from the meal chip — no API call needed
+  if(instructions && instructions.length > 10){
+    const ings = Array.isArray(ingredients) ? ingredients : (ingredients ? JSON.parse(ingredients) : []);
+    const ingHTML = ings.map(i => `<li>${i}</li>`).join('');
+    const steps = instructions.replace(/\.\s+/g, '.</p><p class="drawer-instructions">');
+    bodyEl.innerHTML = `
+      ${ingHTML ? `<span class="drawer-section-label">Ingredients</span><ul class="drawer-ingredients">${ingHTML}</ul>` : ''}
+      <span class="drawer-section-label">Instructions</span>
+      <p class="drawer-instructions">${steps}</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="drawer-source-link" href="https://www.budgetbytes.com/?s=${encodeURIComponent(mealName)}" target="_blank"
+           style="padding:8px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;color:var(--ink)">
+          More on Budget Bytes →
+        </a>
+        <a class="drawer-source-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(mealName+' recipe')}" target="_blank"
+           style="padding:8px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;color:var(--ink)">
+          Watch on YouTube →
+        </a>
+      </div>`;
+  } else {
+    renderFallbackDrawer(mealName, mealDesc, bodyEl);
+  }
 }
 
 function closeRecipeDrawer(){
@@ -3435,47 +3141,6 @@ function closeRecipeDrawer(){
   document.body.style.overflow='';
 }
 
-async function fetchMealRecipe(mealName, mealDesc, needs, bodyEl){
-  try{
-    const url=`/api/recipe?name=${encodeURIComponent(mealName)}${needs?'&needs='+encodeURIComponent(needs):''}`;
-    const res=await fetch(url);
-    const data=await res.json();
-    if(data.found && data.meal){
-      renderRecipeDrawer(data.meal, bodyEl);
-    } else {
-      renderFallbackDrawer(mealName, mealDesc, bodyEl);
-    }
-  }catch(e){
-    renderFallbackDrawer(mealName, mealDesc, bodyEl);
-  }
-}
-
-function renderRecipeDrawer(meal, bodyEl){
-  // meal comes from /api/recipe — clean fields: name, category, area, ingredients[], instructions, youtube, source
-  const ingHTML=(meal.ingredients||[])
-    .map(({ingredient,measure})=>`<li><strong>${measure||''}</strong>${ingredient}</li>`)
-    .join('');
-
-  const steps=meal.instructions
-    ?meal.instructions.replace(/\r\n\r\n|\r\n|\n\n/g,'</p><p class="drawer-instructions">').trim()
-    :'No instructions available.';
-
-  bodyEl.innerHTML=`
-    <div class="drawer-meta">
-      ${meal.category?`<span class="drawer-meta-pill">${meal.category}</span>`:''}
-      ${meal.area?`<span class="drawer-meta-pill">${meal.area}</span>`:''}
-      ${meal.readyInMinutes?`<span class="drawer-meta-pill">⏱ ${meal.readyInMinutes} min</span>`:''}
-    </div>
-    ${ingHTML?`
-      <span class="drawer-section-label">Ingredients</span>
-      <ul class="drawer-ingredients">${ingHTML}</ul>
-    `:''}
-    <span class="drawer-section-label">Instructions</span>
-    <p class="drawer-instructions">${steps}</p>
-    ${meal.youtube?`<a class="drawer-source-link" href="${meal.youtube}" target="_blank">▶ Watch on YouTube →</a>`:''}
-    ${meal.source?`<a class="drawer-source-link" href="${meal.source}" target="_blank" style="margin-left:12px">Full recipe →</a>`:''}
-  `;
-}
 
 function renderFallbackDrawer(mealName, mealDesc, bodyEl){
   const searchQ=encodeURIComponent(mealName);
