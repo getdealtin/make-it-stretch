@@ -405,12 +405,24 @@ const VALID_ITEMS = new Set([
   'driedmango','cannedpeaches','milk','butter','cheese','yogurt','coconutmilk',
   'evaporatedmilk','oil','oliveoil','soy','hotsauce','cannedbroth','vegbroth',
   'blackbeans','kidneybean','cannedchili','cannedsoups','salsa',
+  // Preference group names (for preference_selected events)
+  'store','avoid','have','cuisine','leftover',
 ]);
 
 const VALID_RETAILERS = new Set([
+  // Stores
   'walmart','aldi','costco','amazon','target','kroger','dollargeneral',
   'thrivemarket','wholefoods','traderjoes','publix','heb','safeway','local',
+  // Preference values (store tags, avoid tags, have tags, leftover, cuisine)
+  'full','dollar','corner','none',
+  'gluten','dairy','meat','eggs','peanuts','fish','nothing',
+  'rice','beans','oats','potatoes',
+  'yes','sometimes',
+  'american','latin','asian','southern','mediterranean','any',
 ]);
+
+// Preference groups (sent as item field for preference_selected events)
+const VALID_PREF_GROUPS = new Set(['store','avoid','have','cuisine','leftover']);
 
 const VALID_BUDGET_TIERS = new Set(['low','medium','high']);
 const SESSION_ID_RE = /^[a-z0-9]{12}$/;  // 12 lowercase alphanumeric chars
