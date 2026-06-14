@@ -312,67 +312,22 @@ app.get('/api/food-resources', async (req, res) => {
 });
 
 // ────────────────────────────────────────────────
-// RECIPE ENGINE — SQLite + seed-recipes.json
-// Self-hosted, zero API cost, instant matching
-// Re-seeds from JSON on every cold start (Render free tier safe)
+// RECIPE ENGINE — JSON in memory, zero dependencies
+// Loads seed-recipes.json once at startup
 // ────────────────────────────────────────────────
-const initSql = require('sql.js');
-
-let recipeDB = null;
-
-async function initRecipeDB() {
-  const SQL = await initSql();
-  const db = new SQL.Database();
-
-  db.run(`
-    CREATE TABLE IF NOT EXISTS recipes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT NOT NULL,
-      slot TEXT NOT NULL,
-      cuisine TEXT NOT NULL,
-      ingredients TEXT NOT NULL,
-      instructions TEXT NOT NULL,
-      tags TEXT,
-      avoid TEXT,
-      srv INTEGER DEFAULT 2
-    )
-  `);
-
+let recipes = [];
+try {
   const seedPath = path.join(__dirname, 'data', 'seed-recipes.json');
-  const seedData = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
-
-  const insert = db.prepare(`
-    INSERT INTO recipes (title, slot, cuisine, ingredients, instructions, tags, avoid, srv)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  for (const r of seedData) {
-    insert.run([
-      r.title,
-      r.slot || 'any',
-      r.cuisine || 'any',
-      JSON.stringify(r.ingredients || []),
-      r.instructions || '',
-      r.tags || '',
-      JSON.stringify(r.avoid || []),
-      r.srv || 2
-    ]);
-  }
-  insert.free();
-
-  console.log(`Recipe DB seeded: ${seedData.length} recipes`);
-  return db;
+  recipes = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+  console.log(`Recipe DB loaded: ${recipes.length} recipes`);
+} catch(err) {
+  console.error('Could not load seed-recipes.json:', err.message);
 }
 
-// ── /api/recipes-for-cart
-// Takes cart ingredient IDs + cuisine preference
-// Returns top recipes per slot scored by ingredient match
-app.get('/api/recipes-for-cart', async (req, res) => {
+app.get('/api/recipes-for-cart', (req, res) => {
   try {
-    if (!recipeDB) recipeDB = await initRecipeDB();
-
     const { ingredients, cuisine, avoid } = req.query;
-    const cartIngredients = (ingredients || '').split(',').filter(Boolean);
+    const cartIngredients = (ingredients || '').split(',').filter(Boolean).map(s => s.toLowerCase());
     const selectedCuisines = (cuisine || '').split(',').filter(Boolean);
     const avoidList = (avoid || '').split(',').filter(Boolean);
 
@@ -380,70 +335,50 @@ app.get('/api/recipes-for-cart', async (req, res) => {
       return res.status(400).json({ error: 'ingredients required' });
     }
 
-    // Pull ALL recipes — filter in JS to avoid sql.js bind issues
-    const stmt = recipeDB.prepare('SELECT * FROM recipes');
-    const rows = [];
-    while (stmt.step()) rows.push(stmt.getAsObject());
-    stmt.free();
+    const scored = recipes.map(r => {
+      const recipeIngs = Array.isArray(r.ingredients) ? r.ingredients : [];
+      const recipeAvoids = Array.isArray(r.avoid) ? r.avoid : [];
 
-    // Filter by cuisine in JS
-    const cuisineFiltered = rows.filter(r => {
-      if (!selectedCuisines.length || selectedCuisines.includes('any')) return true;
-      return selectedCuisines.includes(r.cuisine) || r.cuisine === 'any' || r.slot === 'any';
-    });
-
-    // Score each recipe by ingredient overlap with cart
-    const scored = cuisineFiltered.map(r => {
-      let recipeIngs, avoidTags;
-      try {
-        recipeIngs = typeof r.ingredients === 'string' ? JSON.parse(r.ingredients) : (r.ingredients || []);
-        avoidTags = typeof r.avoid === 'string' ? JSON.parse(r.avoid || '[]') : (r.avoid || []);
-      } catch(e) {
-        return null;
+      // Filter by cuisine
+      if (selectedCuisines.length && !selectedCuisines.includes('any')) {
+        if (!selectedCuisines.includes(r.cuisine) && r.cuisine !== 'any' && r.slot !== 'any') {
+          return null;
+        }
       }
 
-      // Skip avoided ingredients
-      if (avoidList.some(a => avoidTags.includes(a))) return null;
+      // Filter avoided ingredients
+      if (avoidList.some(a => recipeAvoids.includes(a))) return null;
 
-      // Count cart ingredient matches
+      // Score by ingredient match
       const matchScore = cartIngredients.filter(cartIng =>
-        recipeIngs.some(recipeIng => {
-          if (typeof recipeIng !== 'string' || typeof cartIng !== 'string') return false;
-          return recipeIng.toLowerCase().includes(cartIng.toLowerCase()) ||
-                 cartIng.toLowerCase().includes(recipeIng.toLowerCase());
-        })
+        recipeIngs.some(recipeIng =>
+          typeof recipeIng === 'string' && (
+            recipeIng.toLowerCase().includes(cartIng) ||
+            cartIng.includes(recipeIng.toLowerCase())
+          )
+        )
       ).length;
 
       if (matchScore < 2) return null;
 
-      return {
-        id: r.id,
-        title: r.title,
-        slot: r.slot,
-        cuisine: r.cuisine,
-        ingredients: recipeIngs,
-        instructions: r.instructions,
-        tags: r.tags,
-        avoid: avoidTags,
-        srv: r.srv,
-        matchScore
-      };
+      return { ...r, matchScore };
     }).filter(Boolean);
 
     scored.sort((a, b) => b.matchScore - a.matchScore);
 
     const bySlot = { breakfast: [], lunch: [], dinner: [], any: [] };
     for (const r of scored) {
-      const slot = (r.slot === 'any' || !bySlot[r.slot]) ? 'any' : r.slot;
-      if (bySlot[slot] && bySlot[slot].length < 12) bySlot[slot].push(r);
+      const slot = bySlot[r.slot] ? r.slot : 'any';
+      if (bySlot[slot].length < 12) bySlot[slot].push(r);
     }
 
     res.json({ found: true, bySlot, total: scored.length });
 
-  } catch (err) {
-    console.error('Recipe match error:', err.message, err.stack);
+  } catch(err) {
+    console.error('Recipe route error:', err.message);
     res.status(500).json({ found: false, error: err.message });
   }
 });
+
 
 app.listen(PORT, () => console.log(`Make It Stretch running on port ${PORT}`));
