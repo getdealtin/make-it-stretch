@@ -405,6 +405,7 @@ const VALID_RETAILERS = new Set([
 ]);
 
 const VALID_BUDGET_TIERS = new Set(['low','medium','high']);
+const SESSION_ID_RE = /^[a-z0-9]{12}$/;  // 12 lowercase alphanumeric chars
 
 app.post('/api/event', async (req, res) => {
   // Rate limit by IP
@@ -418,7 +419,7 @@ app.post('/api/event', async (req, res) => {
     return res.json({ ok: true, stored: false });
   }
 
-  const { event, zip, item, retailer, budget_tier } = req.body;
+  const { event, zip, item, retailer, budget_tier, session_id } = req.body;
 
   // Strict allowlist validation — reject anything not in our known set
   if (!VALID_EVENTS.has(event)) {
@@ -430,6 +431,7 @@ app.post('/api/event', async (req, res) => {
   const safeItem     = VALID_ITEMS.has(item) ? item : null;
   const safeRetailer = VALID_RETAILERS.has(retailer) ? retailer : null;
   const safeTier     = VALID_BUDGET_TIERS.has(budget_tier) ? budget_tier : null;
+  const safeSession  = SESSION_ID_RE.test(session_id) ? session_id : null;
 
   try {
     // Parameterized insert via Supabase REST API
@@ -448,6 +450,7 @@ app.post('/api/event', async (req, res) => {
         item:        safeItem,
         retailer:    safeRetailer,
         budget_tier: safeTier,
+        session_id:  safeSession,
       }),
     });
 
