@@ -217,7 +217,7 @@
   {
     "title": "Tuna Rice Bowl",
     "slot": "lunch",
-    "cuisine": "american",
+    "cuisine": "any",
     "ingredients": [
       "tuna",
       "rice",
@@ -2163,7 +2163,7 @@
   },
   {
     "title": "Fried Rice Cakes",
-    "slot": "dinner",
+    "slot": "lunch",
     "cuisine": "asian",
     "ingredients": [
       "rice",
