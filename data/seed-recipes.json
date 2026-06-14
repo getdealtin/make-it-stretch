@@ -1326,7 +1326,7 @@
   },
   {
     "title": "Cornbread and Beans",
-    "slot": "lunch",
+    "slot": "dinner",
     "cuisine": "southern",
     "ingredients": [
       "cornmeal",
@@ -1346,7 +1346,7 @@
   },
   {
     "title": "Pork and Bean Stew",
-    "slot": "lunch",
+    "slot": "dinner",
     "cuisine": "southern",
     "ingredients": [
       "pork",
@@ -2509,7 +2509,7 @@
   },
   {
     "title": "Tortilla Espa\u00f1ola",
-    "slot": "any",
+    "slot": "dinner",
     "cuisine": "mediterranean",
     "ingredients": [
       "eggs",
