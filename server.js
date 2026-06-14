@@ -324,6 +324,10 @@ try {
   console.error('Could not load seed-recipes.json:', err.message);
 }
 
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', recipes: recipes.length, node: process.version });
+});
+
 app.get('/api/recipes-for-cart', (req, res) => {
   try {
     const { ingredients, cuisine, avoid } = req.query;
