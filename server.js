@@ -328,6 +328,21 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', recipes: recipes.length, node: process.version });
 });
 
+// Dishes that should never appear as standalone meals in a slot
+const SIDE_DISH_BLOCKLIST = new Set([
+  'potato salad', 'potato salad bowl', 'succotash', 'collard-style cabbage',
+  'collard style cabbage', 'coleslaw', 'corn on the cob', 'cornbread',
+  'skillet cornbread', 'biscuits', 'dinner rolls', 'rice paper rolls',
+]);
+
+// Dishes that are NOT breakfast foods
+const NOT_BREAKFAST = new Set([
+  'rice and beans', 'gallo pinto', 'bean stew', 'vegetable soup',
+  'lentil dal', 'hoppin john', "hoppin' john", 'succotash',
+  'potato salad', 'potato salad bowl', 'collard-style cabbage',
+  'pork and bean stew', 'bean and cornmeal stew',
+]);
+
 app.get('/api/recipes-for-cart', (req, res) => {
   try {
     const { ingredients, cuisine, avoid } = req.query;
@@ -355,6 +370,13 @@ app.get('/api/recipes-for-cart', (req, res) => {
       // Filter avoided ingredients
       if (avoidList.some(a => recipeAvoids.includes(a))) return null;
 
+      // Filter side dishes that shouldn't be standalone meals
+      const nameLower = (r.name || '').toLowerCase();
+      if (SIDE_DISH_BLOCKLIST.has(nameLower)) return null;
+
+      // Filter breakfast slot: block known non-breakfast dishes
+      if (r.slot === 'breakfast' && NOT_BREAKFAST.has(nameLower)) return null;
+
       // Score by ingredient match — 1 match minimum (2 was too strict, caused wrong-cuisine bleed)
       const matchScore = cartIngredients.filter(cartIng =>
         recipeIngs.some(recipeIng =>
@@ -372,11 +394,35 @@ app.get('/api/recipes-for-cart', (req, res) => {
 
     scored.sort((a, b) => b.matchScore - a.matchScore);
 
-    // Cap at 20 per slot — 12 was too few for 30-day plans causing empty slot bleed
+    // Cap at 30 per slot for 30-day plans (3 meals/day needs good variety)
     const bySlot = { breakfast: [], lunch: [], dinner: [], any: [] };
     for (const r of scored) {
       const slot = (r.slot && bySlot[r.slot] !== undefined) ? r.slot : 'any';
-      if (bySlot[slot].length < 20) bySlot[slot].push(r);
+      if (bySlot[slot].length < 30) bySlot[slot].push(r);
+    }
+
+    // If any slot is critically empty (<4 recipes), do a relaxed pass with cuisine only (no match score floor)
+    const allCuisineMatch = recipes.filter(r => {
+      const rc = (r.cuisine || '').toLowerCase();
+      const nameLower = (r.name || '').toLowerCase();
+      if (SIDE_DISH_BLOCKLIST.has(nameLower)) return false;
+      if (selectedCuisines.length && !selectedCuisines.includes('any')) {
+        const cl = selectedCuisines.map(c => c.toLowerCase());
+        if (!cl.includes(rc) && rc !== 'any') return false;
+      }
+      if (avoidList.some(a => (Array.isArray(r.avoid) ? r.avoid : []).includes(a))) return false;
+      return true;
+    });
+    for (const slot of ['breakfast','lunch','dinner']) {
+      if (bySlot[slot].length < 4) {
+        const existingIds = new Set(bySlot[slot].map(r => r.id));
+        const extras = allCuisineMatch.filter(r => {
+          const s = (r.slot && bySlot[r.slot] !== undefined) ? r.slot : 'any';
+          const notBreakfast = slot === 'breakfast' && NOT_BREAKFAST.has((r.name||'').toLowerCase());
+          return (s === slot || s === 'any') && !existingIds.has(r.id) && !notBreakfast;
+        });
+        bySlot[slot].push(...extras.slice(0, 30 - bySlot[slot].length));
+      }
     }
 
     res.json({ found: true, bySlot, total: scored.length });
