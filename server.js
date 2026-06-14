@@ -318,7 +318,7 @@ app.get('/api/food-resources', async (req, res) => {
 let recipes = [];
 try {
   const seedPath = path.join(__dirname, 'data', 'seed-recipes.json');
-  recipes = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+  recipes = JSON.parse(fs.readFileSync(seedPath, 'utf8')).map((r, i) => ({ ...r, id: i + 1 }));
   console.log(`Recipe DB loaded: ${recipes.length} recipes`);
 } catch(err) {
   console.error('Could not load seed-recipes.json:', err.message);
