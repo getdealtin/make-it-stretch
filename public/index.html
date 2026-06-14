@@ -2548,15 +2548,15 @@ function chooseMeal(btn){
   const key = btn.dataset.mealKey;
   const recipeId = parseInt(btn.dataset.recipeId);
   if(!key) return;
-  mealChoices[key] = recipeId;
+  // Capture state BEFORE modifying mealChoices
+  const prevChoice   = mealChoices[key];
+  const isDiscover   = btn.classList.contains('discover');
+  mealChoices[key]   = recipeId;
   document.querySelectorAll(`[data-meal-key="${key}"]`).forEach(chip => {
     chip.classList.toggle('chosen', parseInt(chip.dataset.recipeId) === recipeId);
   });
-  // Check discover BEFORE any DOM changes
-  const isDiscover = btn.classList.contains('discover');
-  // Only log swaps (not the initial auto-selection)
-  const prevChoice = mealChoices[key];
-  if(prevChoice !== undefined) {
+  // Only log actual user swaps, not the initial auto-selection on page load
+  if(prevChoice !== undefined && prevChoice !== recipeId) {
     logEvent('meal_swapped', {
       zip:  answers.zip,
       item: isDiscover ? 'discover' : 'default',
