@@ -2796,10 +2796,15 @@ async function buildWeekCards(cart, avoidItems){
     dinner:    [...(bySlot.dinner||[]),    ...allAny],
   };
 
-  // Safety: if any pool is empty, fill with any available recipes
+  // Safety: if any pool is too thin, fill from other slots — but NEVER cross cuisines
+  // allRecipes only contains recipes that already passed the cuisine filter
   const allRecipes = [...(bySlot.breakfast||[]),...(bySlot.lunch||[]),...(bySlot.dinner||[]),...allAny];
   ['breakfast','lunch','dinner'].forEach(s => {
-    if(!pools[s].length) pools[s] = [...allRecipes];
+    if(pools[s].length < 4) {
+      // Pull from same-cuisine recipes in other slots, not from the full universe
+      const extras = allRecipes.filter(r => !pools[s].find(p => p.id === r.id));
+      pools[s] = [...pools[s], ...extras];
+    }
   });
 
   if(!allRecipes.length){
@@ -2813,17 +2818,27 @@ async function buildWeekCards(cart, avoidItems){
   const useLeftover = answers.leftover !== 'no';
   const mealUse = {};
 
-  const pickTwo = (slot, globalDay) => {
+  // Track what's been used this week to prevent same-week repeats
+  const weeklyUsed = {};
+
+  const pickTwo = (slot, globalDay, weekIdx) => {
     const pool = pools[slot] || allRecipes;
     if(!pool.length) return { opts:[], discover:null };
 
+    const weekKey = weekIdx || 0;
+    if(!weeklyUsed[weekKey]) weeklyUsed[weekKey] = new Set();
+    const usedThisWeek = weeklyUsed[weekKey];
+
     const PRIME = 13;
-    // Heavy repeat penalty: each prior use adds 5000 to score (higher = ranked lower)
-    // Offset by position + day so different days naturally pick different dishes
-    const scored = pool.map((r, idx) => ({
-      r,
-      score: (mealUse[r.id]||0) * 5000 + ((idx + globalDay * PRIME) % Math.max(pool.length, 1))
-    }));
+    const scored = pool.map((r, idx) => {
+      const globalUse = (mealUse[r.id]||0);
+      const weekUse = usedThisWeek.has(r.id) ? 1 : 0;
+      // Within same week: 10000 penalty. Across weeks: 5000 per use.
+      return {
+        r,
+        score: weekUse * 10000 + globalUse * 5000 + ((idx + globalDay * PRIME) % Math.max(pool.length, 1))
+      };
+    });
     scored.sort((a,b) => a.score - b.score);
 
     const picked = [];
@@ -2831,7 +2846,10 @@ async function buildWeekCards(cart, avoidItems){
       if(picked.length >= 2) break;
       if(!picked.find(x => x.id === r.id)) picked.push(r);
     }
-    picked.forEach(r => { mealUse[r.id] = (mealUse[r.id]||0) + 1; });
+    picked.forEach(r => {
+      mealUse[r.id] = (mealUse[r.id]||0) + 1;
+      usedThisWeek.add(r.id);
+    });
     return { opts: picked };
   };
 
@@ -2852,9 +2870,9 @@ async function buildWeekCards(cart, avoidItems){
         continue;
       }
       const globalDay = dayCount;
-      const bfOpts = pickTwo('breakfast', globalDay);
-      const luOpts = pickTwo('lunch', globalDay + 100);
-      const diOpts = pickTwo('dinner', globalDay + 200);
+      const bfOpts = pickTwo('breakfast', globalDay, w);
+      const luOpts = pickTwo('lunch', globalDay + 100, w);
+      const diOpts = pickTwo('dinner', globalDay + 200, w);
       weekDays.push({ dayName, leftover:false,
         breakfast: bfOpts.opts, lunch: luOpts.opts, dinner: diOpts.opts });
 
