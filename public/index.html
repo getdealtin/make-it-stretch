@@ -2815,7 +2815,10 @@ async function buildWeekCards(cart, avoidItems){
   const numWeeks = Math.ceil(answers.days / 7);
   const totalDays = answers.days;
   const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const useLeftover = answers.leftover !== 'no';
+  // 'yes' = insert leftover day every other day (d%2===1)
+  // 'sometimes' = insert leftover day every 3rd day (d%3===2) 
+  // 'no' = no leftover days
+  const leftoverMode = answers.leftover || 'sometimes';
   const mealUse = {};
 
   // Track what's been used this week to prevent same-week repeats
@@ -2833,10 +2836,20 @@ async function buildWeekCards(cart, avoidItems){
     const scored = pool.map((r, idx) => {
       const globalUse = (mealUse[r.id]||0);
       const weekUse = usedThisWeek.has(r.id) ? 1 : 0;
+      // Also penalize dishes whose base ingredient is already used this week
+      // e.g. "Congee" and "Congee with Toppings" share the word "Congee"
+      const titleWords = (r.title||'').toLowerCase().split(' ').slice(0,2).join(' ');
+      const similarUsed = [...usedThisWeek].some(usedId => {
+        const usedR = pool.find(p => p.id === usedId);
+        if(!usedR) return false;
+        const usedWords = (usedR.title||'').toLowerCase().split(' ').slice(0,2).join(' ');
+        return titleWords === usedWords && usedR.id !== r.id;
+      });
+      const similarPenalty = similarUsed ? 8000 : 0;
       // Within same week: 10000 penalty. Across weeks: 5000 per use.
       return {
         r,
-        score: weekUse * 10000 + globalUse * 5000 + ((idx + globalDay * PRIME) % Math.max(pool.length, 1))
+        score: weekUse * 10000 + similarPenalty + globalUse * 5000 + ((idx + globalDay * PRIME) % Math.max(pool.length, 1))
       };
     });
     scored.sort((a,b) => a.score - b.score);
@@ -2864,7 +2877,10 @@ async function buildWeekCards(cart, avoidItems){
     const weekDays = [];
     for(let d = 0; d < 7 && dayCount < totalDays; d++, dayCount++){
       const dayName = dayNames[d];
-      const isLeftover = useLeftover && d % 2 === 1 && dayCount > 0;
+      const isLeftover = dayCount > 0 && (
+        (leftoverMode === 'yes' && d % 2 === 1) ||
+        (leftoverMode === 'sometimes' && d % 3 === 2)
+      );
       if(isLeftover){
         weekDays.push({ dayName, leftover:true });
         continue;
