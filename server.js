@@ -385,7 +385,9 @@ app.get('/api/recipe', async (req, res) => {
     }
 
     // Step 1: find recipes by ingredients
-    const searchUrl = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=3&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_KEY}`;
+    // ranking=2 maximizes used ingredients (vs minimizing missing ones)
+    // Use more ingredients for better specificity, require at least half to match
+    const searchUrl = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=5&ranking=2&ignorePantry=true&apiKey=${SPOONACULAR_KEY}`;
     const searchRes = await fetch(searchUrl, { headers: { 'User-Agent': 'getdealtin/1.0' } });
     const searchData = await searchRes.json();
 
@@ -395,8 +397,19 @@ app.get('/api/recipe', async (req, res) => {
       return res.json(result);
     }
 
+    // Filter: require at least half the query ingredients to be used
+    const ingredientCount = ingredients.split(',').length;
+    const minMatch = Math.max(1, Math.floor(ingredientCount / 2));
+    const goodMatch = searchData.find(r => r.usedIngredientCount >= minMatch);
+
+    if (!goodMatch) {
+      const result = { found: false, name };
+      setCache(cacheKey, result);
+      return res.json(result);
+    }
+
     // Step 2: get full recipe details for the best match
-    const recipeId = searchData[0].id;
+    const recipeId = goodMatch.id;
     const detailUrl = `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=${SPOONACULAR_KEY}`;
     const detailRes = await fetch(detailUrl, { headers: { 'User-Agent': 'getdealtin/1.0' } });
     const detail = await detailRes.json();
