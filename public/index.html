@@ -3558,57 +3558,59 @@ function scrollToSystem(){
 // ━━ POPULATE SYSTEM PULSE SIDEBAR — The Story ━━
 function populateSystemPulse(state, pppd, people, days, censusData){
 
-  const POVERTY_LINE = 5.36;   // USDA Thrifty Food Plan — federal bare minimum
-  const SNAP_DAILY   = 6.22;   // max SNAP benefit per person/day (FY2024)
-  const SNAP_ANNUAL  = 2270;   // avg annual SNAP benefit per person
-  const SCHOOL_LUNCH = 3.65;   // national avg paid school lunch
-  const GAS_WATER    = 2.49;   // gas station water bottle
-  const MCDONALDS    = 10.50;  // McDonald's combo with drink
-  const STARBUCKS    = 7.25;   // Starbucks grande latte
+  const POVERTY_LINE = 5.36;
+  const SNAP_DAILY   = 6.22;
+  const SCHOOL_LUNCH = 3.65;
+  const GAS_WATER    = 2.49;
+  const MCDONALDS    = 10.50;
+  const STARBUCKS    = 7.25;
 
   const ppmeal = +(pppd / 3).toFixed(2);
   const snapEligible = pppd < POVERTY_LINE;
   const belowSNAP    = pppd < SNAP_DAILY;
 
   // ── YOUR SITUATION ──
-  // Not "here's a number" — "here's where you sit in the system"
-  // Three statements: what this costs per meal, how the system benchmarks it, what that means
+  // Tone: this is a moment in time, a constraint being navigated — not a life sentence.
+  // Frame it as: here's what this budget means right now, here's how the system sees it.
 
-  // 1. Per-meal anchor — vs something they bought recently
+  // Per-meal vs something they bought recently
   const mealVs = ppmeal < SCHOOL_LUNCH
     ? `less than a paid school lunch ($${SCHOOL_LUNCH})`
     : ppmeal < GAS_WATER
     ? `less than a gas station water bottle ($${GAS_WATER})`
-    : `about $${(ppmeal/SCHOOL_LUNCH).toFixed(1)}× a school lunch`;
+    : `about the cost of a school lunch`;
 
-  const situationLead = `Each meal on this plan costs <strong>$${ppmeal}</strong> — ${mealVs}.`;
+  const situationLead = `Right now, each meal on this plan works out to <strong>$${ppmeal}</strong> — ${mealVs}.`;
 
-  // 2. Where they sit vs the federal system — this is the "system" framing
+  // System framing — where this budget sits vs federal benchmarks
+  // Deliberately uses "right now" / "this budget" not "you are"
   let systemLine;
   if (snapEligible) {
     const gap = (POVERTY_LINE - pppd).toFixed(2);
-    systemLine = `The USDA says <strong>$${POVERTY_LINE}/day</strong> is the bare minimum to eat adequately. You're <strong>$${gap} below that</strong> — which means by the federal government's own measure, this budget isn't enough. SNAP was designed for situations like this.`;
+    systemLine = `The USDA's Thrifty Food Plan sets <strong>$${POVERTY_LINE}/day</strong> as the minimum to eat adequately. This budget is <strong>$${gap} below that line</strong> — which means the federal government's own standard considers it insufficient. That's not a personal judgment. It's a measurement.`;
   } else if (belowSNAP) {
-    const snapGap = (SNAP_DAILY - pppd).toFixed(2);
-    systemLine = `The max SNAP benefit is <strong>$${SNAP_DAILY}/person/day</strong>. You're spending <strong>$${snapGap} less than that</strong> — stretching further than the program was designed to reach, without its support.`;
+    const gap = (SNAP_DAILY - pppd).toFixed(2);
+    systemLine = `The maximum SNAP benefit is <strong>$${SNAP_DAILY}/person/day</strong>. This budget is <strong>$${gap} under that</strong> — stretching further than a federal assistance program is designed to cover, without that program's help.`;
   } else {
-    systemLine = `The USDA poverty food threshold is <strong>$${POVERTY_LINE}/person/day</strong>. You're above it — but only by <strong>$${(pppd - POVERTY_LINE).toFixed(2)}</strong>. The margin between "adequate" and "not enough" is that thin.`;
+    const margin = (pppd - POVERTY_LINE).toFixed(2);
+    systemLine = `The federal poverty food threshold is <strong>$${POVERTY_LINE}/day</strong>. This budget clears it by <strong>$${margin}</strong>. The line between "technically adequate" and "not enough" is that narrow.`;
   }
 
-  // 3. The day-level gut check — full day vs one impulse purchase
+  // Day-level comparison — muted, not dramatic
   let dayLine;
   if (pppd < GAS_WATER) {
-    dayLine = `Your <em>entire day</em> of food ($${pppd}) costs less than a gas station water bottle.`;
+    dayLine = `For context: a full day of food on this plan costs less than a convenience store water bottle.`;
   } else if (pppd < STARBUCKS) {
-    dayLine = `Your <em>entire day</em> of food ($${pppd}) costs less than one Starbucks ($${STARBUCKS}).`;
+    dayLine = `For context: a full day of food on this plan ($${pppd}) costs less than a Starbucks order ($${STARBUCKS}).`;
   } else if (pppd < MCDONALDS) {
-    dayLine = `Your <em>entire day</em> of food ($${pppd}) costs less than one McDonald's combo ($${MCDONALDS}).`;
+    dayLine = `For context: a full day of food on this plan ($${pppd}) costs less than one fast food combo ($${MCDONALDS}).`;
   } else {
-    dayLine = `A McDonald's combo costs $${MCDONALDS}. This plan feeds ${people > 1 ? `${people} people` : 'you'} for an entire day on $${(pppd * people).toFixed(2)}.`;
+    dayLine = `For context: a McDonald's combo costs $${MCDONALDS}. This plan covers a full day of food for $${(pppd * people).toFixed(2)}${people > 1 ? ` for ${people} people` : ''}.`;
   }
 
   // ── YOUR COMMUNITY ──
   let communityHTML;
+  const zip = (censusData && censusData.zip) || answers.zip || '';
 
   if (censusData && censusData.found && censusData.totalHouseholds) {
     const snapPct = censusData.snapPct  || 0;
@@ -3616,46 +3618,41 @@ function populateSystemPulse(state, pppd, people, days, censusData){
     const medInc  = censusData.medianIncome || 0;
     const snapH   = censusData.snapHouseholds || 0;
     const total   = censusData.totalHouseholds || 0;
-    const zip     = censusData.zip || answers.zip || '';
 
     const yearlyFood = pppd * 365 * people;
     const foodPct = medInc > 0 ? Math.round((yearlyFood / medInc) * 100) : null;
 
-    // Neighbors line — count, not just percent
     const neighborsLine = snapH > 0
-      ? `In zip <strong>${zip}</strong>, <strong>${snapH.toLocaleString()} households</strong> — ${snapPct}% of the zip — receive SNAP.`
+      ? `In zip <strong>${zip}</strong>, <strong>${snapH.toLocaleString()} households</strong> (${snapPct}%) currently receive SNAP food assistance.`
       : `<strong>${total.toLocaleString()} households</strong> in zip <strong>${zip}</strong> are navigating food costs right now.`;
 
-    // Poverty as ratio
     const povLine = povPct > 0
       ? `<strong>1 in ${Math.round(100/Math.max(povPct,1))} residents</strong> here lives below the poverty line.`
       : '';
 
-    // Income-to-food ratio
     let incomeLine = '';
     if (foodPct !== null && medInc > 0) {
       const hardship = foodPct >= 30
-        ? ` Economists define food hardship as spending 30%+ of income on food. <strong>This zip is past that line.</strong>`
+        ? ` Economists define food hardship as 30%+ of income spent on food. <strong>This zip crosses that threshold.</strong>`
         : '';
-      incomeLine = `At the local median income of $${Math.round(medInc/1000)}k, this budget takes <strong>${foodPct}% of annual household income</strong> — just for food, before rent, utilities, or anything else.${hardship}`;
+      incomeLine = `At the local median income of $${Math.round(medInc/1000)}k, a budget like this takes <strong>${foodPct}% of annual income</strong> — before rent, utilities, or anything else.${hardship}`;
     }
 
     communityHTML = `
       <p class="pulse-chapter-lead">${neighborsLine}</p>
       ${povLine ? `<p class="pulse-chapter-body" style="margin-top:6px">${povLine}</p>` : ''}
       ${incomeLine ? `<p class="pulse-chapter-body" style="margin-top:8px">${incomeLine}</p>` : ''}
-      <p class="pulse-chapter-body" style="margin-top:10px;color:rgba(250,248,245,.3);font-style:italic">This is a structural condition, not a personal failure.</p>
+      <p class="pulse-chapter-body" style="margin-top:10px;color:rgba(250,248,245,.3);font-style:italic">Tight budgets like this one are common here. The math is hard because the system is hard.</p>
     `;
 
-  } else if (censusData && censusData.zip) {
-    // Census returned but no data for this zip
-    const zip = censusData.zip;
+  } else if (censusData && !censusData.found && zip) {
+    // Census returned nothing for this zip — use state-level context instead
     communityHTML = `
-      <p class="pulse-chapter-lead">In <strong>${state || 'your state'}</strong>, millions of households run this same calculation every week.</p>
-      <p class="pulse-chapter-body" style="margin-top:6px">Detailed zip-level data wasn't available for ${zip}, but the conditions that make this budget necessary are not unique to you.</p>
+      <p class="pulse-chapter-lead">Zip-level data wasn't available for <strong>${zip}</strong>.</p>
+      <p class="pulse-chapter-body" style="margin-top:6px">Nationally, <strong>42 million Americans</strong> rely on SNAP. In <strong>${state || 'your state'}</strong>, food insecurity affects hundreds of thousands of households — and many more are managing tight budgets without assistance. This situation is far from unusual.</p>
     `;
   } else {
-    // Still loading
+    // Still waiting on Census
     communityHTML = `<p class="pulse-chapter-body" style="color:rgba(250,248,245,.35)">Loading local data...</p>`;
   }
 
@@ -3688,10 +3685,10 @@ function populateSystemPulse(state, pppd, people, days, censusData){
 
   el.innerHTML = `
     <div class="pulse-chapter">
-      <div class="pulse-chapter-label">YOUR SITUATION</div>
+      <div class="pulse-chapter-label">RIGHT NOW</div>
       <p class="pulse-chapter-lead">${situationLead}</p>
       <p class="pulse-chapter-body" style="margin-top:8px">${systemLine}</p>
-      <p class="pulse-chapter-body" style="margin-top:8px;color:rgba(250,248,245,.5)">${dayLine}</p>
+      <p class="pulse-chapter-body" style="margin-top:8px;color:rgba(250,248,245,.45)">${dayLine}</p>
     </div>
 
     <div class="pulse-divider"></div>
@@ -3705,7 +3702,7 @@ function populateSystemPulse(state, pppd, people, days, censusData){
 
     <div class="pulse-chapter">
       <div class="pulse-chapter-label">WHO VOTED ON YOUR GROCERIES${state ? ' · ' + state : ''}</div>
-      <p class="pulse-chapter-lead">Congress controls SNAP — the program ${snapEligible ? 'your household may qualify for' : 'that 42 million Americans depend on'}.</p>
+      <p class="pulse-chapter-lead">Congress controls SNAP — the program ${snapEligible ? 'this budget may qualify for' : 'that 42 million Americans depend on'}.</p>
       ${senateBlock}
       <a class="pulse-cta" onclick="scrollToSystem()" style="display:block;margin-top:14px">See the full vote breakdown →</a>
     </div>
@@ -3716,7 +3713,7 @@ function populateSystemPulse(state, pppd, people, days, censusData){
     mobileEl.innerHTML = `
       <p class="pulse-chapter-lead">${situationLead}</p>
       <p class="pulse-chapter-body" style="margin-bottom:8px">${systemLine}</p>
-      <p class="pulse-chapter-body" style="margin-bottom:14px;color:rgba(250,248,245,.5)">${dayLine}</p>
+      <p class="pulse-chapter-body" style="margin-bottom:14px;color:rgba(250,248,245,.45)">${dayLine}</p>
       <div style="background:rgba(255,255,255,.1);height:1px;margin:12px 0"></div>
       ${communityHTML}
       ${(sen1||sen2) ? `<div style="background:rgba(255,255,255,.1);height:1px;margin:12px 0"></div>
