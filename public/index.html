@@ -861,6 +861,8 @@ header h1 em {
   box-shadow: 0 1px 4px rgba(27,54,36,.1), 0 0 0 1px rgba(27,54,36,.06);
   transition: all .12s; line-height: 1.3;
   position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 .meal-chip:hover {
   box-shadow: 0 2px 8px rgba(27,54,36,.15), 0 0 0 1px rgba(27,54,36,.1);
@@ -881,7 +883,15 @@ header h1 em {
   color: #1B3624;
   box-shadow: 0 0 0 2px #3a7a50;
 }
-.meal-chip-name { font-weight: 700; }
+.meal-chip-recipe-btn {
+  background: none; border: none;
+  font-size: 13px; cursor: pointer;
+  padding: 0 0 0 6px;
+  opacity: 0; transition: opacity .15s;
+  flex-shrink: 0; line-height: 1;
+}
+.meal-chip:hover .meal-chip-recipe-btn { opacity: .7; }
+.meal-chip-recipe-btn:hover { opacity: 1 !important; }
 .meal-chip-cuisine {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 10px; opacity: .55;
@@ -1607,6 +1617,146 @@ header h1 em {
   .donation-actions { grid-template-columns: 1fr; }
 }
 
+/* ── RECIPE DRAWER ── */
+.recipe-drawer {
+  position: fixed;
+  top: 0; right: -480px;
+  width: 460px;
+  max-width: 100vw;
+  height: 100%;
+  background: var(--bg);
+  border-left: 1px solid var(--border);
+  box-shadow: -4px 0 32px rgba(27,54,36,.1);
+  transition: right .35s cubic-bezier(.25,1,.5,1);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.recipe-drawer.open { right: 0; }
+.recipe-drawer-hdr {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg2);
+  flex-shrink: 0;
+}
+.recipe-drawer-close {
+  background: none; border: none;
+  font-size: 22px; color: var(--ink3);
+  cursor: pointer; line-height: 1;
+  padding: 0; flex-shrink: 0;
+  transition: color .15s;
+}
+.recipe-drawer-close:hover { color: var(--ink); }
+.recipe-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+.drawer-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 6px;
+  display: block;
+}
+.drawer-title {
+  font-family: 'Lora', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--ink); line-height: 1.2;
+}
+.drawer-meta {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-top: 12px; margin-bottom: 20px;
+}
+.drawer-meta-pill {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 4px;
+  background: var(--bg3); color: var(--ink2);
+}
+.drawer-section-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .7rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: #5A6E61;
+  margin-bottom: 10px; margin-top: 20px;
+  display: block;
+}
+.drawer-ingredients {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.drawer-ingredients li {
+  font-size: 14px; color: var(--ink2);
+  padding: 8px 12px;
+  background: var(--bg2);
+  border-radius: 6px;
+  display: flex; gap: 8px;
+}
+.drawer-ingredients li strong {
+  color: var(--ink); min-width: 60px;
+  flex-shrink: 0;
+}
+.drawer-instructions {
+  font-family: 'Lora', serif;
+  font-size: 14px; color: var(--ink2);
+  line-height: 1.8;
+}
+.drawer-loading {
+  text-align: center; padding: 48px 20px;
+  color: var(--ink3);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+}
+.drawer-loading-pulse {
+  display: flex; justify-content: center;
+  gap: 6px; margin-bottom: 16px;
+}
+.drawer-loading-pulse span {
+  width: 8px; height: 8px;
+  border-radius: 50%; background: var(--gold);
+  animation: drawerPulse 1.2s ease-in-out infinite;
+}
+.drawer-loading-pulse span:nth-child(2){animation-delay:.2s}
+.drawer-loading-pulse span:nth-child(3){animation-delay:.4s}
+.drawer-fallback {
+  padding: 20px;
+  background: var(--bg2);
+  border-radius: 8px;
+  font-size: 14px; color: var(--ink2);
+  line-height: 1.7;
+}
+.drawer-fallback strong { color: var(--ink); }
+.drawer-source-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px; font-weight: 700;
+  color: var(--gold); text-decoration: none;
+}
+.drawer-source-link:hover { text-decoration: underline; }
+.drawer-overlay {
+  position: fixed; inset: 0;
+  background: rgba(27,54,36,.3);
+  z-index: 1999;
+  opacity: 0; pointer-events: none;
+  transition: opacity .35s;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+@keyframes drawerPulse {
+  0%,100%{opacity:.3;transform:scale(.8)}
+  50%{opacity:1;transform:scale(1)}
+}
+@media(max-width:600px){
+  .recipe-drawer { width: 100vw; right: -100vw; }
+}
+
 /* ── FOOTER ── */
 footer {
   background: var(--bg2);
@@ -2031,7 +2181,7 @@ footer a:hover { color: var(--gold); }
 const answers = {
   budget:null, people:null, days:null, zip:null,
   state:null, region:null, stores:[], avoid:[], have:[],
-  otherHave:'', cuisine:'any', leftover:'sometimes'
+  otherHave:'', cuisine:[], leftover:'sometimes'
 };
 const paydayState = { key:null, days:null };
 const multiSelections = { store:[], avoid:[], have:[] };
@@ -2158,28 +2308,40 @@ const MEAL_LIBRARY = {
     {name:'Lentil & Tomato Stew',        slot:'dinner',   needs:['lentils','cannedtomatoes','onions','garlic'],avoid:[],srv:4,desc:'20 minutes, packed with protein.'},
   ],
   asian:[
-    {name:'Congee (Rice Porridge)',      slot:'breakfast',needs:['rice'],                    avoid:[],                 srv:2,desc:'Cook rice in extra water until creamy. Top with egg.'},
-    {name:'Oat Porridge with Soy',       slot:'breakfast',needs:['oats','soy'],              avoid:[],                 srv:2,desc:'Savory oatmeal. Unusual but satisfying.'},
-    {name:'Egg Fried Rice',              slot:'lunch',    needs:['rice','eggs','onions','oil'],avoid:['eggs'],          srv:2,desc:'Best use of leftover rice.'},
-    {name:'Garlic Cabbage & Rice',       slot:'lunch',    needs:['cabbage','garlic','onions','oil','rice'],avoid:[],    srv:2,desc:'Fry until tender and fragrant.'},
-    {name:'Lentil Dal',                  slot:'lunch',    needs:['lentils','onions','garlic','oil'],avoid:[],           srv:4,desc:'Thick spiced lentils over rice.'},
-    {name:'Stir-Fried Vegetables',       slot:'dinner',   needs:['carrots','cabbage','onions','oil','rice'],avoid:[],   srv:3,desc:'High heat, fast, colorful.'},
-    {name:'Khichdi (Rice & Lentils)',    slot:'dinner',   needs:['rice','lentils','onions','oil'],avoid:[],             srv:4,desc:'One-pot South Asian comfort food.'},
-    {name:'Chicken & Soy Rice',          slot:'dinner',   needs:['chicken','rice','soy','garlic'],avoid:['meat'],       srv:4,desc:'Marinate chicken in soy. Pan or oven.'},
-    {name:'Coconut Rice',                slot:'dinner',   needs:['rice','coconutmilk'],       avoid:[],                 srv:4,desc:'Creamy, fragrant. Pairs with anything.'},
-    {name:'Noodle Soup',                 slot:'dinner',   needs:['pasta','carrots','onions','vegbroth'],avoid:['gluten'],srv:3,desc:'Simple broth with vegetables and noodles.'},
+    {name:'Congee (Rice Porridge)',  slot:'breakfast',needs:['rice'],                             avoid:[],          srv:2,desc:'Cook rice in extra water until creamy. Top with egg.'},
+    {name:'Oat Porridge with Soy',   slot:'breakfast',needs:['oats','soy'],                      avoid:[],          srv:2,desc:'Savory oatmeal. Unusual but satisfying.'},
+    {name:'Fried Egg & Rice',        slot:'breakfast',needs:['rice','eggs','oil'],                avoid:['eggs'],    srv:2,desc:'Quick protein bowl. Ready in 5 minutes.'},
+    {name:'Rice & Peanut Butter',    slot:'breakfast',needs:['rice','peanutbutter'],              avoid:['peanuts'], srv:2,desc:'High calorie, filling. Common across Southeast Asia.'},
+    {name:'Egg Fried Rice',          slot:'lunch',    needs:['rice','eggs','onions','oil'],       avoid:['eggs'],    srv:2,desc:'Best use of leftover rice.'},
+    {name:'Garlic Cabbage & Rice',   slot:'lunch',    needs:['cabbage','garlic','onions','oil','rice'],avoid:[],    srv:2,desc:'Fry until tender and fragrant.'},
+    {name:'Lentil Dal',              slot:'lunch',    needs:['lentils','onions','garlic','oil'],  avoid:[],          srv:4,desc:'Thick spiced lentils over rice.'},
+    {name:'Rice Noodle Bowl',        slot:'lunch',    needs:['pasta','carrots','onions','soy'],   avoid:['gluten'],  srv:2,desc:'Light and fast. Add any vegetable you have.'},
+    {name:'Cabbage & Egg Stir Fry',  slot:'lunch',    needs:['cabbage','eggs','garlic','oil'],    avoid:['eggs'],    srv:2,desc:'5 minutes, hot pan. Season with soy or salt.'},
+    {name:'Stir-Fried Vegetables',   slot:'dinner',   needs:['carrots','cabbage','onions','oil','rice'],avoid:[],   srv:3,desc:'High heat, fast, colorful.'},
+    {name:'Khichdi (Rice & Lentils)',slot:'dinner',   needs:['rice','lentils','onions','oil'],    avoid:[],          srv:4,desc:'One-pot South Asian comfort food.'},
+    {name:'Chicken & Soy Rice',      slot:'dinner',   needs:['chicken','rice','soy','garlic'],    avoid:['meat'],    srv:4,desc:'Marinate chicken in soy. Pan or oven.'},
+    {name:'Coconut Rice',            slot:'dinner',   needs:['rice','coconutmilk'],               avoid:[],          srv:4,desc:'Creamy, fragrant. Pairs with anything.'},
+    {name:'Noodle Soup',             slot:'dinner',   needs:['pasta','carrots','onions','vegbroth'],avoid:['gluten'],srv:3,desc:'Simple broth with vegetables and noodles.'},
+    {name:'Bean & Garlic Rice',      slot:'dinner',   needs:['drybeans','rice','garlic','oil'],   avoid:[],          srv:4,desc:'Garlicky beans over rice. Simple and filling.'},
+    {name:'Tofu & Cabbage Bowl',     slot:'dinner',   needs:['tofu','cabbage','soy','garlic','oil'],avoid:[],       srv:3,desc:'Pan-fry tofu until golden. Serve over rice.'},
   ],
   southern:[
-    {name:'Grits & Egg',                 slot:'breakfast',needs:['cornmeal','eggs'],          avoid:['eggs'],           srv:2,desc:'Southern classic. Creamy base, protein on top.'},
-    {name:'Biscuits & Gravy',            slot:'breakfast',needs:['flour','milk','butter'],    avoid:['dairy','gluten'], srv:4,desc:'Weekend staple. Rich and filling.'},
-    {name:'Oatmeal with Banana',         slot:'breakfast',needs:['oats','bananas'],           avoid:[],                 srv:2,desc:'Warm morning bowl.'},
-    {name:'Cabbage & Potato Fry',        slot:'lunch',    needs:['cabbage','potatoes','onions','oil'],avoid:[],         srv:3,desc:'Fry until golden. Southern kitchen staple.'},
-    {name:'Sweet Potato & Bean Bowl',    slot:'lunch',    needs:['sweetpotatoes','drybeans','onions'],avoid:[],         srv:3,desc:'Filling and naturally sweet.'},
-    {name:'Pork & Bean Stew',            slot:'lunch',    needs:['porkchops','drybeans','onions'],avoid:['meat'],       srv:4,desc:'Low and slow. Rich Southern flavor.'},
-    {name:'Chicken & Cornbread',         slot:'dinner',   needs:['chicken','cornmeal','eggs','milk'],avoid:['meat','eggs'],srv:4,desc:'Bake cornbread while chicken cooks.'},
-    {name:'Hoppin\' John',               slot:'dinner',   needs:['drybeans','rice','onions'], avoid:[],                 srv:6,desc:'Black-eyed peas and rice. Southern soul.'},
-    {name:'Fried Catfish & Grits',       slot:'dinner',   needs:['tuna','cornmeal','oil'],    avoid:['fish','meat'],    srv:2,desc:'Pan-fry fish in seasoned cornmeal.'},
-    {name:'Collard-Style Cabbage',       slot:'dinner',   needs:['cabbage','onions','garlic','oil'],avoid:[],           srv:4,desc:'Slow-cooked greens with garlic. Classic sides.'},
+    {name:'Grits & Egg',             slot:'breakfast',needs:['cornmeal','eggs'],                 avoid:['eggs'],    srv:2,desc:'Southern classic. Creamy base, protein on top.'},
+    {name:'Biscuits & Gravy',        slot:'breakfast',needs:['flour','milk','butter'],            avoid:['dairy','gluten'],srv:4,desc:'Weekend staple. Rich and filling.'},
+    {name:'Oatmeal with Banana',     slot:'breakfast',needs:['oats','bananas'],                  avoid:[],          srv:2,desc:'Warm morning bowl.'},
+    {name:'Cornmeal Porridge',       slot:'breakfast',needs:['cornmeal','milk'],                 avoid:['dairy'],   srv:2,desc:'Creamy hot cereal. Sweeten with anything you have.'},
+    {name:'Egg & Sweet Potato Hash', slot:'breakfast',needs:['sweetpotatoes','eggs','onions','oil'],avoid:['eggs'], srv:2,desc:'Dice and fry until crispy. Southern diner staple.'},
+    {name:'Cabbage & Potato Fry',    slot:'lunch',    needs:['cabbage','potatoes','onions','oil'],avoid:[],         srv:3,desc:'Fry until golden. Southern kitchen staple.'},
+    {name:'Sweet Potato & Bean Bowl',slot:'lunch',    needs:['sweetpotatoes','drybeans','onions'],avoid:[],         srv:3,desc:'Filling and naturally sweet.'},
+    {name:'Pork & Bean Stew',        slot:'lunch',    needs:['porkchops','drybeans','onions'],   avoid:['meat'],    srv:4,desc:'Low and slow. Rich Southern flavor.'},
+    {name:'Cornbread & Beans',       slot:'lunch',    needs:['cornmeal','drybeans','onions'],    avoid:[],          srv:4,desc:'Classic pairing. Make a skillet of cornbread.'},
+    {name:'Potato Salad Bowl',       slot:'lunch',    needs:['potatoes','onions','oil'],         avoid:[],          srv:4,desc:'Boil potatoes, dress simply. Filling cold or warm.'},
+    {name:'Chicken & Cornbread',     slot:'dinner',   needs:['chicken','cornmeal','eggs','milk'],avoid:['meat','eggs'],srv:4,desc:'Bake cornbread while chicken cooks.'},
+    {name:"Hoppin' John",            slot:'dinner',   needs:['drybeans','rice','onions'],        avoid:[],          srv:6,desc:'Black-eyed peas and rice. Southern soul.'},
+    {name:'Fried Catfish & Grits',   slot:'dinner',   needs:['tuna','cornmeal','oil'],           avoid:['fish','meat'],srv:2,desc:'Pan-fry fish in seasoned cornmeal.'},
+    {name:'Collard-Style Cabbage',   slot:'dinner',   needs:['cabbage','onions','garlic','oil'], avoid:[],          srv:4,desc:'Slow-cooked greens with garlic. Classic sides.'},
+    {name:'Sweet Potato & Chicken',  slot:'dinner',   needs:['sweetpotatoes','chicken','onions','oil'],avoid:['meat'],srv:4,desc:'Roast together. Simple, filling, naturally sweet.'},
+    {name:'Bean & Cornmeal Stew',    slot:'dinner',   needs:['drybeans','cornmeal','onions','oil'],avoid:[],        srv:4,desc:'Thick, hearty, deeply Southern.'},
   ],
   mediterranean:[
     {name:'Egg & Potato Skillet',        slot:'breakfast',needs:['eggs','potatoes','onions','oil'],avoid:['eggs'],      srv:2,desc:'Dice and fry together. Add garlic.'},
@@ -2306,7 +2468,30 @@ function zipToInfoFn(zip){if(!zip||zip.length<3)return null;const p=zip.substrin
 function selectPayday(k,d){paydayState.key=k;paydayState.days=d;document.querySelectorAll('[id^="pay-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('pay-'+k).classList.add('selected');}
 function selectWho(k,p){document.querySelectorAll('[id^="who-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('who-'+k).classList.add('selected');document.getElementById('inp-people').value=p;}
 function onPeopleInput(){document.querySelectorAll('[id^="who-"]').forEach(b=>b.classList.remove('selected'));}
-function selectCuisine(v){answers.cuisine=v;document.querySelectorAll('[id^="cuisine-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('cuisine-'+v).classList.add('selected');}
+function selectCuisine(v){
+  const anyBtn=document.getElementById('cuisine-any');
+  if(v==='any'){
+    answers.cuisine=[];
+    document.querySelectorAll('[id^="cuisine-"]').forEach(b=>b.classList.remove('selected'));
+    anyBtn&&anyBtn.classList.add('selected');
+    return;
+  }
+  // Deselect "Mix it up" when a specific cuisine is chosen
+  anyBtn&&anyBtn.classList.remove('selected');
+  const idx=answers.cuisine.indexOf(v);
+  const btn=document.getElementById('cuisine-'+v);
+  if(idx>-1){
+    answers.cuisine.splice(idx,1);
+    btn&&btn.classList.remove('selected');
+  } else {
+    answers.cuisine.push(v);
+    btn&&btn.classList.add('selected');
+  }
+  // If nothing selected, fall back to "Mix it up"
+  if(answers.cuisine.length===0){
+    anyBtn&&anyBtn.classList.add('selected');
+  }
+}
 function selectLeftover(v){answers.leftover=v;document.querySelectorAll('[id^="leftover-"]').forEach(b=>b.classList.remove('selected'));document.getElementById('leftover-'+v).classList.add('selected');}
 function toggleMulti(g,v){const arr=multiSelections[g];if(v==='none'||v==='nothing'){multiSelections[g]=[];document.querySelectorAll('[id^="'+g+'-"]').forEach(b=>b.classList.remove('selected'));document.getElementById(g+'-'+v).classList.add('selected');return;}document.getElementById(g+'-none')?.classList.remove('selected');document.getElementById(g+'-nothing')?.classList.remove('selected');const i=arr.indexOf(v);if(i>-1){arr.splice(i,1);document.getElementById(g+'-'+v).classList.remove('selected');}else{arr.push(v);document.getElementById(g+'-'+v).classList.add('selected');}}
 
@@ -2335,7 +2520,7 @@ async function runCalculation(){
   answers.avoid=multiSelections.avoid;
   answers.have=multiSelections.have;
   answers.otherHave=document.getElementById('inp-other-have').value.trim();
-  if(!answers.cuisine)answers.cuisine='any';
+  if(!answers.cuisine||answers.cuisine.length===0)answers.cuisine=[];
   if(!answers.leftover)answers.leftover='sometimes';
   showStep('calc');
 
@@ -2349,12 +2534,12 @@ async function runCalculation(){
     const r=await fetch('/api/food-prices?region='+(answers.region||'national'));
     const d=await r.json();
     if(d.blsPrices&&!d.fallback){
-      // Merge live BLS prices over fallback (BLS only covers ~15 items)
       prices={...prices,...Object.fromEntries(Object.entries(d.blsPrices).filter(([k,v])=>v&&v>0))};
       livePrices=d.blsPrices;
     }
   }catch(e){}
 
+  try{
   // Store price adjustments
   const CORNER_ADJ={bread:1.2,eggs:1.3,milk:1.25,bananas:1.15};
   const DOLLAR_ADJ={rice:.9,bread:.85,pasta:.8,cannedtomatoes:.9};
@@ -2404,9 +2589,9 @@ async function runCalculation(){
   // These four guarantee a calorie-safe baseline regardless of cuisine or budget
   const FLOOR_IDS=['rice','drybeans','oil','oats'];
 
-  const cuisine=answers.cuisine||'any';
-  let remaining=answers.budget;
+  const cuisine=answers.cuisine||[];
   let totalCals=0;
+  let remaining=answers.budget;
   cart=[];
 
   const addToCart=(food)=>{
@@ -2443,9 +2628,14 @@ async function runCalculation(){
   if(remaining>0.50){
     const boostBudget=answers.budget*0.10;
     let boostSpent=0;
-    const boostIds=CUISINE_BOOSTS[cuisine]||CUISINE_BOOSTS.any;
-    for(const id of boostIds){
-      const f=getFood(id); // undefined if restricted by avoidItems — safely skipped
+    // Merge boost IDs from all selected cuisines (deduplicated)
+    const boostSet=new Set();
+    const selectedCuisines=cuisine.length>0?cuisine:['any'];
+    selectedCuisines.forEach(c=>{
+      (CUISINE_BOOSTS[c]||CUISINE_BOOSTS.any).forEach(id=>boostSet.add(id));
+    });
+    for(const id of boostSet){
+      const f=getFood(id);
       if(f&&!cart.find(c=>c.id===id)&&boostSpent+f.price<=boostBudget){
         if(addToCart(f)) boostSpent+=f.price;
       }
@@ -2506,6 +2696,7 @@ async function runCalculation(){
 
   clearInterval(msgInterval);
 
+  try{
   // ── SUMMARY CARD
   document.getElementById('summary-title').innerHTML='Your <span>'+answers.days+'-Day</span> Game Plan';
   document.getElementById('stats-row').innerHTML=
@@ -2543,10 +2734,23 @@ async function runCalculation(){
   const shoppingAcc=document.getElementById('acc-shopping');
   if(shoppingAcc)shoppingAcc.classList.add('open');
 
-  document.getElementById('walkthrough').style.display='none';
-  document.getElementById('dashboard').style.display='block';
-  initDonation();
-  setTimeout(()=>document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'}),100);
+  }catch(renderErr){
+    console.error('Render error:', renderErr, renderErr.stack);
+  }finally{
+    document.getElementById('walkthrough').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    initDonation();
+    setTimeout(()=>document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'}),100);
+  }
+
+  }catch(calcErr){
+    console.error('Calculation error:',calcErr.message, calcErr.stack);
+  }finally{
+    clearInterval(msgInterval);
+    document.getElementById('walkthrough').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    initDonation();
+  }
 }
 
 // ━━ CENSUS SOLIDARITY ━━
@@ -2584,18 +2788,35 @@ async function loadCensusData(zip,state,people,pppd){
 // ━━ WEEK CARDS ━━
 function buildWeekCards(cart,avoidItems){
   const cartSet=new Set(cart.map(c=>c.id));
-  const cuisine=answers.cuisine||'any';
+  const cuisine=Array.isArray(answers.cuisine)?answers.cuisine:[];
   const useLeftover=answers.leftover!=='no';
 
-  // When cuisine is 'any', pull from ALL cuisines for maximum variety
-  // When specific cuisine chosen, use that + 'any' as supplement
-  const allCuisineMeals=(cuisine==='any'
+  // When no cuisine selected, pull from ALL cuisines for maximum variety
+  // When specific cuisines chosen, merge meals from all selected + 'any' as supplement
+  let allCuisineMeals=(cuisine.length===0
     ? Object.values(MEAL_LIBRARY).flat()
-    : [...(MEAL_LIBRARY[cuisine]||[]),...(MEAL_LIBRARY.any||[])]
+    : [...new Set([
+        ...cuisine.flatMap(c=>MEAL_LIBRARY[c]||[]),
+        ...(MEAL_LIBRARY.any||[])
+      ])]
   ).filter(m=>{
     if(m.avoid&&m.avoid.some(a=>avoidItems.includes(a)))return false;
     return m.needs.filter(n=>cartSet.has(n)).length>=Math.min(2,m.needs.length);
   }).filter((m,i,arr)=>arr.findIndex(x=>x.name===m.name)===i);
+
+  // Safety fallback: if cuisine + needs filtering left fewer than 3 meals,
+  // expand to all cuisines so the meal plan can always populate
+  if(allCuisineMeals.length < 3){
+    allCuisineMeals = Object.values(MEAL_LIBRARY).flat()
+      .filter(m=>!(m.avoid&&m.avoid.some(a=>avoidItems.includes(a))))
+      .filter((m,i,arr)=>arr.findIndex(x=>x.name===m.name)===i);
+    // If allergy filters are so tight it STILL has fewer than 3,
+    // bypass all restrictions entirely to prevent a hard freeze
+    if(allCuisineMeals.length < 3){
+      allCuisineMeals = Object.values(MEAL_LIBRARY).flat()
+        .filter((m,i,arr)=>arr.findIndex(x=>x.name===m.name)===i);
+    }
+  }
 
   const allDiscoverMeals=DISCOVER_MEALS.filter(m=>{
     if(m.avoid&&m.avoid.some(a=>avoidItems.includes(a)))return false;
@@ -2607,9 +2828,11 @@ function buildWeekCards(cart,avoidItems){
     lunch:     allDiscoverMeals.filter(m=>m.slot==='lunch'||m.slot==='any'),
     dinner:    allDiscoverMeals.filter(m=>m.slot==='dinner'||m.slot==='any'),
   };
-  // Fallback: if a discover pool slot is empty, use all discover meals
+  // Fallback chain: discover meals → cuisine meals by slot → any available meal
   ['breakfast','lunch','dinner'].forEach(s=>{
     if(!discPool[s].length) discPool[s]=[...allDiscoverMeals];
+    if(!discPool[s].length) discPool[s]=allCuisineMeals.filter(m=>m.slot===s||m.slot==='any');
+    if(!discPool[s].length) discPool[s]=[...allCuisineMeals];
   });
 
   // Pre-assign ALL days up front so we can spread meals evenly
@@ -2640,11 +2863,13 @@ function buildWeekCards(cart,avoidItems){
     const combined = [...slotSpecific, ...anySlot];
     if(!combined.length) return{opts:[],discover:null};
 
-    // Score each meal: fewer uses = better; use prime step (7) for tiebreak to avoid cycles
+    // Score each meal: penalize recent uses heavily, use prime rotation for tiebreak
+    // Higher penalty multiplier = more variety across weeks
     const PRIME = 7;
+    const maxUse = Math.max(1, ...Object.values(mealUse));
     const scored = combined.map((m, idx) => ({
       m,
-      score: (mealUse[m.name]||0) * 1000 + ((idx + globalDay * PRIME) % combined.length)
+      score: (mealUse[m.name]||0) * 2000 + ((idx + globalDay * PRIME) % combined.length)
     }));
     scored.sort((a,b) => a.score - b.score);
 
@@ -2698,7 +2923,7 @@ function buildWeekCards(cart,avoidItems){
         <div class="week-card-left">
           <div class="week-label">${weekLabel}</div>
           <div class="week-title">${dateRange}</div>
-          <div class="week-subtitle">${wk.days.length} days · ${cuisine==='any'?'Mixed cuisine':cuisine.charAt(0).toUpperCase()+cuisine.slice(1)} style</div>
+          <div class="week-subtitle">${wk.days.length} days · ${cuisine.length===0?'Mixed cuisine':cuisine.map(c=>c.charAt(0).toUpperCase()+c.slice(1)).join(' & ')} style</div>
         </div>
         <div class="week-card-right">
           <span class="week-badge">${wk.days.length} days</span>
@@ -2734,12 +2959,14 @@ function buildWeekCards(cart,avoidItems){
             const isFirst=mi===0;
             html+=`<div class="meal-chip${isFirst?' chosen':''}" id="mc-${day.index}-${slot}-${mi}" onclick="chooseMeal(${day.index},'${slot}',${mi},'${m.name.replace(/'/g,"\\'")}')">
               <span class="meal-chip-name">${m.name}</span>
+              <button class="meal-chip-recipe-btn" onclick="event.stopPropagation();openRecipeDrawer('${m.name.replace(/'/g,"\\'")}','${(m.desc||'').replace(/'/g,"\\'")}','')" title="View recipe">📖</button>
             </div>`;
           });
           if(slotData.discover){
             const dm=slotData.discover;
             html+=`<div class="meal-chip discover" id="mc-${day.index}-${slot}-d" onclick="chooseMeal(${day.index},'${slot}','d','${dm.name.replace(/'/g,"\\'")}')">
               <span class="discover-pill">new</span><span class="meal-chip-name">${dm.name}</span><span class="meal-chip-cuisine">${dm.cuisine}</span>
+              <button class="meal-chip-recipe-btn" onclick="event.stopPropagation();openRecipeDrawer('${dm.name.replace(/'/g,"\\'")}','${(dm.desc||'').replace(/'/g,"\\'")}','${dm.cuisine}')" title="View recipe">📖</button>
             </div>`;
           }
           html+=`</div></div>`;
@@ -3165,6 +3392,109 @@ async function loadResources(zip,state){
   }
 }
 
+// ━━ RECIPE DRAWER ━━
+function openRecipeDrawer(mealName, mealDesc, cuisine){
+  const drawer=document.getElementById('recipe-drawer');
+  const overlay=document.getElementById('drawer-overlay');
+  const titleEl=document.getElementById('drawer-title');
+  const eyebrowEl=document.getElementById('drawer-eyebrow');
+  const bodyEl=document.getElementById('recipe-drawer-body');
+
+  // Open immediately with loading state
+  titleEl.textContent=mealName;
+  eyebrowEl.textContent=cuisine?cuisine+' · Recipe':'Recipe';
+  bodyEl.innerHTML=`<div class="drawer-loading">
+    <div class="drawer-loading-pulse"><span></span><span></span><span></span></div>
+    Looking up recipe...
+  </div>`;
+  drawer.classList.add('open');
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+
+  // Search TheMealDB — try the meal name, fall back to first keyword
+  fetchMealRecipe(mealName, mealDesc, bodyEl);
+}
+
+function closeRecipeDrawer(){
+  document.getElementById('recipe-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+async function fetchMealRecipe(mealName, mealDesc, bodyEl){
+  try{
+    // Call our own server proxy — TheMealDB search + relevance validation happens server-side
+    // Server caches results for 7 days so repeat lookups are instant
+    const res=await fetch(`/api/recipe?name=${encodeURIComponent(mealName)}`);
+    const data=await res.json();
+    if(data.found && data.meal){
+      renderRecipeDrawer(data.meal, bodyEl);
+    } else {
+      renderFallbackDrawer(mealName, mealDesc, bodyEl);
+    }
+  }catch(e){
+    renderFallbackDrawer(mealName, mealDesc, bodyEl);
+  }
+}
+
+function renderRecipeDrawer(meal, bodyEl){
+  // meal comes from /api/recipe — clean fields: name, category, area, ingredients[], instructions, youtube, source
+  const ingHTML=(meal.ingredients||[])
+    .map(({ingredient,measure})=>`<li><strong>${measure||''}</strong>${ingredient}</li>`)
+    .join('');
+
+  const steps=meal.instructions
+    ?meal.instructions.replace(/\r\n\r\n|\r\n|\n\n/g,'</p><p class="drawer-instructions">').trim()
+    :'No instructions available.';
+
+  bodyEl.innerHTML=`
+    <div class="drawer-meta">
+      ${meal.category?`<span class="drawer-meta-pill">${meal.category}</span>`:''}
+      ${meal.area?`<span class="drawer-meta-pill">${meal.area}</span>`:''}
+    </div>
+    ${ingHTML?`
+      <span class="drawer-section-label">Ingredients</span>
+      <ul class="drawer-ingredients">${ingHTML}</ul>
+    `:''}
+    <span class="drawer-section-label">Instructions</span>
+    <p class="drawer-instructions">${steps}</p>
+    ${meal.youtube?`<a class="drawer-source-link" href="${meal.youtube}" target="_blank">▶ Watch on YouTube →</a>`:''}
+    ${meal.source?`<a class="drawer-source-link" href="${meal.source}" target="_blank" style="margin-left:12px">Full recipe →</a>`:''}
+  `;
+}
+
+function renderFallbackDrawer(mealName, mealDesc, bodyEl){
+  const searchQ=encodeURIComponent(mealName);
+  const budgetQ=encodeURIComponent(mealName+' budget recipe');
+  bodyEl.innerHTML=`
+    <div class="drawer-fallback">
+      <strong>${mealName}</strong>
+      <p style="margin-top:10px;font-family:'Lora',serif;font-style:italic;font-size:14px;color:var(--ink2);line-height:1.7;">
+        ${mealDesc||'A budget-friendly meal built around what you have.'}
+      </p>
+    </div>
+    <div class="pulse-divider" style="background:var(--border);height:1px;margin:20px 0;"></div>
+    <span class="drawer-section-label">Find a recipe</span>
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:14px;line-height:1.6;">
+      This one isn't in our database yet. These will find it:
+    </p>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <a class="drawer-source-link" href="https://www.budgetbytes.com/?s=${searchQ}" target="_blank"
+         style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;color:var(--ink);">
+        Budget Bytes — best for budget cooking recipes →
+      </a>
+      <a class="drawer-source-link" href="https://www.youtube.com/results?search_query=${budgetQ}" target="_blank"
+         style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;color:var(--ink);">
+        YouTube — video walkthrough →
+      </a>
+      <a class="drawer-source-link" href="https://www.themealdb.com/search.php?s=${searchQ}" target="_blank"
+         style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;color:var(--ink);">
+        TheMealDB — global recipe database →
+      </a>
+    </div>
+  `;
+}
+
 // ━━ ACCORDION ━━
 // ━━ POST-OUTPUT ACTIONS ━━
 function buildListText(){
@@ -3318,7 +3648,7 @@ function restart(){
   Object.keys(mealChoices).forEach(k=>delete mealChoices[k]);
   Object.keys(mealPlan).forEach(k=>delete mealPlan[k]);
   Object.keys(mealOptions).forEach(k=>delete mealOptions[k]);
-  Object.assign(answers,{budget:null,people:null,days:null,zip:null,state:null,region:null,stores:[],avoid:[],have:[],otherHave:'',cuisine:'any',leftover:'sometimes'});
+  Object.assign(answers,{budget:null,people:null,days:null,zip:null,state:null,region:null,stores:[],avoid:[],have:[],otherHave:'',cuisine:[],leftover:'sometimes'});
   Object.assign(paydayState,{key:null,days:null});
   multiSelections.store=[];multiSelections.avoid=[];multiSelections.have=[];
   cart=[];activePrices={};livePrices=null;
@@ -3334,5 +3664,18 @@ function restart(){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
+<!-- ── RECIPE DRAWER ── -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeRecipeDrawer()"></div>
+<div class="recipe-drawer" id="recipe-drawer">
+  <div class="recipe-drawer-hdr">
+    <div>
+      <span class="drawer-eyebrow" id="drawer-eyebrow">Recipe</span>
+      <h3 class="drawer-title" id="drawer-title"></h3>
+    </div>
+    <button class="recipe-drawer-close" onclick="closeRecipeDrawer()">×</button>
+  </div>
+  <div class="recipe-drawer-body" id="recipe-drawer-body"></div>
+</div>
+
 </body>
 </html>
