@@ -11,7 +11,7 @@ const OPENSTATES_KEY = process.env.OPENSTATES_KEY || '';
 const BLS_KEY        = process.env.BLS_KEY        || '';
 const USDA_KEY       = process.env.USDA_KEY       || '';
 const CONGRESS_KEY   = process.env.CONGRESS_KEY   || '';
-const CENSUS_KEY     = process.env.CENSUS_KEY     || 'DEMO_KEY';
+const CENSUS_KEY     = process.env.CENSUS_KEY     || '';
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -162,7 +162,7 @@ app.get('/api/census', async (req, res) => {
 
     // Build URL — use real key if available, otherwise keyless (Census allows ~500 req/day)
     const baseUrl = `https://api.census.gov/data/2022/acs/acs5?get=${variables}&for=zip%20code%20tabulation%20area:${zip}`;
-    const useKey = CENSUS_KEY && CENSUS_KEY !== 'DEMO_KEY';
+    const useKey = !!CENSUS_KEY;
     const url = useKey ? baseUrl + `&key=${CENSUS_KEY}` : baseUrl;
 
     // Fetch — if keyed request fails, retry without key
@@ -343,7 +343,7 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     recipes: recipes.length,
     node: process.version,
-    census_key: CENSUS_KEY && CENSUS_KEY !== 'DEMO_KEY' ? 'set (' + CENSUS_KEY.slice(0,6) + '...)' : 'missing/demo',
+    census_key: CENSUS_KEY ? 'set (' + CENSUS_KEY.slice(0,6) + '...)' : 'NOT SET',
   });
 });
 
