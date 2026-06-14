@@ -623,7 +623,7 @@
   },
   {
     "title": "Rice and Beans",
-    "slot": "lunch",
+    "slot": "dinner",
     "cuisine": "latin",
     "ingredients": [
       "rice",
@@ -2021,18 +2021,19 @@
     "srv": 3
   },
   {
-    "title": "Ensalada de Frijoles",
+    "title": "Frijoles con Arroz Bowl",
     "slot": "lunch",
     "cuisine": "latin",
     "ingredients": [
       "beans",
+      "rice",
       "onions",
       "canned tomatoes",
       "oil",
       "salt"
     ],
-    "instructions": "Mix cooked beans with finely diced onion and tomato. Dress with oil and salt. Let sit 10 minutes for flavors to meld. Serve at room temperature.",
-    "tags": "no-cook,refreshing",
+    "instructions": "Cook rice. Fry onion in oil until soft. Add tomatoes, cook 3 minutes. Add beans with their liquid, simmer 10 minutes until thick. Season well. Serve beans over rice as a bowl. Top with raw diced onion if desired.",
+    "tags": "classic,vegan,filling",
     "avoid": [],
     "srv": 3
   },
@@ -2563,5 +2564,298 @@
       "gluten"
     ],
     "srv": 4
+  },
+  {
+    "title": "Black-Eyed Pea Soup",
+    "slot": "lunch",
+    "cuisine": "southern",
+    "ingredients": [
+      "beans",
+      "onions",
+      "garlic",
+      "canned tomatoes",
+      "oil",
+      "salt"
+    ],
+    "instructions": "Fry onion and garlic in oil until soft. Add tomatoes, cook 5 minutes. Add black-eyed peas and water to cover. Simmer 20 minutes until thick and creamy. Season generously with salt and pepper. Serve with cornbread if available.",
+    "tags": "classic,hearty",
+    "avoid": [],
+    "srv": 4
+  },
+  {
+    "title": "Sweet Potato Soup",
+    "slot": "lunch",
+    "cuisine": "southern",
+    "ingredients": [
+      "sweet potatoes",
+      "onions",
+      "milk",
+      "butter",
+      "salt"
+    ],
+    "instructions": "Peel and cube sweet potatoes. Boil in salted water with onion until very tender, about 20 minutes. Drain. Mash or blend until smooth. Stir in milk and butter. Reheat gently. Season with salt. Naturally sweet and filling.",
+    "tags": "creamy,vegan-adaptable",
+    "avoid": [
+      "dairy"
+    ],
+    "srv": 4
+  },
+  {
+    "title": "Chicken and Vegetable Soup",
+    "slot": "lunch",
+    "cuisine": "southern",
+    "ingredients": [
+      "chicken",
+      "carrots",
+      "onions",
+      "potatoes",
+      "garlic",
+      "salt"
+    ],
+    "instructions": "Cover chicken with water in a pot. Add onion, garlic, salt. Boil 25 minutes until cooked through. Remove chicken and shred. Return to pot with diced potatoes and carrots. Simmer 20 minutes until vegetables are tender. Season well.",
+    "tags": "hearty,healing",
+    "avoid": [
+      "meat"
+    ],
+    "srv": 6
+  },
+  {
+    "title": "Hoppin John Soup",
+    "slot": "lunch",
+    "cuisine": "southern",
+    "ingredients": [
+      "beans",
+      "rice",
+      "onions",
+      "garlic",
+      "oil",
+      "salt"
+    ],
+    "instructions": "Fry onion and garlic in oil until golden. Add black-eyed peas with water to cover. Simmer 15 minutes. Add cooked rice and enough water to make a thick soup. Season generously. The rice thickens the broth as it sits.",
+    "tags": "classic,quick",
+    "avoid": [],
+    "srv": 4
+  },
+  {
+    "title": "Smothered Potatoes",
+    "slot": "lunch",
+    "cuisine": "southern",
+    "ingredients": [
+      "potatoes",
+      "onions",
+      "milk",
+      "oil",
+      "flour",
+      "salt"
+    ],
+    "instructions": "Slice potatoes thin. Fry onion in oil until soft. Add potatoes, stir to coat. Add small amount of water, cover, cook 15 minutes until tender. Mix flour with milk and pour over. Cook until thick gravy forms. Season well.",
+    "tags": "creamy,filling",
+    "avoid": [
+      "dairy",
+      "gluten"
+    ],
+    "srv": 3
+  },
+  {
+    "title": "Bean and Sweet Potato Bowl",
+    "slot": "lunch",
+    "cuisine": "southern",
+    "ingredients": [
+      "beans",
+      "sweet potatoes",
+      "onions",
+      "oil",
+      "salt"
+    ],
+    "instructions": "Bake or boil sweet potato until tender. Fry onion in oil until soft. Add beans, heat through, season well. Split sweet potato open. Spoon beans over top. Mash slightly as you eat so the potato and beans combine.",
+    "tags": "simple,filling",
+    "avoid": [],
+    "srv": 2
+  },
+  {
+    "title": "Lentil and Tomato Soup",
+    "slot": "lunch",
+    "cuisine": "mediterranean",
+    "ingredients": [
+      "lentils",
+      "canned tomatoes",
+      "onions",
+      "garlic",
+      "oil",
+      "salt"
+    ],
+    "instructions": "Fry onion and garlic in oil until golden. Add tomatoes, cook 5 minutes pressing down. Add lentils and water to cover by 2 inches. Simmer 25 minutes until lentils are soft and starting to dissolve. Season generously. Add lemon juice if available.",
+    "tags": "classic,vegan",
+    "avoid": [],
+    "srv": 4
+  },
+  {
+    "title": "Bread and Bean Soup",
+    "slot": "lunch",
+    "cuisine": "mediterranean",
+    "ingredients": [
+      "bread",
+      "beans",
+      "onions",
+      "garlic",
+      "canned tomatoes",
+      "oil"
+    ],
+    "instructions": "Fry onion and garlic in oil. Add tomatoes, simmer 10 minutes. Add beans and water. Simmer 15 minutes. Tear in stale bread. Cook 5 more minutes until bread absorbs broth and thickens it. Season. This is ribollita-style.",
+    "tags": "bread-using,italian",
+    "avoid": [
+      "gluten"
+    ],
+    "srv": 4
+  },
+  {
+    "title": "Egg and Tomato Pan",
+    "slot": "lunch",
+    "cuisine": "mediterranean",
+    "ingredients": [
+      "eggs",
+      "canned tomatoes",
+      "onions",
+      "garlic",
+      "oil",
+      "salt"
+    ],
+    "instructions": "Fry onion and garlic in oil 3 minutes. Add tomatoes, season, simmer 10 minutes until thick. Create 3-4 wells in the sauce. Crack one egg into each well. Cover and cook on low until whites are set but yolks still soft, about 5 minutes. Serve from pan with bread.",
+    "tags": "quick,shakshuka-style",
+    "avoid": [
+      "eggs"
+    ],
+    "srv": 2
+  },
+  {
+    "title": "Pasta e Fagioli",
+    "slot": "lunch",
+    "cuisine": "mediterranean",
+    "ingredients": [
+      "pasta",
+      "beans",
+      "onions",
+      "garlic",
+      "canned tomatoes",
+      "oil"
+    ],
+    "instructions": "Fry onion and garlic. Add tomatoes, cook 5 minutes. Add beans with water. Simmer 10 minutes, mashing some beans for creaminess. Add small pasta directly to pot. Cook until pasta is tender, adding water as needed. Should be very thick. Season well.",
+    "tags": "italian,one-pot",
+    "avoid": [
+      "gluten"
+    ],
+    "srv": 4
+  },
+  {
+    "title": "Chickpea and Bread Salad",
+    "slot": "lunch",
+    "cuisine": "mediterranean",
+    "ingredients": [
+      "chickpeas",
+      "bread",
+      "canned tomatoes",
+      "onions",
+      "garlic",
+      "oil"
+    ],
+    "instructions": "Toast bread cubes in oil until golden and crispy. Dice tomatoes and onion. Mix chickpeas with tomatoes, onion and garlic. Dress with oil and salt. Add bread just before eating so it stays crisp. This is a panzanella-style salad.",
+    "tags": "bread-using,no-cook",
+    "avoid": [
+      "gluten"
+    ],
+    "srv": 3
+  },
+  {
+    "title": "Caldo de Pollo",
+    "slot": "lunch",
+    "cuisine": "latin",
+    "ingredients": [
+      "chicken",
+      "potatoes",
+      "carrots",
+      "onions",
+      "garlic",
+      "salt"
+    ],
+    "instructions": "Place chicken pieces in pot with water. Add whole onion, garlic, salt. Bring to boil, skim foam. Simmer 30 minutes. Add potato and carrot chunks. Cook 20 more minutes. Remove chicken, shred, return to broth. Season. A simple healing broth.",
+    "tags": "classic,healing",
+    "avoid": [
+      "meat"
+    ],
+    "srv": 6
+  },
+  {
+    "title": "Frijoles de Olla",
+    "slot": "lunch",
+    "cuisine": "latin",
+    "ingredients": [
+      "beans",
+      "onions",
+      "garlic",
+      "oil",
+      "salt"
+    ],
+    "instructions": "Soak beans overnight. Drain, cover with fresh water by 3 inches. Add halved onion and garlic. Simmer 1.5-2 hours until very tender and creamy. The broth becomes rich and thick. Season generously at the end only. Serve as a soup with tortillas.",
+    "tags": "traditional,slow-cooked",
+    "avoid": [],
+    "srv": 6
+  },
+  {
+    "title": "Tortilla Soup",
+    "slot": "lunch",
+    "cuisine": "latin",
+    "ingredients": [
+      "canned tomatoes",
+      "onions",
+      "garlic",
+      "tortillas",
+      "oil",
+      "salt"
+    ],
+    "instructions": "Blend tomatoes with onion and garlic. Fry this sauce in oil in a pot for 5 minutes. Add water to make a broth. Simmer 15 minutes. Season. Cut tortillas into strips and fry in oil until crispy. Serve soup topped with crispy tortilla strips.",
+    "tags": "warming,classic",
+    "avoid": [
+      "gluten"
+    ],
+    "srv": 4
+  },
+  {
+    "title": "Miso Soup with Rice",
+    "slot": "lunch",
+    "cuisine": "asian",
+    "ingredients": [
+      "soy sauce",
+      "tofu",
+      "onions",
+      "eggs",
+      "rice",
+      "oil"
+    ],
+    "instructions": "Bring water to simmer with soy sauce for broth. Add diced onion, cook 5 minutes. If using tofu, add cubed tofu. Beat eggs and stir slowly into simmering broth to form ribbons. Serve over or alongside steamed rice. Season.",
+    "tags": "light,warming",
+    "avoid": [
+      "eggs"
+    ],
+    "srv": 2
+  },
+  {
+    "title": "Dan Dan Noodles",
+    "slot": "lunch",
+    "cuisine": "asian",
+    "ingredients": [
+      "pasta",
+      "peanut butter",
+      "soy sauce",
+      "garlic",
+      "oil",
+      "carrots"
+    ],
+    "instructions": "Cook noodles until tender. Mix peanut butter, soy sauce, garlic and oil with hot water to make a thick sauce. Grate carrots. Drain noodles. Toss noodles with sauce and carrots. Add more hot water if sauce is too thick. Serve warm or at room temperature.",
+    "tags": "spicy-adaptable,filling",
+    "avoid": [
+      "peanuts",
+      "gluten"
+    ],
+    "srv": 2
   }
 ]
