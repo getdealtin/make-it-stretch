@@ -1026,6 +1026,7 @@ header h1 em {
 }
 .meal-chip:hover .meal-chip-recipe-btn { opacity: 0.7; }
 .meal-chip-recipe-btn:hover { opacity: 1 !important; }
+.meal-chip-name { font-weight: 700; }
 .meal-chip-cuisine {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 10px; opacity: .55;
@@ -3099,7 +3100,7 @@ async function buildWeekCards(cart, avoidItems){
               data-slot="${slot}"
               onclick="chooseMeal(this)"
               title="${(r.title||'').replace(/"/g,'&quot;')}">
-              ${newPill}${r.title||''}${cuisineTag}<span class="meal-chip-recipe-btn"
+              ${newPill}<span class="meal-chip-name">${r.title||''}</span>${cuisineTag}<span class="meal-chip-recipe-btn"
               data-recipe-id="${r.id}"
               onclick="event.stopPropagation();openRecipeByEl(this)">📖</span>
             </button>
