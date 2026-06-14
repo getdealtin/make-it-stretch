@@ -160,15 +160,29 @@ app.get('/api/census', async (req, res) => {
       'B01003_001E',  // Total population
     ].join(',');
 
-    const url = `https://api.census.gov/data/2022/acs/acs5?get=${variables}&for=zip%20code%20tabulation%20area:${zip}&key=${CENSUS_KEY}`;
-    const response = await fetch(url);
+    // Build URL — use real key if available, otherwise keyless (Census allows ~500 req/day)
+    const baseUrl = `https://api.census.gov/data/2022/acs/acs5?get=${variables}&for=zip%20code%20tabulation%20area:${zip}`;
+    const useKey = CENSUS_KEY && CENSUS_KEY !== 'DEMO_KEY';
+    const url = useKey ? baseUrl + `&key=${CENSUS_KEY}` : baseUrl;
 
-    if (!response.ok) {
-      // ZIP not found in Census — return graceful null
-      return res.json({ zip, found: false });
+    // Fetch — if keyed request fails, retry without key
+    let raw = null;
+    const tryFetch = async (fetchUrl) => {
+      const res = await fetch(fetchUrl);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        console.error(`Census ${fetchUrl.includes('key=') ? 'keyed' : 'keyless'} request failed for ${zip}: HTTP ${res.status} — ${errText.slice(0,150)}`);
+        return null;
+      }
+      return res.json();
+    };
+
+    raw = await tryFetch(url);
+    if (!raw && useKey) {
+      console.log(`Retrying Census without key for zip ${zip}`);
+      raw = await tryFetch(baseUrl);
     }
 
-    const raw = await response.json();
     if (!raw || raw.length < 2) return res.json({ zip, found: false });
 
     const headers = raw[0];
@@ -325,7 +339,12 @@ try {
 }
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', recipes: recipes.length, node: process.version });
+  res.json({
+    status: 'ok',
+    recipes: recipes.length,
+    node: process.version,
+    census_key: CENSUS_KEY && CENSUS_KEY !== 'DEMO_KEY' ? 'set (' + CENSUS_KEY.slice(0,6) + '...)' : 'missing/demo',
+  });
 });
 
 // Dishes that should never appear as standalone meals in a slot
