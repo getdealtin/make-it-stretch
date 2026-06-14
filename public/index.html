@@ -2182,7 +2182,7 @@ footer a:hover { color: var(--gold); }
               <button class="action-trigger" onclick="shareList()" id="action-share">
                 <span>⎋</span> Share
               </button>
-              <button class="action-trigger" onclick="window.print()">
+              <button class="action-trigger" onclick="logEvent('list_printed',{zip:answers.zip});window.print()">
                 <span>⎙</span> Print / PDF
               </button>
               <a class="action-trigger" href="/resources" target="_blank">
@@ -2312,6 +2312,20 @@ footer a:hover { color: var(--gold); }
 </footer>
 
 <script>
+// ━━ EVENT LOGGING ━━
+// Anonymous behavioral events — no PII, no tracking, no fingerprinting.
+// Events are fire-and-forget: UI never waits on them, failures are silent.
+// All validation happens server-side — this just sends the payload.
+async function logEvent(event, extras = {}) {
+  try {
+    fetch('/api/event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, ...extras }),
+    }).catch(() => {}); // silent failure — never blocks UI
+  } catch(e) {}
+}
+
 // ━━ STATE ━━
 const answers = {
   budget:null, people:null, days:null, zip:null,
@@ -2513,6 +2527,7 @@ function chooseMeal(btn){
   document.querySelectorAll(`[data-meal-key="${key}"]`).forEach(chip => {
     chip.classList.toggle('chosen', parseInt(chip.dataset.recipeId) === recipeId);
   });
+  logEvent('meal_swapped', { zip: answers.zip });
 }
 
 // ━━ RECIPE DRAWER — open by element data attribute ━━
@@ -2520,6 +2535,7 @@ function openRecipeByEl(btn){
   const recipeId = parseInt(btn.dataset.recipeId || btn.closest('[data-recipe-id]')?.dataset.recipeId);
   const r = recipeMap[recipeId];
   if(!r) return;
+  logEvent('recipe_opened', { zip: answers.zip });
   openRecipeDrawer(r.title, (r.instructions||'').slice(0,80), r.cuisine||'', r.ingredients||[], r.instructions||'');
 }
 
@@ -2590,6 +2606,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
 // ━━ MAIN CALCULATION ━━
 async function runCalculation(){
+  // Log anonymously — budget tier derived server-side, not exact amount
+  const pppd = answers.budget && answers.people && answers.days
+    ? +(answers.budget / answers.days / answers.people).toFixed(2) : 0;
+  const budget_tier = pppd < 5.36 ? 'low' : pppd < 10 ? 'medium' : 'high';
+  logEvent('budget_entered', { zip: answers.zip, budget_tier });
   answers.stores=multiSelections.store;
   answers.avoid=multiSelections.avoid;
   answers.have=multiSelections.have;
@@ -3530,6 +3551,7 @@ function buildListText(){
 }
 
 function emailList(){
+  logEvent('list_emailed', { zip: answers.zip });
   const btn=document.getElementById('action-email');
   const text=buildListText();
   if(!text){if(btn){const o=btn.innerHTML;btn.innerHTML='<span>○</span> No list yet';setTimeout(()=>btn.innerHTML=o,2000);}return;}
@@ -3544,6 +3566,7 @@ function emailList(){
 }
 
 function shareList(){
+  logEvent('list_shared', { zip: answers.zip });
   const btn=document.getElementById('action-share');
   const text=buildListText();
   if(!text) return;
