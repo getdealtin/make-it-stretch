@@ -2366,18 +2366,38 @@ const ALL_TIPS=[
   {text:'🫘 Canned beans are pre-cooked — open and eat, no stove needed. Best for rushed days.',needs:['chickpeas','blackbeans','kidneybean']},
 ];
 
-// ━━ MEAL CHIP SELECTION ━━
-// Cart is fixed by budget optimizer — chip selection is visual only
-// Recipes are suggestions for what to cook with what's in the cart
-function chooseMeal(key, recipeId, title, slot){
-  // Update choice state
-  mealChoices[key] = recipeId;
+// ━━ RECIPE LOOKUP MAP — populated when meal plan builds ━━
+const recipeMap = {};
 
-  // Update visual selection — deselect siblings, select clicked chip
-  const chipsInSlot = document.querySelectorAll(`[data-meal-key="${key}"]`);
-  chipsInSlot.forEach(chip => {
+// ━━ MEAL CHIP SELECTION ━━
+function chooseMeal(btn){
+  const key = btn.dataset.mealKey;
+  const recipeId = parseInt(btn.dataset.recipeId);
+  if(!key) return;
+  mealChoices[key] = recipeId;
+  document.querySelectorAll(`[data-meal-key="${key}"]`).forEach(chip => {
     chip.classList.toggle('selected', parseInt(chip.dataset.recipeId) === recipeId);
   });
+}
+
+// ━━ RECIPE DRAWER — open by element data attribute ━━
+function openRecipeByEl(btn){
+  const recipeId = parseInt(btn.dataset.recipeId || btn.closest('[data-recipe-id]')?.dataset.recipeId);
+  const r = recipeMap[recipeId];
+  if(!r) return;
+  openRecipeDrawer(r.title, (r.instructions||'').slice(0,80), r.cuisine||'', r.ingredients||[], r.instructions||'');
+}
+
+// ━━ WEEK ACCORDION ━━
+function toggleWeek(wi){
+  const card = document.getElementById(`week-${wi}`);
+  if(!card) return;
+  const body = card.querySelector('.week-body');
+  const toggle = card.querySelector('.week-toggle');
+  if(!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  if(toggle) toggle.textContent = isOpen ? '▼' : '▲';
 }
 
 
@@ -2722,7 +2742,13 @@ async function buildWeekCards(cart, avoidItems){
       return;
     }
     console.log('Recipe API response:', data.found, 'total:', data.total, 'breakfast:', data.bySlot?.breakfast?.length, 'lunch:', data.bySlot?.lunch?.length, 'dinner:', data.bySlot?.dinner?.length);
-    if(data.found) bySlot = data.bySlot;
+    if(data.found) {
+      bySlot = data.bySlot;
+      // Build recipe lookup map so chip clicks can find full recipe data
+      [...(bySlot.breakfast||[]), ...(bySlot.lunch||[]), ...(bySlot.dinner||[]), ...(bySlot.any||[])].forEach(r => {
+        recipeMap[r.id] = r;
+      });
+    }
   } catch(e) {
     console.error('Recipe fetch error:', e);
     wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Could not load recipes. Please try again.</div>';
@@ -2846,21 +2872,19 @@ async function buildWeekCards(cart, avoidItems){
         html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
         opts.forEach((r, i) => {
           const isSelected = i === 0;
-          const safeTitle = (r.title||'').replace(/'/g, "\'");
-          const safeDesc = (r.instructions||'').slice(0,80).replace(/'/g,"\'").replace(/\n/g,' ');
-          const safeInstr = (r.instructions||'').replace(/'/g,"\'").replace(/\n/g,' ');
-          const safeIngs = JSON.stringify(r.ingredients||[]);
           html += `<button class="meal-chip${isSelected?' selected':''}"
             data-meal-key="${key}"
             data-recipe-id="${r.id}"
-            onclick="chooseMeal('${key}',${r.id},'${safeTitle}','${slot}')"
-            title="${r.title}">
-            ${r.title}
+            data-slot="${slot}"
+            onclick="chooseMeal(this)"
+            title="${(r.title||'').replace(/"/g,'&quot;')}">
+            ${r.title||''}
             <button class="meal-chip-recipe-btn"
-              onclick="event.stopPropagation();openRecipeDrawer('${safeTitle}','${safeDesc}','${r.cuisine||''}',${safeIngs},'${safeInstr}')">📖</button>
+              data-recipe-id="${r.id}"
+              onclick="event.stopPropagation();openRecipeByEl(this)">📖</button>
           </button>`;
         });
-        html += `</div></div>`;
+                html += `</div></div>`;
       });
       html += `</div></div>`;
     });
