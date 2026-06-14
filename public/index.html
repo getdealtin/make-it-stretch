@@ -3393,12 +3393,34 @@ async function loadResources(zip,state){
 }
 
 // ━━ RECIPE DRAWER ━━
-function openRecipeDrawer(mealName, mealDesc, cuisine){
+function openRecipeDrawer(mealName, mealDesc, cuisine, needsStr){
   const drawer=document.getElementById('recipe-drawer');
   const overlay=document.getElementById('drawer-overlay');
   const titleEl=document.getElementById('drawer-title');
   const eyebrowEl=document.getElementById('drawer-eyebrow');
   const bodyEl=document.getElementById('recipe-drawer-body');
+
+  // Look up needs from mealOptions if not passed directly
+  let needs = needsStr || '';
+  if(!needs){
+    // Search all mealOptions slots for this meal name
+    for(const key of Object.keys(mealOptions)){
+      const opts = mealOptions[key];
+      for(const opt of Object.values(opts)){
+        if(opt && opt.name === mealName && opt.needs){
+          needs = opt.needs.join(',');
+          break;
+        }
+      }
+      if(needs) break;
+    }
+    // Also check MEAL_LIBRARY and DISCOVER_MEALS directly
+    if(!needs){
+      const all = [...Object.values(MEAL_LIBRARY).flat(), ...DISCOVER_MEALS];
+      const found = all.find(m => m.name === mealName);
+      if(found && found.needs) needs = found.needs.join(',');
+    }
+  }
 
   // Open immediately with loading state
   titleEl.textContent=mealName;
@@ -3411,8 +3433,7 @@ function openRecipeDrawer(mealName, mealDesc, cuisine){
   overlay.classList.add('open');
   document.body.style.overflow='hidden';
 
-  // Search TheMealDB — try the meal name, fall back to first keyword
-  fetchMealRecipe(mealName, mealDesc, bodyEl);
+  fetchMealRecipe(mealName, mealDesc, needs, bodyEl);
 }
 
 function closeRecipeDrawer(){
@@ -3421,11 +3442,10 @@ function closeRecipeDrawer(){
   document.body.style.overflow='';
 }
 
-async function fetchMealRecipe(mealName, mealDesc, bodyEl){
+async function fetchMealRecipe(mealName, mealDesc, needs, bodyEl){
   try{
-    // Call our own server proxy — TheMealDB search + relevance validation happens server-side
-    // Server caches results for 7 days so repeat lookups are instant
-    const res=await fetch(`/api/recipe?name=${encodeURIComponent(mealName)}`);
+    const url=`/api/recipe?name=${encodeURIComponent(mealName)}${needs?'&needs='+encodeURIComponent(needs):''}`;
+    const res=await fetch(url);
     const data=await res.json();
     if(data.found && data.meal){
       renderRecipeDrawer(data.meal, bodyEl);
@@ -3451,6 +3471,7 @@ function renderRecipeDrawer(meal, bodyEl){
     <div class="drawer-meta">
       ${meal.category?`<span class="drawer-meta-pill">${meal.category}</span>`:''}
       ${meal.area?`<span class="drawer-meta-pill">${meal.area}</span>`:''}
+      ${meal.readyInMinutes?`<span class="drawer-meta-pill">⏱ ${meal.readyInMinutes} min</span>`:''}
     </div>
     ${ingHTML?`
       <span class="drawer-section-label">Ingredients</span>
