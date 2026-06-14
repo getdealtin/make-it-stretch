@@ -504,7 +504,8 @@ app.get('/api/health', (req, res) => {
     recipes: recipes.length,
     node: process.version,
     census_key:   CENSUS_KEY   ? 'set (' + CENSUS_KEY.slice(0,6)   + '...)' : 'NOT SET',
-    supabase:     SUPABASE_URL ? 'configured' : 'NOT SET',
+    supabase_url: SUPABASE_URL ? SUPABASE_URL.slice(0, 40) : 'NOT SET',
+    supabase_key: SUPABASE_KEY ? 'set (' + SUPABASE_KEY.slice(0,8) + '...)' : 'NOT SET',
   });
 });
 
