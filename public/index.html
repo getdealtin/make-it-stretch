@@ -2817,10 +2817,12 @@ async function buildWeekCards(cart, avoidItems){
     const pool = pools[slot] || allRecipes;
     if(!pool.length) return { opts:[], discover:null };
 
-    const PRIME = 7;
+    const PRIME = 13;
+    // Heavy repeat penalty: each prior use adds 5000 to score (higher = ranked lower)
+    // Offset by position + day so different days naturally pick different dishes
     const scored = pool.map((r, idx) => ({
       r,
-      score: (mealUse[r.id]||0) * 2000 + ((idx + globalDay * PRIME) % pool.length)
+      score: (mealUse[r.id]||0) * 5000 + ((idx + globalDay * PRIME) % Math.max(pool.length, 1))
     }));
     scored.sort((a,b) => a.score - b.score);
 
