@@ -313,56 +313,80 @@ app.get('/api/food-resources', async (req, res) => {
 // ────────────────────────────────────────────────
 // API: RECIPE LOOKUP — TheMealDB proxy
 // Searches TheMealDB server-side and validates relevance
-// before returning to the client — prevents wrong matches
 // Cache: 7 days (recipes don't change)
 // ────────────────────────────────────────────────
 const RECIPE_CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
+
+// Meals that have no correct TheMealDB match — return not-found immediately
+// Add any meal name here that consistently returns wrong results
+const NO_SEARCH = new Set([
+  'Biscuits & Gravy', 'Fried Catfish & Grits', "Hoppin' John",
+  'Grits & Egg', 'Collard-Style Cabbage', 'Cornmeal Porridge',
+  'Bean & Cornmeal Stew', 'Cornbread & Beans', 'Sweet Potato & Chicken',
+  'Egg & Sweet Potato Hash', 'Cabbage & Potato Fry', 'Potato & Onion Fry',
+  'Garlic Cabbage & Rice', 'Oat Porridge with Soy', 'Stir-Fried Vegetables',
+  'Rice & Peanut Butter', 'Cabbage & Egg Stir Fry', 'Cabbage & Tofu Bowl',
+  'Bean & Garlic Rice', 'Tofu & Cabbage Bowl', 'Rice Noodle Bowl',
+  'Peanut Butter & Banana', 'Peanut Butter Toast', 'Bean Soup & Bread',
+  'Potato Salad Bowl', 'Pork & Bean Stew', 'Sweet Potato & Bean Bowl',
+  'Ground Beef & Rice', 'Cabbage & Potato Fry', 'Potato & Onion Fry',
+  'Rice & Beans', 'Egg Scramble', 'Simple Oatmeal', 'Bean Stew',
+  'Vegetable Soup', 'Pasta & Sauce', 'Chicken & Rice', 'Tuna Rice Bowl',
+  'Scrambled Eggs & Toast', 'Oatmeal & Banana', 'Oatmeal with Banana',
+  'Oatmeal with Applesauce', 'Congee (Rice Porridge)', 'Noodle Soup',
+  'Coconut Rice', 'Chicken & Soy Rice', 'Chicken & Cornbread',
+  'Fried Egg & Rice', 'Corn Porridge', 'Frijoles de Olla',
+  'Avena (Oatmeal)', 'Caldo de Res (Beef Soup)', 'Arroz con Huevo',
+  'Huevos con Tortilla', 'Sopa de Verduras', 'Tortillas con Frijoles',
+  'Gallo Pinto', 'Rice & Beans (Arroz y Frijoles)', 'Lentil & Tomato Stew',
+]);
 
 app.get('/api/recipe', async (req, res) => {
   const { name } = req.query;
   if (!name) return res.status(400).json({ found: false });
 
+  // Check no-search list first
+  if (NO_SEARCH.has(name)) {
+    return res.json({ found: false, name, reason: 'no-match' });
+  }
+
   const cacheKey = `recipe:${name.toLowerCase()}`;
   const cached = getCached(cacheKey);
   if (cached) return res.json({ ...cached, _cached: true });
 
-  // Words too generic to count as a meaningful match
+  // Words too generic to use as match criteria
   const GENERIC = new Set([
     'with','and','the','for','from','over','slow','baked','fried','cooked',
-    'bean','beans','soup','stew','bowl','bread','sauce','rice','egg','eggs',
-    'simple','easy','quick','mixed','style','meat','milk','cream','salt',
-    'spicy','sweet','savory','grilled','roasted','steamed'
+    'soup','stew','bowl','bread','sauce','egg','eggs','simple','easy',
+    'quick','mixed','style','meat','milk','cream','salt','spicy','sweet',
+    'savory','grilled','roasted','steamed','cake','pie'
   ]);
 
-  // Extract meaningful words from a meal name
   const distinctive = (str) =>
     str.toLowerCase()
        .replace(/[^a-z\s]/g, ' ')
        .split(/\s+/)
-       .filter(w => w.length >= 3 && !GENERIC.has(w))
+       .filter(w => w.length >= 4 && !GENERIC.has(w))
        .sort((a, b) => b.length - a.length);
 
-  // A result is relevant if at least one distinctive query word
-  // appears in the result name AND the result name doesn't add
-  // unrelated distinctive words that contradict the query
+  // Require ALL top distinctive query words to appear in the result
+  // This prevents "Peanut Butter & Banana" matching "Peanut Butter Cookies"
   const isRelevant = (queryName, resultName) => {
-    const qWords = distinctive(queryName);
+    const qWords = distinctive(queryName).slice(0, 2);
+    if (!qWords.length) return false; // no distinctive words = no confident match
     const rStr = resultName.toLowerCase().replace(/[^a-z\s]/g, ' ');
-    if (!qWords.length) return true;
-    // Top 2 distinctive words — at least one must match
-    return qWords.slice(0, 2).some(w => rStr.includes(w));
+    // ALL top words must match (not just one)
+    return qWords.every(w => rStr.includes(w));
   };
 
   try {
-    // Clean the search term
     const clean = name
-      .replace(/\(.*?\)/g, '')   // remove parentheticals
+      .replace(/\(.*?\)/g, '')
       .replace(/[&]/g, 'and')
       .replace(/[^a-zA-Z\s]/g, ' ')
       .trim()
       .split(' ').slice(0, 3).join(' ');
 
-    // Try 1: search by full cleaned name
     const r1 = await fetch(
       `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(clean)}`,
       { headers: { 'User-Agent': 'getdealtin/1.0' } }
@@ -376,24 +400,7 @@ app.get('/api/recipe', async (req, res) => {
       return res.json(result);
     }
 
-    // Try 2: search by the single most distinctive word
-    const topWord = distinctive(clean)[0];
-    if (topWord && topWord !== clean.toLowerCase()) {
-      const r2 = await fetch(
-        `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(topWord)}`,
-        { headers: { 'User-Agent': 'getdealtin/1.0' } }
-      );
-      const d2 = await r2.json();
-      const match2 = (d2.meals || []).find(m => isRelevant(name, m.strMeal));
-
-      if (match2) {
-        const result = { found: true, meal: formatMeal(match2) };
-        setCache(cacheKey, result);
-        return res.json(result);
-      }
-    }
-
-    // No confident match found
+    // No confident match
     const result = { found: false, name };
     setCache(cacheKey, result);
     res.json(result);
