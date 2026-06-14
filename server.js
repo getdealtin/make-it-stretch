@@ -343,9 +343,11 @@ app.get('/api/recipes-for-cart', (req, res) => {
       const recipeIngs = Array.isArray(r.ingredients) ? r.ingredients : [];
       const recipeAvoids = Array.isArray(r.avoid) ? r.avoid : [];
 
-      // Filter by cuisine
+      // Filter by cuisine — lowercase both sides to prevent case mismatch
+      const rc = (r.cuisine || '').toLowerCase();
       if (selectedCuisines.length && !selectedCuisines.includes('any')) {
-        if (!selectedCuisines.includes(r.cuisine) && r.cuisine !== 'any' && r.slot !== 'any') {
+        const cuisineLower = selectedCuisines.map(c => c.toLowerCase());
+        if (!cuisineLower.includes(rc) && rc !== 'any') {
           return null;
         }
       }
@@ -353,7 +355,7 @@ app.get('/api/recipes-for-cart', (req, res) => {
       // Filter avoided ingredients
       if (avoidList.some(a => recipeAvoids.includes(a))) return null;
 
-      // Score by ingredient match
+      // Score by ingredient match — 1 match minimum (2 was too strict, caused wrong-cuisine bleed)
       const matchScore = cartIngredients.filter(cartIng =>
         recipeIngs.some(recipeIng =>
           typeof recipeIng === 'string' && (
@@ -363,17 +365,18 @@ app.get('/api/recipes-for-cart', (req, res) => {
         )
       ).length;
 
-      if (matchScore < 2) return null;
+      if (matchScore < 1) return null;
 
       return { ...r, matchScore };
     }).filter(Boolean);
 
     scored.sort((a, b) => b.matchScore - a.matchScore);
 
+    // Cap at 20 per slot — 12 was too few for 30-day plans causing empty slot bleed
     const bySlot = { breakfast: [], lunch: [], dinner: [], any: [] };
     for (const r of scored) {
-      const slot = bySlot[r.slot] ? r.slot : 'any';
-      if (bySlot[slot].length < 12) bySlot[slot].push(r);
+      const slot = (r.slot && bySlot[r.slot] !== undefined) ? r.slot : 'any';
+      if (bySlot[slot].length < 20) bySlot[slot].push(r);
     }
 
     res.json({ found: true, bySlot, total: scored.length });
