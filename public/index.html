@@ -313,8 +313,8 @@ header h1 em {
 .pulse-chapter { padding: 0; }
 .pulse-chapter-label {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 9px; font-weight: 800; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--gold);
+  font-size: 10px; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #E8922F;
   margin-bottom: 8px;
 }
 .pulse-chapter-lead {
@@ -343,11 +343,11 @@ header h1 em {
 }
 .pulse-senator {
   padding: 10px 12px; border-radius: 6px;
-  border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
 }
-.pulse-senator.vote-protect { border-color: rgba(58,122,80,.4); background: rgba(58,122,80,.08); }
-.pulse-senator.vote-cut     { border-color: rgba(184,60,43,.35); background: rgba(184,60,43,.08); }
+.pulse-senator.vote-protect { border-color: rgba(93,184,122,.5); background: rgba(58,122,80,.12); }
+.pulse-senator.vote-cut     { border-color: rgba(248,113,113,.4); background: rgba(184,60,43,.12); }
 .pulse-sen-name {
   font-size: 11px; font-weight: 700;
   color: rgba(250,248,245,.9);
@@ -3618,7 +3618,7 @@ function populateSystemPulse(state, pppd, people, days, censusData){
     if (!rep) return '';
     const v = hrVote.votes[rep.party] || 'NV';
     const cls = v === 'N' ? 'vote-protect' : v === 'Y' ? 'vote-cut' : '';
-    const col = v === 'Y' ? 'var(--red)' : v === 'N' ? 'var(--green)' : 'var(--ink3)';
+    const col = v === 'Y' ? '#f87171' : v === 'N' ? '#5db87a' : 'rgba(250,248,245,.5)';
     const label = v === 'Y' ? 'VOTED YES — cut SNAP' : v === 'N' ? 'VOTED NO — protect SNAP' : 'Not recorded';
     return `<div class="pulse-senator ${cls}">
       <div class="pulse-sen-name">${rep.name}</div>
