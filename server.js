@@ -379,12 +379,14 @@ const VALID_EVENTS = new Set([
   'meal_swapped',
   'brand_clicked',
   'online_alt_clicked',
+  'item_checked',
   'recipe_opened',
   'list_emailed',
   'list_printed',
   'list_shared',
   'snap_screener_clicked',
   'foodbank_clicked',
+  'resource_clicked',
   'wic_clicked',
 ]);
 
