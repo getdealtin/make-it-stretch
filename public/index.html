@@ -3783,27 +3783,11 @@ function initDonation(){
 
 }
 
-async function launchStripe(){
+function launchStripe(){
   const btn = document.getElementById('stripe-checkout-btn');
-  if(!_stripe){
-    // Stripe key not yet configured — open Stripe payment link as fallback
-    // Replace with your Stripe payment link from dashboard.stripe.com/payment-links
-    window.open('https://buy.stripe.com/28EcN7giU7JS6LM53kfQI00','_blank');
-    return;
-  }
   if(btn){ btn.querySelector('.stripe-btn-main').textContent='Opening...'; }
-  try {
-    // Replace 'price_XXXXX' with your Stripe Price ID
-    const {error} = await _stripe.redirectToCheckout({
-      lineItems:[{price:'price_1ThuuEPo7HmLEBd46gDEuDma', quantity:1}],
-      mode:'payment',
-      successUrl: window.location.origin+'?donated=1',
-      cancelUrl: window.location.href,
-    });
-    if(error && btn) btn.querySelector('.stripe-btn-main').textContent='Contribute';
-  } catch(e){
-    if(btn) btn.querySelector('.stripe-btn-main').textContent='Contribute';
-  }
+  window.open('https://buy.stripe.com/28EcN7giU7JS6LM53kfQI00','_blank');
+  setTimeout(()=>{ if(btn) btn.querySelector('.stripe-btn-main').textContent='Contribute'; }, 1500);
 }
 
 // ━━ RESTART ━━
