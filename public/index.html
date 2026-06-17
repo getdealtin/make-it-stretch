@@ -2922,7 +2922,7 @@ async function loadCensusData(zip,state,people,pppd){
     const medInc=d.medianIncome||0;
     const total=d.totalHouseholds;
 
-    document.getElementById('sol-headline').textContent='You\'re one of '+snapH.toLocaleString()+' households in zip '+zip+' navigating food costs right now.';
+    document.getElementById('sol-headline').textContent='You\'re one of '+total.toLocaleString()+' households in zip '+zip+' navigating food costs right now.';
     document.getElementById('sol-stats').innerHTML=
       '<div class="sol-stat"><div class="sol-stat-val">'+snapPct+'%</div><div class="sol-stat-label">households receiving<br>SNAP in your zip</div></div>'+
       '<div class="sol-stat"><div class="sol-stat-val">'+povPct+'%</div><div class="sol-stat-label">below the<br>poverty line</div></div>'+
@@ -2932,7 +2932,7 @@ async function loadCensusData(zip,state,people,pppd){
     let desc='';
     if(snapPct>20)desc='<strong>More than 1 in 5 households</strong> in your zip code receives SNAP benefits. Food insecurity here is not a personal failure — it\'s a community-wide reality shaped by wages, housing costs, and policy decisions. ';
     else if(snapPct>10)desc='<strong>Roughly 1 in 10 households</strong> in your area receives food assistance. ';
-    else desc='<strong>Thousands of families</strong> across your zip code are working with similar budgets. ';
+    else desc='<strong>'+total.toLocaleString()+' households</strong> across your zip code are navigating similar budgets. ';
     if(pppd<5)desc+='At $'+pppd+'/person/day, you may qualify for SNAP. See the Get Help section below.';
     document.getElementById('sol-desc').innerHTML=desc;
     el.classList.add('visible');
@@ -3130,7 +3130,7 @@ async function buildWeekCards(cart, avoidItems){
   weeks.forEach((weekDays, wi) => {
     const activeDays = weekDays.filter(d => !d.leftover);
     const weekStart = weekDays[0]?.dayName || 'Mon';
-    const weekEnd = weekDays[weekDays.length-1]?.dayName || 'Sun';
+    const weekEnd = activeDays[activeDays.length-1]?.dayName || weekDays[weekDays.length-1]?.dayName || 'Sun';
     const isOpen = wi === 0;
 
     html += `<div class="week-card" id="week-${wi}">
@@ -3138,10 +3138,10 @@ async function buildWeekCards(cart, avoidItems){
         <div>
           <div class="week-label">WEEK ${wi+1}</div>
           <div class="week-title">${weekStart} – ${weekEnd}</div>
-          <div class="week-subtitle">${activeDays.length} days · ${cuisineLabel}</div>
+          <div class="week-subtitle">${weekDays.length} days · ${cuisineLabel}</div>
         </div>
         <div style="display:flex;align-items:center;gap:12px">
-          <span class="week-day-count" style="color:var(--gold);font-size:13px;font-weight:600">${activeDays.length} day${activeDays.length===1?'':'s'}</span>
+          <span class="week-day-count" style="color:var(--gold);font-size:13px;font-weight:600">${weekDays.length} day${weekDays.length===1?'':'s'}</span>
           <span class="week-toggle">▲</span>
         </div>
       </div>
