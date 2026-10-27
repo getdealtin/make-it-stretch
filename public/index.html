@@ -3343,7 +3343,7 @@ function saveCorrection(){
   const val=document.getElementById('corr-input').value.trim();
   if(!val||!brandState.correcting)return;
   brandState.corrections[brandState.correcting.id]={userPrice:val,brand:brandState.correcting.brand,food:brandState.correcting.food,date:new Date().toLocaleDateString()};
-  logEvent('price_correction_saved', {zip:answers.zip, item:brandState.correcting.food});
+  logEvent('price_correction_saved', {zip:answers.zip, item:brandState.correcting.food, price:val});
   document.getElementById('corr-overlay').classList.remove('open');
   brandState.correcting=null;
   renderBrandDetail(brandState.selectedFood);

@@ -443,7 +443,7 @@ app.post('/api/event', async (req, res) => {
 
   const { event, zip, item, retailer, budget_tier, session_id,
           pppd, people_tier, days_tier,
-          budget, people, days, stores, avoid, leftover } = req.body;
+          budget, people, days, stores, avoid, leftover, price } = req.body;
 
   // Strict allowlist validation — reject anything not in our known set
   if (!VALID_EVENTS.has(event)) {
@@ -465,6 +465,7 @@ app.post('/api/event', async (req, res) => {
   const safeStores     = typeof stores === 'string' && stores.length < 100 ? stores : null;
   const safeAvoid      = typeof avoid === 'string' && avoid.length < 100 ? avoid : null;
   const safeLeftover   = ['yes','sometimes','no'].includes(leftover) ? leftover : null;
+  const safePrice      = (typeof price === 'string' && price.trim().length > 0 && price.trim().length <= 40) ? price.trim() : null;
 
   try {
     // Parameterized insert via Supabase REST API
@@ -493,6 +494,7 @@ app.post('/api/event', async (req, res) => {
         stores:      safeStores,
         avoid:       safeAvoid,
         leftover:    safeLeftover,
+        price:       safePrice,
       }),
     });
 
@@ -761,6 +763,7 @@ function renderDashboard(d) {
   const card = (label, val) => `<div class="card"><div class="cv">${val == null ? '—' : esc(val)}</div><div class="cl">${label}</div></div>`;
   const evRows = (d.events_by_type || []).map(o => `<tr><td>${esc(o.event)}</td><td class="num">${esc(o.n)}</td></tr>`).join('') || '<tr><td colspan="2" class="dim">none yet</td></tr>';
   const zipRows = (d.top_zips || []).map(o => `<tr><td>${esc(o.zip)}</td><td class="num">${esc(o.sessions)}</td></tr>`).join('') || '<tr><td colspan="2" class="dim">no area has enough sessions to show yet</td></tr>';
+  const prRows = (d.price_reports || []).map(o => `<tr><td>${esc(o.item)}</td><td>${esc(o.zip)}</td><td class="num">${esc(o.price)}</td><td class="dim" style="font-family:'IBM Plex Mono',monospace;font-size:12px">${o.ts ? esc(new Date(o.ts).toISOString().slice(5, 16).replace('T', ' ')) : ''}</td></tr>`).join('') || `<tr><td colspan="4" class="dim">no price reports yet — they'll appear here as people correct shelf prices</td></tr>`;
   const enRows = [
     ['Meals swapped', en.meals_swapped], ['Items checked', en.items_checked],
     ['Lists printed', en.lists_printed], ['Lists emailed', en.lists_emailed],
@@ -823,6 +826,9 @@ ${bar('High', bt.high, 'var(--green)')}
 <h2>Where — top areas</h2>
 <table><tr><td><strong>Zip</strong></td><td class="num"><strong>Sessions</strong></td></tr>${zipRows}</table>
 <p class="note">Private operator view — all areas shown. Apply small-cell suppression only when you export a report for an outside party, so no shared row can point at a household.</p>
+<h2>Real prices people reported${d.price_reports_total ? ` (${d.price_reports_total})` : ''}</h2>
+<table><tr><td><strong>Item</strong></td><td><strong>Zip</strong></td><td class="num"><strong>Reported price</strong></td><td><strong>When</strong></td></tr>${prRows}</table>
+<p class="note">What people actually typed when correcting a shelf price — real-world ground truth to compare against the BLS estimates. Free-form entries, so units vary.</p>
 </div></body></html>`;
 }
 
