@@ -394,6 +394,7 @@ const VALID_EVENTS = new Set([
   'price_correction_saved',
   'restarted',
   'preference_selected',
+  'page_view',
 ]);
 
 const VALID_ITEMS = new Set([
@@ -665,5 +666,124 @@ app.get('/api/recipes-for-cart', (req, res) => {
   }
 });
 
+
+// ────────────────────────────────────────────────
+// API: PING — public keep-alive. Touches Supabase so the free-tier
+// project's inactivity timer resets. Returns no data. The scheduled
+// keep-alive workflow calls this (it needs no key, unlike /api/stats).
+// ────────────────────────────────────────────────
+app.get('/api/ping', async (req, res) => {
+  if (SUPABASE_URL && SUPABASE_KEY) {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/events?select=id&limit=1`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+      });
+    } catch (e) { /* best-effort */ }
+  }
+  res.json({ ok: true, ts: new Date().toISOString() });
+});
+
+// ────────────────────────────────────────────────
+// DASHBOARD — hidden internal analytics page at /dash.
+// Protected by STATS_KEY: without the correct ?key= it returns a plain
+// 404, so the page is invisible to anyone without the link. Reads only
+// the aggregated, k-anonymized `dashboard` view — never raw rows.
+// ────────────────────────────────────────────────
+app.get('/dash', async (req, res) => {
+  const { key } = req.query;
+  if (!process.env.STATS_KEY || key !== process.env.STATS_KEY) {
+    return res.status(404).send('<!doctype html><title>Not found</title><h1>404 — Not found</h1>');
+  }
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    return res.status(503).send('Database not configured.');
+  }
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/dashboard?select=summary`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+    });
+    const rows = await r.json();
+    const d = (Array.isArray(rows) && rows[0] && rows[0].summary) ? rows[0].summary : null;
+    if (!d) return res.status(500).send('No dashboard data returned.');
+    res.set('Content-Type', 'text/html; charset=utf-8').send(renderDashboard(d));
+  } catch (err) {
+    console.error('Dashboard error:', err.message);
+    res.status(500).send('Error loading dashboard.');
+  }
+});
+
+function renderDashboard(d) {
+  const t = d.totals || {}, en = d.engagement || {}, bt = d.budget_tiers || {};
+  const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+  const last = t.last_event ? new Date(t.last_event) : null;
+  const ageH = last ? Math.round((Date.now() - last.getTime()) / 3600000) : null;
+  const fresh = ageH != null && ageH <= 48;
+  const stamp = dt => dt ? new Date(dt).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : '—';
+  const card = (label, val) => `<div class="card"><div class="cv">${val == null ? '—' : esc(val)}</div><div class="cl">${label}</div></div>`;
+  const evRows = (d.events_by_type || []).map(o => `<tr><td>${esc(o.event)}</td><td class="num">${esc(o.n)}</td></tr>`).join('') || '<tr><td colspan="2" class="dim">none yet</td></tr>';
+  const zipRows = (d.top_zips || []).map(o => `<tr><td>${esc(o.zip)}</td><td class="num">${esc(o.sessions)}</td></tr>`).join('') || '<tr><td colspan="2" class="dim">no area has enough sessions to show yet</td></tr>';
+  const enRows = [
+    ['Meals swapped', en.meals_swapped], ['Items checked', en.items_checked],
+    ['Lists printed', en.lists_printed], ['Lists emailed', en.lists_emailed],
+    ['Lists shared', en.lists_shared], ['Brand prices viewed', en.brand_clicks],
+    ['SNAP screener clicks', en.snap_clicks], ['Food-bank clicks', en.foodbank_clicks],
+  ].map(([l, v]) => `<tr><td>${l}</td><td class="num">${v == null ? '—' : esc(v)}</td></tr>`).join('');
+  const tierTotal = (bt.low || 0) + (bt.medium || 0) + (bt.high || 0);
+  const bar = (label, v, color) => { const pct = tierTotal ? Math.round((v || 0) / tierTotal * 100) : 0; return `<div class="barrow"><span class="bl">${label}</span><span class="bt"><span class="bf" style="width:${pct}%;background:${color}"></span></span><span class="bn">${v || 0} · ${pct}%</span></div>`; };
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard · Make It Stretch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B3624;--ink2:#3E4A42;--ink3:#6b7a70;--bg:#FAF8F5;--bg2:#fff;--border:#DDD9D1;--gold:#D9822B;--green:#2e7d50;--red:#c0492f}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;padding:28px 18px 80px}
+.wrap{max-width:860px;margin:0 auto}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+h1{font-family:'Lora',serif;font-size:30px;margin:6px 0 2px}
+.status{font-family:'IBM Plex Mono',monospace;font-size:12px;margin:10px 0 24px;color:var(--ink2)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:8px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 16px}
+.cv{font-family:'Lora',serif;font-size:30px;font-weight:700;color:var(--ink)}
+.cl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-top:4px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+h2{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:28px 0 10px}
+table{width:100%;border-collapse:collapse;background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
+tr:last-child td{border-bottom:none}
+.num{text-align:right;font-family:'IBM Plex Mono',monospace;font-weight:600}
+.dim{color:var(--ink3);font-style:italic}
+.barrow{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+.bl{width:72px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--ink2)}
+.bt{flex:1;height:14px;background:#eceae4;border-radius:7px;overflow:hidden}
+.bf{display:block;height:100%}
+.bn{width:92px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink2)}
+.note{font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.6}
+@media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<p class="eyebrow">Make It Stretch · Internal</p>
+<h1>Dashboard</h1>
+<p class="status"><span class="dot" style="background:${fresh ? 'var(--green)' : 'var(--red)'}"></span>Last activity: ${stamp(t.last_event)}${ageH != null ? ` (${ageH < 1 ? 'under 1h' : ageH + 'h'} ago)` : ''} — ${fresh ? 'logging looks live' : 'no recent events'} &nbsp;·&nbsp; generated ${stamp(Date.now())}</p>
+<div class="grid">
+${card('Visits', t.visits)}
+${card('Sessions', t.distinct_sessions)}
+${card('Plans built', t.plans_built)}
+${card('Total events', t.total_events)}
+</div>
+<p class="note">A "visit" is any page load; a "session" is a visit that did something; a "plan built" means the person completed the intake.</p>
+<div class="cols">
+<div><h2>Events by type</h2><table>${evRows}</table></div>
+<div><h2>Engagement</h2><table>${enRows}</table></div>
+</div>
+<h2>Budget pressure (per-person-per-day)</h2>
+${bar('Low', bt.low, 'var(--red)')}
+${bar('Medium', bt.medium, 'var(--gold)')}
+${bar('High', bt.high, 'var(--green)')}
+<p class="note">"Low" = below the USDA Thrifty Food Plan line (about $5.36/person/day). Based on ${tierTotal} completed plan${tierTotal === 1 ? '' : 's'}.</p>
+<h2>Where — top areas</h2>
+<table><tr><td><strong>Zip</strong></td><td class="num"><strong>Sessions</strong></td></tr>${zipRows}</table>
+<p class="note">Areas with fewer than 5 sessions are hidden so no row can point at a household${d.zips_suppressed ? ` (${d.zips_suppressed} area${d.zips_suppressed == 1 ? '' : 's'} hidden)` : ''}. The Visits count begins filling once this update is deployed.</p>
+</div></body></html>`;
+}
 
 app.listen(PORT, () => console.log(`Make It Stretch running on port ${PORT}`));

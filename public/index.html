@@ -2329,6 +2329,9 @@ function logEvent(event, extras = {}) {
   } catch(e) {}
 }
 
+// Count this visit — fires once per page load.
+logEvent('page_view', {});
+
 // ── AUTO-CAPTURE ──────────────────────────────────────────────
 // A single delegated click listener on the document.
 // Any element with data-event="event_name" is tracked automatically.
