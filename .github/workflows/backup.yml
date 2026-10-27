@@ -1,0 +1,47 @@
+name: Weekly database backup
+
+# Supabase's free tier keeps no backups. This dumps the database once a week
+# to a compressed GitHub Actions artifact (retained 90 days, then auto-deleted).
+# The dump lives on GitHub, not in Supabase, so it uses none of your Supabase
+# storage. The whole DB is a few MB, so each backup is tiny.
+#
+# SETUP (one time): add a repository secret named SUPABASE_DB_URL with your
+# Supabase connection string (Supabase dashboard -> Project Settings ->
+# Database -> Connection string -> URI, including the password). Use the
+# direct connection or the Session pooler string, not the Transaction pooler.
+
+on:
+  schedule:
+    - cron: "23 8 * * 0"   # Sundays ~03:23 US Central
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PostgreSQL 17 client
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Dump database
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$DB_URL" ]; then
+            echo "SUPABASE_DB_URL secret is not set — see the setup note in this file." >&2
+            exit 1
+          fi
+          STAMP=$(date -u +%Y%m%d)
+          pg_dump "$DB_URL" --no-owner --no-privileges | gzip -9 > "backup-$STAMP.sql.gz"
+          ls -lh "backup-$STAMP.sql.gz"
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup-${{ github.run_id }}
+          path: backup-*.sql.gz
+          retention-days: 90
+          if-no-files-found: error
