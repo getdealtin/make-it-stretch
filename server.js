@@ -64,7 +64,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.ht
 app.get('/about', (req, res) => res.sendFile(path.join(__dirname, 'public', 'about.html')));
 app.get('/resources', (req, res) => res.sendFile(path.join(__dirname, 'public', 'resources.html')));
 app.use((req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
+  if (req.path.startsWith('/api') || req.path.startsWith('/dash')) return next();
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
