@@ -713,6 +713,23 @@ function dashAuthed(req) {
   return false;
 }
 
+// Resolve a US zip -> {city, state} via a free, no-key lookup. Cached 24h.
+async function cityForZip(zip) {
+  if (!/^[0-9]{5}$/.test(zip || '')) return null;
+  const ck = 'city:' + zip;
+  const c = getCached(ck);
+  if (c !== null) return c;
+  try {
+    const r = await fetch(`https://api.zippopotam.us/us/${zip}`);
+    if (!r.ok) { setCache(ck, {}); return {}; }
+    const j = await r.json();
+    const p = (j.places && j.places[0]) || {};
+    const out = { city: p['place name'] || '', state: p['state abbreviation'] || '' };
+    setCache(ck, out);
+    return out;
+  } catch (e) { return {}; }
+}
+
 // Login — checks the password, sets a 30-day auth cookie (the cookie holds a
 // hash of STATS_KEY, never the key itself; changing STATS_KEY logs everyone out).
 app.post('/dash/login', (req, res) => {
@@ -746,14 +763,25 @@ app.get('/dash', async (req, res) => {
     const rows = await r.json();
     const d = (Array.isArray(rows) && rows[0] && rows[0].summary) ? rows[0].summary : null;
     if (!d) return res.status(500).send('No dashboard data returned.');
-    res.set('Content-Type', 'text/html; charset=utf-8').send(renderDashboard(d));
+    // Resolve city names for the zips shown (cached, best-effort)
+    const zips = new Set();
+    (d.top_zips || []).forEach(o => o.zip && zips.add(o.zip));
+    (d.recent_sessions || []).forEach(o => o.zip && zips.add(o.zip));
+    const cityMap = {};
+    await Promise.all([...zips].map(async z => {
+      const c = await cityForZip(z);
+      if (c && c.city) cityMap[z] = c.city + (c.state ? ', ' + c.state : '');
+    }));
+    res.set('Content-Type', 'text/html; charset=utf-8').send(renderDashboard(d, cityMap));
   } catch (err) {
     console.error('Dashboard error:', err.message);
     res.status(500).send('Error loading dashboard.');
   }
 });
 
-function renderDashboard(d) {
+function renderDashboard(d, cityMap) {
+  cityMap = cityMap || {};
+  const cityOf = z => cityMap[z] || '—';
   const t = d.totals || {}, en = d.engagement || {}, bt = d.budget_tiers || {};
   const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
   const last = t.last_event ? new Date(t.last_event) : null;
@@ -762,7 +790,8 @@ function renderDashboard(d) {
   const stamp = dt => dt ? new Date(dt).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : '—';
   const card = (label, val) => `<div class="card"><div class="cv">${val == null ? '—' : esc(val)}</div><div class="cl">${label}</div></div>`;
   const evRows = (d.events_by_type || []).map(o => `<tr><td>${esc(o.event)}</td><td class="num">${esc(o.n)}</td></tr>`).join('') || '<tr><td colspan="2" class="dim">none yet</td></tr>';
-  const zipRows = (d.top_zips || []).map(o => `<tr><td>${esc(o.zip)}</td><td class="num">${esc(o.sessions)}</td></tr>`).join('') || '<tr><td colspan="2" class="dim">no area has enough sessions to show yet</td></tr>';
+  const zipRows = (d.top_zips || []).map(o => `<tr><td>${esc(o.zip)}</td><td>${esc(cityOf(o.zip))}</td><td class="num">${esc(o.sessions)}</td></tr>`).join('') || '<tr><td colspan="3" class="dim">no areas yet</td></tr>';
+  const rsRows = (d.recent_sessions || []).map(o => { const when = o.ts ? new Date(o.ts).toISOString().slice(0,16).replace('T',' ') : ''; return `<tr><td class="dim" style="font-family:'IBM Plex Mono',monospace;font-size:12px">${esc(when)}</td><td>${o.zip ? esc(cityOf(o.zip)) : '—'}</td><td>${o.zip ? esc(o.zip) : '—'}</td><td class="num">${esc(o.events)}</td><td>${o.built_plan ? '✓' : ''}</td></tr>`; }).join('') || '<tr><td colspan="5" class="dim">no sessions yet</td></tr>';
   const prRows = (d.price_reports || []).map(o => `<tr><td>${esc(o.item)}</td><td>${esc(o.zip)}</td><td class="num">${esc(o.price)}</td><td class="dim" style="font-family:'IBM Plex Mono',monospace;font-size:12px">${o.ts ? esc(new Date(o.ts).toISOString().slice(5, 16).replace('T', ' ')) : ''}</td></tr>`).join('') || `<tr><td colspan="4" class="dim">no price reports yet — they'll appear here as people correct shelf prices</td></tr>`;
   const enRows = [
     ['Meals swapped', en.meals_swapped], ['Items checked', en.items_checked],
@@ -814,6 +843,9 @@ ${card('Plans built', t.plans_built)}
 ${card('Total events', t.total_events)}
 </div>
 <p class="note">A "visit" is any page load; a "session" is a visit that did something; a "plan built" means the person completed the intake.</p>
+<h2>Recent sessions — is anyone using it?</h2>
+<table><tr><td><strong>When (UTC)</strong></td><td><strong>City</strong></td><td><strong>Zip</strong></td><td class="num"><strong>Events</strong></td><td><strong>Plan?</strong></td></tr>${rsRows}</table>
+<p class="note">Each row is one visit. Blank city/zip = they landed but didn't enter a zip. "Plan?" ✓ = completed the intake.</p>
 <div class="cols">
 <div><h2>Events by type</h2><table>${evRows}</table></div>
 <div><h2>Engagement</h2><table>${enRows}</table></div>
@@ -824,7 +856,7 @@ ${bar('Medium', bt.medium, 'var(--gold)')}
 ${bar('High', bt.high, 'var(--green)')}
 <p class="note">"Low" = below the USDA Thrifty Food Plan line (about $5.36/person/day). Based on ${tierTotal} completed plan${tierTotal === 1 ? '' : 's'}.</p>
 <h2>Where — top areas</h2>
-<table><tr><td><strong>Zip</strong></td><td class="num"><strong>Sessions</strong></td></tr>${zipRows}</table>
+<table><tr><td><strong>Zip</strong></td><td><strong>City</strong></td><td class="num"><strong>Sessions</strong></td></tr>${zipRows}</table>
 <p class="note">Private operator view — all areas shown. Apply small-cell suppression only when you export a report for an outside party, so no shared row can point at a household.</p>
 <h2>Real prices people reported${d.price_reports_total ? ` (${d.price_reports_total})` : ''}</h2>
 <table><tr><td><strong>Item</strong></td><td><strong>Zip</strong></td><td class="num"><strong>Reported price</strong></td><td><strong>When</strong></td></tr>${prRows}</table>
