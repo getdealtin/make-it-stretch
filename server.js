@@ -822,7 +822,7 @@ ${bar('High', bt.high, 'var(--green)')}
 <p class="note">"Low" = below the USDA Thrifty Food Plan line (about $5.36/person/day). Based on ${tierTotal} completed plan${tierTotal === 1 ? '' : 's'}.</p>
 <h2>Where — top areas</h2>
 <table><tr><td><strong>Zip</strong></td><td class="num"><strong>Sessions</strong></td></tr>${zipRows}</table>
-<p class="note">Areas with fewer than 5 sessions are hidden so no row can point at a household${d.zips_suppressed ? ` (${d.zips_suppressed} area${d.zips_suppressed == 1 ? '' : 's'} hidden)` : ''}. The Visits count begins filling once this update is deployed.</p>
+<p class="note">Private operator view — all areas shown. Apply small-cell suppression only when you export a report for an outside party, so no shared row can point at a household.</p>
 </div></body></html>`;
 }
 
