@@ -2,6 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -689,10 +690,49 @@ app.get('/api/ping', async (req, res) => {
 // 404, so the page is invisible to anyone without the link. Reads only
 // the aggregated, k-anonymized `dashboard` view — never raw rows.
 // ────────────────────────────────────────────────
+// ── Dashboard auth helpers ──
+function dashToken() {
+  return crypto.createHash('sha256').update((process.env.STATS_KEY || '') + '::dash::v1').digest('hex');
+}
+function getCookie(req, name) {
+  const h = req.headers.cookie || '';
+  const c = h.split(';').map(s => s.trim()).find(s => s.startsWith(name + '='));
+  return c ? decodeURIComponent(c.slice(name.length + 1)) : null;
+}
+function safeEqual(a, b) {
+  const ba = Buffer.from(String(a)), bb = Buffer.from(String(b));
+  return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
+}
+function dashAuthed(req) {
+  const k = process.env.STATS_KEY;
+  if (!k) return false;
+  if (getCookie(req, 'dash_auth') === dashToken()) return true;          // signed-in cookie
+  if (req.query.key && safeEqual(req.query.key, k)) return true;         // direct ?key= still works
+  return false;
+}
+
+// Login — checks the password, sets a 30-day auth cookie (the cookie holds a
+// hash of STATS_KEY, never the key itself; changing STATS_KEY logs everyone out).
+app.post('/dash/login', (req, res) => {
+  const k = process.env.STATS_KEY;
+  if (!k) return res.status(503).json({ ok: false, error: 'not_configured' });
+  const pw = (req.body && req.body.password) || '';
+  if (!safeEqual(pw, k)) return res.status(401).json({ ok: false });
+  res.setHeader('Set-Cookie', `dash_auth=${dashToken()}; Path=/dash; HttpOnly; Secure; SameSite=Lax; Max-Age=${60 * 60 * 24 * 30}`);
+  res.json({ ok: true });
+});
+
+app.get('/dash/logout', (req, res) => {
+  res.setHeader('Set-Cookie', 'dash_auth=; Path=/dash; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+  res.redirect('/dash');
+});
+
 app.get('/dash', async (req, res) => {
-  const { key } = req.query;
-  if (!process.env.STATS_KEY || key !== process.env.STATS_KEY) {
-    return res.status(404).send('<!doctype html><title>Not found</title><h1>404 — Not found</h1>');
+  if (!process.env.STATS_KEY) {
+    return res.status(503).send('Dashboard not configured yet — set the STATS_KEY environment variable in Render.');
+  }
+  if (!dashAuthed(req)) {
+    return res.set('Content-Type', 'text/html; charset=utf-8').send(renderLogin());
   }
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return res.status(503).send('Database not configured.');
@@ -761,7 +801,7 @@ tr:last-child td{border-bottom:none}
 .note{font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.6}
 @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
-<p class="eyebrow">Make It Stretch · Internal</p>
+<p class="eyebrow">Make It Stretch · Internal &nbsp;·&nbsp; <a href="/dash/logout" style="color:inherit">sign out</a></p>
 <h1>Dashboard</h1>
 <p class="status"><span class="dot" style="background:${fresh ? 'var(--green)' : 'var(--red)'}"></span>Last activity: ${stamp(t.last_event)}${ageH != null ? ` (${ageH < 1 ? 'under 1h' : ageH + 'h'} ago)` : ''} — ${fresh ? 'logging looks live' : 'no recent events'} &nbsp;·&nbsp; generated ${stamp(Date.now())}</p>
 <div class="grid">
@@ -783,6 +823,43 @@ ${bar('High', bt.high, 'var(--green)')}
 <h2>Where — top areas</h2>
 <table><tr><td><strong>Zip</strong></td><td class="num"><strong>Sessions</strong></td></tr>${zipRows}</table>
 <p class="note">Areas with fewer than 5 sessions are hidden so no row can point at a household${d.zips_suppressed ? ` (${d.zips_suppressed} area${d.zips_suppressed == 1 ? '' : 's'} hidden)` : ''}. The Visits count begins filling once this update is deployed.</p>
+</div></body></html>`;
+}
+
+function renderLogin() {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B3624;--bg:#FAF8F5;--bg2:#fff;--border:#DDD9D1;--gold:#D9822B;--red:#c0492f;--ink3:#6b7a70}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px 28px;max-width:360px;width:100%}
+h1{font-family:'Lora',serif;font-size:24px;margin-bottom:6px}
+p.sub{font-size:13px;color:var(--ink3);margin-bottom:20px}
+input{width:100%;padding:11px 13px;font-size:15px;border:1.5px solid var(--border);border-radius:9px;outline:none;font-family:inherit}
+input:focus{border-color:var(--gold)}
+button{width:100%;margin-top:12px;padding:11px;font-size:15px;font-weight:700;color:#fff;background:var(--ink);border:none;border-radius:9px;cursor:pointer}
+button:hover{background:#244a30}
+button:disabled{opacity:.6;cursor:default}
+.err{color:var(--red);font-size:13px;margin-top:10px;min-height:16px}
+</style></head><body><div class="box">
+<h1>Dashboard</h1>
+<p class="sub">Enter the password to continue.</p>
+<input id="pw" type="password" placeholder="Password" autofocus autocomplete="current-password">
+<button id="go">Sign in</button>
+<div class="err" id="err"></div>
+<script>
+var go=document.getElementById('go'),pw=document.getElementById('pw'),err=document.getElementById('err');
+async function submit(){err.textContent='';go.disabled=true;go.textContent='Checking…';
+  try{var r=await fetch('/dash/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw.value})});
+    if(r.ok){location.href='/dash';return;}
+    err.textContent='Wrong password.';}catch(e){err.textContent='Something went wrong. Try again.';}
+  go.disabled=false;go.textContent='Sign in';pw.focus();pw.select();}
+go.addEventListener('click',submit);
+pw.addEventListener('keydown',function(e){if(e.key==='Enter')submit();});
+</script>
 </div></body></html>`;
 }
 
