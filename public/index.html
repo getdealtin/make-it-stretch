@@ -2024,7 +2024,7 @@ footer a:hover { color: var(--gold); }
       <div class="step-inner">
         <p class="step-eyebrow">Step 4 of 5</p>
         <p class="step-q">What's your zip code?</p>
-        <p class="step-hint">Used for regional food prices and your representatives. Not stored.</p>
+        <p class="step-hint">Used for regional food prices and your representatives. Never linked to your identity.</p>
         <input class="field-input" type="text" id="inp-zip" placeholder="e.g. 72201" maxlength="5" inputmode="numeric" style="max-width:240px">
         <div class="zip-context" id="zip-context"></div>
         <div id="err-3" class="error-msg">Please enter a 5-digit zip code.</div>
@@ -2640,7 +2640,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 // ━━ MAIN CALCULATION ━━
 async function runCalculation(){
-  // Log anonymously — budget tier derived server-side, not exact amount
+  // Log anonymously — usage details (budget, household, days, zip, behavior); no name/email/phone/IP, nothing that identifies a person
   const pppd = answers.budget && answers.people && answers.days
     ? +(answers.budget / answers.days / answers.people).toFixed(2) : 0;
   const budget_tier = pppd < 5.36 ? 'low' : pppd < 10 ? 'medium' : 'high';
@@ -2971,7 +2971,6 @@ async function buildWeekCards(cart, avoidItems){
       wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Server error — check console.</div>';
       return;
     }
-    console.log('Recipe API response:', data.found, 'total:', data.total, 'breakfast:', data.bySlot?.breakfast?.length, 'lunch:', data.bySlot?.lunch?.length, 'dinner:', data.bySlot?.dinner?.length);
     if(data.found) {
       bySlot = data.bySlot;
       // Client-side cuisine guard: strip recipes that don't match selected cuisines
