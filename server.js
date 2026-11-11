@@ -629,8 +629,8 @@ app.get('/dash/logout', (req, res) => {
 
 // Dated facts shown under Annual updates on /dash. When you update or check one, change its date here.
 const CHECKS = {
-  census: { vintage: 2022, checked: null }, // /api/census uses the 2022 ACS 5-year; no check date recorded yet
-  votes: null,                                // senator vote records (KEY_VOTES in public/index.html)
+  census: { vintage: 2022, checked: '2026-05-30' }, // /api/census uses the 2022 ACS 5-year (set up May 30, 2026)
+  votes: '2026-06-13',                              // senator vote records (KEY_VOTES in public/index.html), last changed June 13, 2026
   links: null,                                // help links (/api/food-resources, /resources)
 };
 
