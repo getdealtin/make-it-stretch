@@ -265,6 +265,14 @@ State bills loaded async from OpenStates API.
 
 ## What's Pending
 
+- [ ] **Add the `BACKUP_PASSPHRASE` secret** (owner, noted Nov 11 2026). GitHub → make-it-stretch → Settings →
+  Secrets and variables → Actions → New repository secret. Use a long passphrase and keep a copy somewhere
+  safe: without it no backup can be restored. Until it's added, the weekly backup stops before uploading
+  anything, so **there are no database backups yet** (the earlier three were empty and have been deleted).
+  After adding it, run "Weekly database backup" once from the Actions tab and check it uploads
+  `supabase-backup-encrypted-…`.
+- [ ] **Merge the engine upgrade** (`claude/prototype-engine-upgrade-weupza` → `main`) to put it live. The
+  Supabase function `dashboard_range` for /dash is already installed.
 - [ ] **Census API key activation** — Email expected from api.census.gov. Add as `CENSUS_KEY` in Render. The backend endpoint is already built and will activate automatically.
 - [ ] **Validate with zip 72209** (Little Rock, AR — south region) once Census key is live
 - [ ] **Test full flow** after deploy: budget → cart → solidarity strip → civic section
