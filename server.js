@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { renderDashboard } = require('./lib/dashboard.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -62,7 +63,10 @@ setInterval(() => {
 // ── ROUTES
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/about', (req, res) => res.sendFile(path.join(__dirname, 'public', 'about.html')));
+app.get('/how-plans-work', (req, res) => res.sendFile(path.join(__dirname, 'public', 'how-plans-work.html')));
 app.get('/resources', (req, res) => res.sendFile(path.join(__dirname, 'public', 'resources.html')));
+// The engine's ES modules, for the browser (before the page fallback below).
+app.use('/engine', express.static(path.join(__dirname, 'engine'), { maxAge: '1h' }));
 app.use((req, res, next) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/dash')) return next();
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -70,91 +74,74 @@ app.use((req, res, next) => {
 
 // ────────────────────────────────────────────────
 // API: BLS FOOD PRICES BY REGION
-// Series IDs: APU[regionCode][itemCode]
-// Northeast=0200, Midwest=0300, South=0400, West=0500, National=0000
+// Series ids, regions and package sizes: lib/prices.js (from the Austin build, checked Nov 2026).
 // ────────────────────────────────────────────────
+// ── The meal-planning engine (a copy of the Austin build's; see engine/SOURCE.json and
+// scripts/update-engine.mjs). It is plain ES modules, loaded once at startup, and the same files run
+// in the browser (served at /engine/). Plans are built in the browser; the server serves the data.
+const engineReady = (async () => {
+  const E = await import('./engine/index.js');
+  const { BLS_ITEMS, BLS_CHECKED, seriesFor, toPackagePrices } = await import('./lib/prices.js');
+  const { makeLivePrices } = await import('./lib/live-prices.js');
+  const read = f => JSON.parse(fs.readFileSync(path.join(__dirname, 'data', f), 'utf8'));
+  // The 161 seed recipes (ids 1–161), the 25 NHLBI main dishes (ids 1001+, printed amounts and credits)
+  // and the 22 simple everyday meals (ids 2001+): the same 208 recipes the Austin build uses.
+  const NIH = read('nih-recipes.json');
+  const RECIPES = [...E.indexRecipes(read('seed-recipes.json')), ...NIH.recipes.map(({ es, key, ...r }) => r), ...read('simple-meals.json').recipes];
+  const RECIPES_JSON = JSON.stringify(RECIPES.map(r => ({
+    id: r.id, title: r.title, slot: r.slot, cuisine: r.cuisine, ingredients: r.ingredients,
+    instructions: r.instructions, tags: r.tags, avoid: r.avoid, srv: r.srv,
+    ...(r.uses ? { uses: r.uses, lines: r.lines, note: r.note, steps: r.steps, extra: r.extra, source: r.source } : {}),
+  })));
+
+  // Live BLS average prices (series codes and package sizes checked in the Austin build, lib/prices.js).
+  async function fetchBlsPrices(region) {
+    if (!BLS_KEY) return null;
+    const year = String(new Date().getFullYear());
+    try {
+      const r = await fetch('https://api.bls.gov/publicAPI/v2/timeseries/data/', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          seriesid: [...new Set([...seriesFor(region), ...seriesFor('national')])],
+          startyear: String(+year - 1), endyear: year, registrationkey: BLS_KEY,
+        }),
+        signal: AbortSignal.timeout(8000),
+      });
+      const d = await r.json();
+      if (d.status !== 'REQUEST_SUCCEEDED') return null;
+      const bySeries = {};
+      for (const sr of d.Results?.series || []) {
+        const v = parseFloat(sr.data?.[0]?.value);
+        if (v > 0) bySeries[sr.seriesID] = v;
+      }
+      const estimates = E.FALLBACK_PRICES[region] || E.FALLBACK_PRICES.national;
+      return { ...toPackagePrices(bySeries, 'national', estimates), ...toPackagePrices(bySeries, region, estimates) };
+    } catch { return null; }
+  }
+  // Fresh for 24 hours; through a BLS outage the last good prices are kept (in memory) and BLS
+  // isn't asked again for 15 minutes.
+  const livePrices = makeLivePrices({ fetchPrices: fetchBlsPrices });
+  console.log(`Engine loaded (Austin ${require('./engine/SOURCE.json').commit.slice(0, 7)}): ${RECIPES.length} recipes`);
+  return { E, RECIPES, RECIPES_JSON, livePrices, BLS_ITEMS, BLS_CHECKED };
+})();
+engineReady.catch(err => console.error('Engine failed to load:', err));
+
+const REGIONS = ['northeast', 'midwest', 'south', 'west', 'national'];
 app.get('/api/food-prices', async (req, res) => {
-  const { region } = req.query;
-  const cacheKey = `prices:${region || 'national'}`;
-  const cached = getCached(cacheKey);
-  if (cached) return res.json({ ...cached, _cached: true });
-
-  if (!BLS_KEY) {
-    return res.json({ fallback: true, region, prices: getFallbackPrices(region) });
-  }
-
-  const regionCode = { northeast:'0200', midwest:'0300', south:'0400', west:'0500', national:'0000' }[region] || '0000';
-
-  const seriesIds = [
-    `APU${regionCode}703511`,  // Chicken leg quarters
-    `APU${regionCode}708111`,  // Eggs grade A large dozen
-    `APU${regionCode}710211`,  // Milk whole gallon
-    `APU${regionCode}712112`,  // White rice 1lb
-    `APU${regionCode}716114`,  // Dry beans 1lb
-    `APU${regionCode}702111`,  // White bread 1lb
-    `APU${regionCode}702421`,  // Oatmeal 16oz
-    `APU${regionCode}711311`,  // Potatoes 5lb
-    `APU${regionCode}711412`,  // Bananas 1lb
-    `APU${regionCode}715211`,  // Peanut butter 16oz
-    `APU${regionCode}717311`,  // Canned tomatoes 14.5oz
-    `APU${regionCode}703612`,  // Tuna canned 6oz
-    `APU${regionCode}714212`,  // Pasta 1lb
-    `APU${regionCode}711111`,  // Apples 1lb
-    `APU${regionCode}714232`,  // Flour 5lb
-    `APU${regionCode}711311`,  // Onions 1lb (reuses potato code as proxy)
-  ];
-
-  try {
-    const response = await fetch('https://api.bls.gov/publicAPI/v2/timeseries/data/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        seriesid: seriesIds,
-        startyear: '2025',
-        endyear: '2025',
-        registrationkey: BLS_KEY
-      })
-    });
-
-    const data = await response.json();
-    if (data.status !== 'REQUEST_SUCCEEDED') {
-      return res.json({ fallback: true, region, prices: getFallbackPrices(region) });
-    }
-
-    const prices = {};
-    for (const series of (data.Results?.series || [])) {
-      const latestValue = series.data?.[0]?.value;
-      if (latestValue) prices[series.seriesID] = parseFloat(latestValue);
-    }
-
-    const result = { region, prices, blsPrices: mapBLSToFoodIds(prices, regionCode) };
-    setCache(cacheKey, result);
-    res.json(result);
-
-  } catch (err) {
-    res.json({ fallback: true, region, prices: getFallbackPrices(region), error: err.message });
-  }
+  const region = REGIONS.includes(req.query.region) ? req.query.region : 'national';
+  const { livePrices } = await engineReady;
+  const live = BLS_KEY ? await livePrices.get(region) : null;
+  const st = livePrices.status().find(x => x.region === region);
+  // blsPrices: live package prices by food id. The browser merges them over the engine's
+  // built-in estimates (engine resolvePrices), so a food BLS doesn't cover keeps its estimate.
+  res.set('Cache-Control', 'public, max-age=3600')
+    .json({ region, fallback: !live, blsPrices: live || {}, fetched_at: st?.fetched_at || null });
 });
 
-// Map BLS series IDs back to food item IDs used by the frontend
-function mapBLSToFoodIds(prices, regionCode) {
-  return {
-    chicken:       prices[`APU${regionCode}703511`],
-    eggs:          prices[`APU${regionCode}708111`],
-    milk:          prices[`APU${regionCode}710211`],
-    rice:          prices[`APU${regionCode}712112`],
-    drybeans:      prices[`APU${regionCode}716114`],
-    bread:         prices[`APU${regionCode}702111`],
-    oats:          prices[`APU${regionCode}702421`],
-    potatoes:      prices[`APU${regionCode}711311`],
-    bananas:       prices[`APU${regionCode}711412`],
-    peanutbutter:  prices[`APU${regionCode}715211`],
-    cannedtomatoes:prices[`APU${regionCode}717311`],
-    tuna:          prices[`APU${regionCode}703612`],
-    pasta:         prices[`APU${regionCode}714212`],
-    flour:         prices[`APU${regionCode}714232`],
-  };
-}
+app.get('/api/recipes', async (req, res) => {
+  const { RECIPES_JSON } = await engineReady;
+  res.type('json').set('Cache-Control', 'public, max-age=3600').send(RECIPES_JSON);
+});
 
 // ────────────────────────────────────────────────
 // API: CENSUS ACS — ZIP CODE SOLIDARITY DATA
@@ -356,19 +343,6 @@ app.get('/api/food-resources', async (req, res) => {
 });
 
 // ────────────────────────────────────────────────
-// RECIPE ENGINE — JSON in memory, zero dependencies
-// Loads seed-recipes.json once at startup
-// ────────────────────────────────────────────────
-let recipes = [];
-try {
-  const seedPath = path.join(__dirname, 'data', 'seed-recipes.json');
-  recipes = JSON.parse(fs.readFileSync(seedPath, 'utf8')).map((r, i) => ({ ...r, id: i + 1 }));
-  console.log(`Recipe DB loaded: ${recipes.length} recipes`);
-} catch(err) {
-  console.error('Could not load seed-recipes.json:', err.message);
-}
-
-// ────────────────────────────────────────────────
 // API: EVENT LOGGING
 // Receives anonymous behavioral events from the frontend.
 // Validates strictly — no raw user input reaches the DB.
@@ -396,6 +370,12 @@ const VALID_EVENTS = new Set([
   'restarted',
   'preference_selected',
   'page_view',
+  // Added with the Austin engine (Nov 2026), for /dash:
+  'step_completed',     // item = the intake step finished (where people stop)
+  'principle_failed',   // item = the engine rule a plan broke (a bug to fix; no answers sent)
+  'list_switched',      // retailer = 'short' or 'full'
+  'rules_opened',       // opened "How your plan is made"
+  'twists_opened',
 ]);
 
 const VALID_ITEMS = new Set([
@@ -407,6 +387,16 @@ const VALID_ITEMS = new Set([
   'driedmango','cannedpeaches','milk','butter','cheese','yogurt','coconutmilk',
   'evaporatedmilk','oil','oliveoil','soy','hotsauce','cannedbroth','vegbroth',
   'blackbeans','kidneybean','cannedchili','cannedsoups','salsa',
+  // Foods the NHLBI recipes added (engine/extra-foods.js)
+  'chickenbreast','drumsticks','sirloin','roundroast','tomatoes','avocado','zucchini','cornears',
+  'frozenpeas','tomatosauce','plantains','mozzarella','raisins','sourcream','salmon','fish',
+  'cornflakes','breadcrumbs','kielbasa','buttermilk','hominy','masaharina','quinoa','brownrice','groundturkey',
+  // Intake steps (step_completed)
+  'step_budget','step_days','step_people','step_zip','step_prefs',
+  'diet',
+  // Engine rules (principle_failed; engine/principles.js ids)
+  'cookable','within_budget','calories_first','fullness_next','guidance','variety','spread',
+  'household','no_piles','honest','same_plan',
   // Preference group names (for preference_selected events)
   'store','avoid','have','cuisine','leftover',
 ]);
@@ -418,13 +408,14 @@ const VALID_RETAILERS = new Set([
   // Preference values (store tags, avoid tags, have tags, leftover, cuisine)
   'full','dollar','corner','none',
   'gluten','dairy','meat','eggs','peanuts','fish','nothing',
+  'pork','halal','kosher','diabetic','low_sodium','short',
   'rice','beans','oats','potatoes',
   'yes','sometimes',
   'american','latin','asian','southern','mediterranean','any',
 ]);
 
 // Preference groups (sent as item field for preference_selected events)
-const VALID_PREF_GROUPS = new Set(['store','avoid','have','cuisine','leftover']);
+const VALID_PREF_GROUPS = new Set(['store','avoid','diet','have','cuisine','leftover']);
 
 const VALID_BUDGET_TIERS = new Set(['low','medium','high']);
 const SESSION_ID_RE = /^[a-z0-9]{12}$/;  // 12 lowercase alphanumeric chars
@@ -452,7 +443,9 @@ app.post('/api/event', async (req, res) => {
 
   // Sanitize optional fields — must match allowlists or be set to null
   const safeZip      = /^[0-9]{5}$/.test(zip) ? zip : null;
-  const safeItem     = VALID_ITEMS.has(item) ? item : null;
+  // budget_entered carries the cuisines chosen ("latin,asian" or "any"); every other event one known item.
+  const CUISINE_LIST = /^(american|latin|asian|southern|mediterranean|any)(,(american|latin|asian|southern|mediterranean))*$/;
+  const safeItem     = VALID_ITEMS.has(item) || (event === 'budget_entered' && CUISINE_LIST.test(item || '')) ? item : null;
   const safeRetailer = VALID_RETAILERS.has(retailer) ? retailer : null;
   const safeTier     = VALID_BUDGET_TIERS.has(budget_tier) ? budget_tier : null;
   const safeSession    = SESSION_ID_RE.test(session_id) ? session_id : null;
@@ -545,130 +538,18 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  const { RECIPES } = await engineReady;
   res.json({
     status: 'ok',
-    recipes: recipes.length,
+    recipes: RECIPES.length,
+    engine: require('./engine/SOURCE.json').commit.slice(0, 7),
     node: process.version,
     census_key:   CENSUS_KEY   ? 'set (' + CENSUS_KEY.slice(0,6)   + '...)' : 'NOT SET',
     supabase_url: SUPABASE_URL ? SUPABASE_URL.slice(0, 40) : 'NOT SET',
     supabase_key: SUPABASE_KEY ? 'set (' + SUPABASE_KEY.slice(0,8) + '...)' : 'NOT SET',
   });
 });
-
-// Dishes that should never appear as standalone meals in a slot
-const SIDE_DISH_BLOCKLIST = new Set([
-  'potato salad', 'potato salad bowl', 'succotash', 'collard-style cabbage',
-  'collard style cabbage', 'coleslaw', 'corn on the cob', 'cornbread',
-  'skillet cornbread', 'biscuits', 'dinner rolls', 'rice paper rolls',
-]);
-
-// Dishes that are NOT breakfast foods
-const NOT_BREAKFAST = new Set([
-  'rice and beans', 'gallo pinto', 'bean stew', 'vegetable soup',
-  'lentil dal', 'hoppin john', "hoppin' john", 'succotash',
-  'potato salad', 'potato salad bowl', 'collard-style cabbage',
-  'pork and bean stew', 'bean and cornmeal stew',
-]);
-
-app.get('/api/recipes-for-cart', (req, res) => {
-  try {
-    const { ingredients, cuisine, avoid } = req.query;
-    const cartIngredients = (ingredients || '').split(',').filter(Boolean).map(s => s.toLowerCase());
-    const selectedCuisines = (cuisine || '').split(',').filter(Boolean);
-    const avoidList = (avoid || '').split(',').filter(Boolean);
-
-    if (!cartIngredients.length) {
-      return res.status(400).json({ error: 'ingredients required' });
-    }
-
-    const scored = recipes.map(r => {
-      const recipeIngs = Array.isArray(r.ingredients) ? r.ingredients : [];
-      const recipeAvoids = Array.isArray(r.avoid) ? r.avoid : [];
-
-      // Filter by cuisine — lowercase both sides to prevent case mismatch
-      const rc = (r.cuisine || '').toLowerCase();
-      if (selectedCuisines.length && !selectedCuisines.includes('any')) {
-        const cuisineLower = selectedCuisines.map(c => c.toLowerCase());
-        if (!cuisineLower.includes(rc) && rc !== 'any') {
-          return null;
-        }
-      }
-
-      // Filter avoided ingredients
-      if (avoidList.some(a => recipeAvoids.includes(a))) return null;
-
-      // Filter side dishes that shouldn't be standalone meals
-      const nameLower = (r.title || '').toLowerCase();
-      if (SIDE_DISH_BLOCKLIST.has(nameLower)) return null;
-
-      // Filter breakfast slot: block known non-breakfast dishes
-      if (r.slot === 'breakfast' && NOT_BREAKFAST.has(nameLower)) return null;
-
-      // Score by ingredient match — 1 match minimum (2 was too strict, caused wrong-cuisine bleed)
-      const matchScore = cartIngredients.filter(cartIng =>
-        recipeIngs.some(recipeIng =>
-          typeof recipeIng === 'string' && (
-            recipeIng.toLowerCase().includes(cartIng) ||
-            cartIng.includes(recipeIng.toLowerCase())
-          )
-        )
-      ).length;
-
-      if (matchScore < 1) return null;
-
-      return { ...r, matchScore };
-    }).filter(Boolean);
-
-    scored.sort((a, b) => b.matchScore - a.matchScore);
-
-    // Cap at 30 per slot for 30-day plans (3 meals/day needs good variety)
-    // STRICT: a breakfast recipe only goes in breakfast, dinner only in dinner, etc.
-    const bySlot = { breakfast: [], lunch: [], dinner: [], any: [] };
-    for (const r of scored) {
-      const rSlot = r.slot || 'any';
-      // Only put in 'any' if truly slot=any; otherwise respect the recipe's slot exactly
-      const targetSlot = (bySlot[rSlot] !== undefined) ? rSlot : 'any';
-      if (bySlot[targetSlot].length < 30) bySlot[targetSlot].push(r);
-    }
-
-    // If any slot is critically empty (<4 recipes), do a relaxed pass with cuisine only (no match score floor)
-    const allCuisineMatch = recipes.filter(r => {
-      const rc = (r.cuisine || '').toLowerCase();
-      const nameLower = (r.title || '').toLowerCase();
-      if (SIDE_DISH_BLOCKLIST.has(nameLower)) return false;
-      if (selectedCuisines.length && !selectedCuisines.includes('any')) {
-        const cl = selectedCuisines.map(c => c.toLowerCase());
-        if (!cl.includes(rc) && rc !== 'any') return false;
-      }
-      if (avoidList.some(a => (Array.isArray(r.avoid) ? r.avoid : []).includes(a))) return false;
-      return true;
-    });
-    for (const slot of ['breakfast','lunch','dinner']) {
-      if (bySlot[slot].length < 4) {
-        const existingIds = new Set(bySlot[slot].map(r => r.id));
-        const extras = allCuisineMatch.filter(r => {
-          const rSlot = r.slot || 'any';
-          // STRICT slot enforcement: breakfast dishes ONLY go to breakfast,
-          // dinner dishes ONLY go to dinner. Only slot='any' can fill any slot.
-          if (rSlot === 'breakfast' && slot !== 'breakfast') return false;
-          if (rSlot === 'dinner' && slot !== 'dinner') return false;
-          if (rSlot === 'lunch' && slot !== 'lunch') return false;
-          if (NOT_BREAKFAST.has((r.title||'').toLowerCase()) && slot === 'breakfast') return false;
-          return !existingIds.has(r.id);
-        });
-        bySlot[slot].push(...extras.slice(0, 30 - bySlot[slot].length));
-      }
-    }
-
-    res.json({ found: true, bySlot, total: scored.length });
-
-  } catch(err) {
-    console.error('Recipe route error:', err.message);
-    res.status(500).json({ found: false, error: err.message });
-  }
-});
-
 
 // ────────────────────────────────────────────────
 // API: PING — public keep-alive. Touches Supabase so the free-tier
@@ -746,6 +627,25 @@ app.get('/dash/logout', (req, res) => {
   res.redirect('/dash');
 });
 
+// Dated facts shown under Annual updates on /dash. When you update or check one, change its date here.
+const CHECKS = {
+  census: { vintage: 2022, checked: null }, // /api/census uses the 2022 ACS 5-year; no check date recorded yet
+  votes: null,                                // senator vote records (KEY_VOTES in public/index.html)
+  links: null,                                // help links (/api/food-resources, /resources)
+};
+
+// Is the engine copy behind Austin's? Checked in the background (needs git), at most twice a day.
+let engineBehind = { behind: null, changed: [] };
+async function checkEngine() {
+  try {
+    const { behind } = await import('./scripts/update-engine.mjs');
+    const b = await behind();
+    engineBehind = { behind: b.changed.length > 0, changed: b.changed, checked_at: new Date().toISOString() };
+  } catch (e) { console.warn('[engine] could not check Austin’s engine:', e.message.split('\n')[0]); }
+}
+setTimeout(checkEngine, 30e3).unref();
+setInterval(checkEngine, 12 * 3600e3).unref();
+
 app.get('/dash', async (req, res) => {
   if (!process.env.STATS_KEY) {
     return res.status(503).send('Dashboard not configured yet — set the STATS_KEY environment variable in Render.');
@@ -756,15 +656,22 @@ app.get('/dash', async (req, res) => {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return res.status(503).send('Database not configured.');
   }
+  const days = [7, 30, 90, 365].includes(Number(req.query.days)) ? Number(req.query.days) : 30;
+  const headers = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' };
   try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/dashboard?select=summary`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
-    });
-    const rows = await r.json();
-    const d = (Array.isArray(rows) && rows[0] && rows[0].summary) ? rows[0].summary : null;
+    // The date-range summary (data/supabase_dashboard_range.sql); until it's set up, the all-time view.
+    let d = null, ranged = false;
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/dashboard_range`, { method: 'POST', headers, body: JSON.stringify({ p_days: days }) });
+    if (r.ok) { d = await r.json(); ranged = !!d; }
+    if (!d) {
+      const v = await fetch(`${SUPABASE_URL}/rest/v1/dashboard?select=summary`, { headers });
+      const rows = await v.json();
+      d = (Array.isArray(rows) && rows[0] && rows[0].summary) ? rows[0].summary : null;
+    }
     if (!d) return res.status(500).send('No dashboard data returned.');
     // Resolve city names for the zips shown (cached, best-effort)
     const zips = new Set();
+    (d.zips || []).forEach(([z]) => z && zips.add(z));
     (d.top_zips || []).forEach(o => o.zip && zips.add(o.zip));
     (d.recent_sessions || []).forEach(o => o.zip && zips.add(o.zip));
     const cityMap = {};
@@ -772,97 +679,20 @@ app.get('/dash', async (req, res) => {
       const c = await cityForZip(z);
       if (c && c.city) cityMap[z] = c.city + (c.state ? ', ' + c.state : '');
     }));
-    res.set('Content-Type', 'text/html; charset=utf-8').send(renderDashboard(d, cityMap));
+    const { E, RECIPES, livePrices, BLS_ITEMS, BLS_CHECKED } = await engineReady;
+    const { EXTRA_PRICES_AS_OF } = await import('./engine/extra-foods.js');
+    const src = JSON.parse(fs.readFileSync(path.join(__dirname, 'engine', 'SOURCE.json'), 'utf8'));
+    res.set('Content-Type', 'text/html; charset=utf-8').send(renderDashboard({
+      d, ranged, days, cityMap,
+      ctx: { BENCHMARKS: E.BENCHMARKS, BLS_CHECKED, BLS_ITEMS, EXTRA_PRICES_AS_OF, CHECKS, blsKey: !!BLS_KEY },
+      prices: livePrices.status(),
+      engine: { repo: src.repo, commit: src.commit, copied_at: src.copied_at, recipes: RECIPES.length, ...engineBehind },
+    }));
   } catch (err) {
     console.error('Dashboard error:', err.message);
     res.status(500).send('Error loading dashboard.');
   }
 });
-
-function renderDashboard(d, cityMap) {
-  cityMap = cityMap || {};
-  const cityOf = z => cityMap[z] || '—';
-  const t = d.totals || {}, en = d.engagement || {}, bt = d.budget_tiers || {};
-  const esc = s => String(s == null ? '' : s).replace(/[<>&]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
-  const last = t.last_event ? new Date(t.last_event) : null;
-  const ageH = last ? Math.round((Date.now() - last.getTime()) / 3600000) : null;
-  const fresh = ageH != null && ageH <= 48;
-  const stamp = dt => dt ? new Date(dt).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : '—';
-  const card = (label, val) => `<div class="card"><div class="cv">${val == null ? '—' : esc(val)}</div><div class="cl">${label}</div></div>`;
-  const evRows = (d.events_by_type || []).map(o => `<tr><td>${esc(o.event)}</td><td class="num">${esc(o.n)}</td></tr>`).join('') || '<tr><td colspan="2" class="dim">none yet</td></tr>';
-  const zipRows = (d.top_zips || []).map(o => `<tr><td>${esc(o.zip)}</td><td>${esc(cityOf(o.zip))}</td><td class="num">${esc(o.sessions)}</td></tr>`).join('') || '<tr><td colspan="3" class="dim">no areas yet</td></tr>';
-  const rsRows = (d.recent_sessions || []).map(o => { const when = o.ts ? new Date(o.ts).toISOString().slice(0,16).replace('T',' ') : ''; return `<tr><td class="dim" style="font-family:'IBM Plex Mono',monospace;font-size:12px">${esc(when)}</td><td>${o.zip ? esc(cityOf(o.zip)) : '—'}</td><td>${o.zip ? esc(o.zip) : '—'}</td><td class="num">${esc(o.events)}</td><td>${o.built_plan ? '✓' : ''}</td></tr>`; }).join('') || '<tr><td colspan="5" class="dim">no sessions yet</td></tr>';
-  const prRows = (d.price_reports || []).map(o => `<tr><td>${esc(o.item)}</td><td>${esc(o.zip)}</td><td class="num">${esc(o.price)}</td><td class="dim" style="font-family:'IBM Plex Mono',monospace;font-size:12px">${o.ts ? esc(new Date(o.ts).toISOString().slice(5, 16).replace('T', ' ')) : ''}</td></tr>`).join('') || `<tr><td colspan="4" class="dim">no price reports yet — they'll appear here as people correct shelf prices</td></tr>`;
-  const enRows = [
-    ['Meals swapped', en.meals_swapped], ['Items checked', en.items_checked],
-    ['Lists printed', en.lists_printed], ['Lists emailed', en.lists_emailed],
-    ['Lists shared', en.lists_shared], ['Brand prices viewed', en.brand_clicks],
-    ['SNAP screener clicks', en.snap_clicks], ['Food-bank clicks', en.foodbank_clicks],
-  ].map(([l, v]) => `<tr><td>${l}</td><td class="num">${v == null ? '—' : esc(v)}</td></tr>`).join('');
-  const tierTotal = (bt.low || 0) + (bt.medium || 0) + (bt.high || 0);
-  const bar = (label, v, color) => { const pct = tierTotal ? Math.round((v || 0) / tierTotal * 100) : 0; return `<div class="barrow"><span class="bl">${label}</span><span class="bt"><span class="bf" style="width:${pct}%;background:${color}"></span></span><span class="bn">${v || 0} · ${pct}%</span></div>`; };
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard · Make It Stretch</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#1B3624;--ink2:#3E4A42;--ink3:#6b7a70;--bg:#FAF8F5;--bg2:#fff;--border:#DDD9D1;--gold:#D9822B;--green:#2e7d50;--red:#c0492f}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;padding:28px 18px 80px}
-.wrap{max-width:860px;margin:0 auto}
-.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
-h1{font-family:'Lora',serif;font-size:30px;margin:6px 0 2px}
-.status{font-family:'IBM Plex Mono',monospace;font-size:12px;margin:10px 0 24px;color:var(--ink2)}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:8px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 16px}
-.cv{font-family:'Lora',serif;font-size:30px;font-weight:700;color:var(--ink)}
-.cl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-top:4px}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-h2{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:28px 0 10px}
-table{width:100%;border-collapse:collapse;background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
-tr:last-child td{border-bottom:none}
-.num{text-align:right;font-family:'IBM Plex Mono',monospace;font-weight:600}
-.dim{color:var(--ink3);font-style:italic}
-.barrow{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
-.bl{width:72px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--ink2)}
-.bt{flex:1;height:14px;background:#eceae4;border-radius:7px;overflow:hidden}
-.bf{display:block;height:100%}
-.bn{width:92px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink2)}
-.note{font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.6}
-@media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}}
-</style></head><body><div class="wrap">
-<p class="eyebrow">Make It Stretch · Internal &nbsp;·&nbsp; <a href="/dash/logout" style="color:inherit">sign out</a></p>
-<h1>Dashboard</h1>
-<p class="status"><span class="dot" style="background:${fresh ? 'var(--green)' : 'var(--red)'}"></span>Last activity: ${stamp(t.last_event)}${ageH != null ? ` (${ageH < 1 ? 'under 1h' : ageH + 'h'} ago)` : ''} — ${fresh ? 'logging looks live' : 'no recent events'} &nbsp;·&nbsp; generated ${stamp(Date.now())}</p>
-<div class="grid">
-${card('Visits', t.visits)}
-${card('Sessions', t.distinct_sessions)}
-${card('Plans built', t.plans_built)}
-${card('Total events', t.total_events)}
-</div>
-<p class="note">A "visit" is any page load; a "session" is a visit that did something; a "plan built" means the person completed the intake.</p>
-<h2>Recent sessions — is anyone using it?</h2>
-<table><tr><td><strong>When (UTC)</strong></td><td><strong>City</strong></td><td><strong>Zip</strong></td><td class="num"><strong>Events</strong></td><td><strong>Plan?</strong></td></tr>${rsRows}</table>
-<p class="note">Each row is one visit. Blank city/zip = they landed but didn't enter a zip. "Plan?" ✓ = completed the intake.</p>
-<div class="cols">
-<div><h2>Events by type</h2><table>${evRows}</table></div>
-<div><h2>Engagement</h2><table>${enRows}</table></div>
-</div>
-<h2>Budget pressure (per-person-per-day)</h2>
-${bar('Low', bt.low, 'var(--red)')}
-${bar('Medium', bt.medium, 'var(--gold)')}
-${bar('High', bt.high, 'var(--green)')}
-<p class="note">"Low" = below the USDA Thrifty Food Plan line (about $5.36/person/day). Based on ${tierTotal} completed plan${tierTotal === 1 ? '' : 's'}.</p>
-<h2>Where — top areas</h2>
-<table><tr><td><strong>Zip</strong></td><td><strong>City</strong></td><td class="num"><strong>Sessions</strong></td></tr>${zipRows}</table>
-<p class="note">Private operator view — all areas shown. Apply small-cell suppression only when you export a report for an outside party, so no shared row can point at a household.</p>
-<h2>Real prices people reported${d.price_reports_total ? ` (${d.price_reports_total})` : ''}</h2>
-<table><tr><td><strong>Item</strong></td><td><strong>Zip</strong></td><td class="num"><strong>Reported price</strong></td><td><strong>When</strong></td></tr>${prRows}</table>
-<p class="note">What people actually typed when correcting a shelf price — real-world ground truth to compare against the BLS estimates. Free-form entries, so units vary.</p>
-</div></body></html>`;
-}
 
 function renderLogin() {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">

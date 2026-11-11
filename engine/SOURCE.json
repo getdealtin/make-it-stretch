@@ -1,0 +1,107 @@
+{
+  "repo": "getdealtin/makeitstretch-civic",
+  "commit": "f276a754026bf127a4cd110f9e1d15d5cfd6ebcb",
+  "copied_at": "2026-11-11",
+  "files": {
+    "engine/box.js": {
+      "from": "engine/box.js",
+      "sha256": "826033706f9c36fc96b1143a25f8545014c93e1ce08f2ff5904d27cd847da9d1"
+    },
+    "engine/diets.js": {
+      "from": "engine/diets.js",
+      "sha256": "83d8153d43ef0fb89245efd225f0911bbecfa8d6be4ce0c02e827714744ee497"
+    },
+    "engine/extra-foods.js": {
+      "from": "engine/extra-foods.js",
+      "sha256": "4a7b5f458405b8f8e52ae914cae75764be416112be7291ddbf953d42d9b7b316"
+    },
+    "engine/food-db.js": {
+      "from": "engine/food-db.js",
+      "sha256": "6b307fd8ce1311c7a439ac1da20c7f516a04b91a4f0b304285fcb3e36550c1a0"
+    },
+    "engine/index.js": {
+      "from": "engine/index.js",
+      "sha256": "7d74db975dc852694a365fb083ac4b295b311cfb7711155156b141551111cb90"
+    },
+    "engine/meals.js": {
+      "from": "engine/meals.js",
+      "sha256": "a2b6132a1b7bc9813d00357d8cea3583e141e17d5ac895d251f0abbcac77ab1c"
+    },
+    "engine/nutrition.js": {
+      "from": "engine/nutrition.js",
+      "sha256": "a7594ab2c359a890aacbfa8d0b51129cfc59c42e27cd16d8ea049ec6be236a89"
+    },
+    "engine/pricing.js": {
+      "from": "engine/pricing.js",
+      "sha256": "f34945752ffd8e15fa317fda2ab5f9078b0e56dda3248cbf54703d34629d9fa3"
+    },
+    "engine/principles.js": {
+      "from": "engine/principles.js",
+      "sha256": "4e5faef5b8f8edf4c5360d9cf8308f3077c690e5057b323ac044f419f230fe60"
+    },
+    "engine/recipes.js": {
+      "from": "engine/recipes.js",
+      "sha256": "3fdcd20e3930ee895d64e30747f7edcbf171defcb56fa0288b7d7bcf0382b4d6"
+    },
+    "engine/satiety.js": {
+      "from": "engine/satiety.js",
+      "sha256": "dc741535f5ab12210f88b673ad836eb1036cd9c1715aa4a738fa4cb170bc55c0"
+    },
+    "engine/shopping.js": {
+      "from": "engine/shopping.js",
+      "sha256": "6880f9115370804a75bc46d5a61654ea4294bf397bc38456041adf95b065086e"
+    },
+    "engine/twists.js": {
+      "from": "engine/twists.js",
+      "sha256": "5547c351ace573b2fe4a228147df76c690f22ea8faaf67eb4f9caeec19ea838a"
+    },
+    "engine/zip-map.js": {
+      "from": "engine/zip-map.js",
+      "sha256": "c2cd0ce054f00ab9582252166459aad74afd2c2d84685ed4a7ee89c0697a3a06"
+    },
+    "data/seed-recipes.json": {
+      "from": "data/seed-recipes.json",
+      "sha256": "9b2709427ec6b43a460b015a3bc50d945d9588c552543f9f2a640df8d552a9f6"
+    },
+    "data/nih-recipes.json": {
+      "from": "data/nih-recipes.json",
+      "sha256": "40b0a948ab2026567dd7d3bef6527c3184ad0246e4618a076d0145178f47be11"
+    },
+    "data/simple-meals.json": {
+      "from": "data/simple-meals.json",
+      "sha256": "afb0f29078b0edf9b9a5fbc60b2972ee40c309d56b89b56f802abc99d1153785"
+    },
+    "public/i18n/data/es.json": {
+      "from": "public/i18n/data/es.json",
+      "sha256": "d973b0c811b1a4a9b5e70a3715a5d7982f686d555bdabed52258b59077fcd626"
+    },
+    "public/i18n/principles/en.js": {
+      "from": "public/i18n/principles/en.js",
+      "sha256": "e89bd620dd85d2f6484114be2b4cf4079f1aa076018d2f910d77c9c6ff46a10c"
+    },
+    "public/i18n/principles/es.js": {
+      "from": "public/i18n/principles/es.js",
+      "sha256": "85be3f44a4e41982e3b36904a73ce6e52998b60e7b38601d0d223260acc60690"
+    },
+    "lib/prices.js": {
+      "from": "server/prices.js",
+      "sha256": "27236c9176c8607870903df5a3d385759d1e8b21714fa27bd786099ea20ab420"
+    },
+    "lib/live-prices.js": {
+      "from": "server/live-prices.js",
+      "sha256": "57929360cdbfac39ef5c5cbd60951c73a7dd3b87ef558418a5ea140feb8b8343"
+    },
+    "test/engine.test.js": {
+      "from": "test/engine.test.js",
+      "sha256": "3f46e9b75421e0f18e4e63d900ff382798aedb3fadf910f2ad43e4869edf0fba"
+    },
+    "test/meals.test.js": {
+      "from": "test/meals.test.js",
+      "sha256": "62c92203752298ecf6625da5e5cccf78b9fd795f018f0b944e1bae03f6b8fbb9"
+    },
+    "test/box.test.js": {
+      "from": "test/box.test.js",
+      "sha256": "82dfcdcb734be6e93d436304f2521cc0f8071f26de92db8c7dca4cb5bbf439da"
+    }
+  }
+}

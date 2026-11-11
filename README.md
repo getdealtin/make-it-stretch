@@ -42,12 +42,62 @@
 ```
 make-it-stretch/
 ├── public/
-│   └── index.html        ← Full frontend (HTML + CSS + JS, single file, ~140KB)
-├── server.js             ← Node.js/Express backend
-├── package.json          ← v2.0.0, deps: express + node-fetch
-├── .gitignore
-└── README.md             ← This file
+│   ├── index.html          ← Full frontend (HTML + CSS + JS, single file); runs the engine in the browser
+│   ├── how-plans-work.html ← "How your plan is made": 5 promises + the engine's 11 rules (EN/ES)
+│   ├── about.html, resources.html
+│   └── i18n/
+│       ├── strings.js      ← new screen text, English + Spanish (see Languages)
+│       ├── principles/     ← the 11 rules in plain words (copied from the Austin build)
+│       └── data/es.json    ← Spanish for foods, recipes, NHLBI dishes, twists (copied)
+├── engine/                 ← the meal-planning engine, COPIED from makeitstretch-civic (don't edit here)
+│   └── SOURCE.json         ← which Austin commit it came from + a hash of every copied file
+├── lib/
+│   ├── prices.js, live-prices.js ← BLS series + outage-proof price cache (copied with the engine)
+│   └── dashboard.cjs       ← /dash page
+├── data/
+│   ├── seed-recipes.json, simple-meals.json, nih-recipes.json ← 208 recipes (copied)
+│   └── supabase_dashboard_range.sql ← run once for /dash date ranges
+├── scripts/update-engine.mjs ← copy the engine from Austin, or --check if it's behind
+├── test/                   ← npm test (node:test, no dependencies)
+├── server.js               ← Node.js/Express backend
+└── README.md               ← This file
 ```
+
+## The meal-planning engine (Nov 2026)
+
+Plans come from the same engine as the Austin build (austin.makeitstretch.org, repo
+`getdealtin/makeitstretch-civic`). The two sites stay separate: separate repos, deploys and designs.
+**This repo keeps its own copy** (owner decision, Nov 11 2026), so an Austin change only reaches
+food.getdealtin.com when someone copies it and this site's tests pass.
+
+- **Update:** `node scripts/update-engine.mjs` (needs git; copies Austin's `main`; `--ref <sha>` for a
+  given commit, `--from ../makeitstretch-civic` for a local checkout). Then `npm test`, look at a few plans, commit.
+- **Behind?** `node scripts/update-engine.mjs --check`. `npm test` checks it too (skipped offline), and
+  `.github/workflows/engine-check.yml` runs it weekly and on every push; a failed run means Austin has changes.
+  /dash shows it under *Meal-planning engine*.
+- **Don't edit the copy.** `test/sync.test.js` fails if a copied file differs from what was copied.
+  Change it in makeitstretch-civic, then copy.
+
+What it does (rules in `engine/principles.js`, shown at `/how-plans-work`): meals first, then a list of
+only what those meals use; about 2,000 calories per person per day first, then fullness, then federal
+guidance when the budget allows; different meals from the same groceries; no ingredient in more than about
+1 in 4 meals; **leftover money is shown, never spent on piles of one food** (this replaced the old
+"spend the full budget" cart). Each meal has one swap that keeps the plan in budget, and swapping rebuilds
+the list. Tight budgets repeat fewer meals before covering fewer days, and the plan says how many days and
+calories it covers. Meals that come up 3+ times show "Ways to change it up". Plans longer than a week get one
+list per week; "Show a shorter list" repeats fewer meals. Diets: halal, kosher, less sugar, low sodium
+(plus no pork), each with a note in the plan. Every plan is checked against the 11 rules in the browser;
+a broken rule is logged (`principle_failed`) and shown on /dash.
+
+Recipes: the 161 seed recipes, 22 simple everyday meals and 25 NHLBI main dishes (printed amounts,
+steps and credit, word for word).
+
+## Languages
+
+New screen text is added in **English and Spanish** as it's written (`public/i18n/strings.js`; owner
+decision Nov 11 2026). The main tool stays English until the rest of the site is translated; then it gets
+an EN/ES switch. `/how-plans-work` already switches. `test/i18n.test.js` fails on any missing Spanish.
+Static text that's in the table carries `data-t="key"` so the test can check it word for word.
 
 ---
 
@@ -69,7 +119,9 @@ make-it-stretch/
 
 | Endpoint | Method | Params | What it does |
 |---|---|---|---|
-| `/api/food-prices` | GET | `?region=northeast\|midwest\|south\|west\|national` | Fetches live BLS food prices. Falls back to hardcoded May 2025 averages if key missing or call fails. 24-hour cache. |
+| `/api/food-prices` | GET | `?region=northeast\|midwest\|south\|west\|national` | Live BLS package prices by food id (`blsPrices`), from the series in `lib/prices.js`. Fresh 24 h; through a BLS outage the last good prices are kept. The browser merges them over the engine's estimates. |
+| `/api/recipes` | GET | — | The 208 recipes the engine uses. |
+| `/engine/*` | GET | — | The engine's ES modules, for the browser. |
 | `/api/census` | GET | `?zip=72209` | ACS 5-year estimates by ZCTA: households, SNAP %, poverty rate, median income. Used for solidarity strip. |
 | `/api/state-bills` | GET | `?state=AR` | OpenStates: recent food/nutrition/SNAP bills for the state. |
 | `/api/congress-reps` | GET | `?state=AR` | Congress.gov: US Senators for the state. |
@@ -78,11 +130,7 @@ make-it-stretch/
 
 ### Caching
 
-All API calls use 24-hour in-memory cache (Node.js `Map`). Cache resets on Render redeploy. No persistent storage.
-
-### Fallback Prices
-
-`getFallbackPrices(region)` returns May 2025 BLS averages for 30+ food items across 5 regions (northeast, midwest, south, west, national). Used whenever BLS call fails or key is missing.
+API calls use a 24-hour in-memory cache (Node.js `Map`). BLS prices use `lib/live-prices.js`. Cache resets on Render redeploy.
 
 ---
 
@@ -129,50 +177,19 @@ Matches `follow-the-money.onrender.com` exactly:
 | 3 | Zip code | Must be 5 digits. Resolves to state + region via ZIP_MAP. |
 | 4 | Cuisine preference, stores, avoidances, have-on-hand, leftover preference | All optional |
 
-### Food Database
+### Food, recipes and the plan
 
-80+ items. **No budget gatekeeping** — all foods available regardless of budget. Budget only determines quantity.
-
-Categories: grains, protein, vegetables, fruit, dairy, fats, pantry staples.
-
-Tier system (display only, not gatekeeping):
-- **Tier 1** — Essential staples (rice, beans, eggs, oats, bread...)
-- **Tier 2** — Stretch items (frozen veg, cheese, butter, pork chops...)
-
-### Meal Library
-
-Meals organized by cuisine: `american`, `latin`, `asian`, `southern`, `mediterranean`, `any`.
-
-Each cuisine has 8–10 meals across `breakfast` / `lunch` / `dinner` slots.
-
-**DISCOVER_MEALS** (8 cross-cultural options): Shakshuka, Gallo Pinto, Khichdi, Mujaddara, Aloo Sabzi, Congee, Sweet Potato Stew, Polenta & Sauce. Shown with a "new" badge — one per meal slot per day.
-
-Meals are filtered by:
-1. User's avoid list (gluten-free, no dairy, no meat, etc.)
-2. Ingredients actually in the generated cart
-
-### Cart Logic
-
-**First pass:** Buy one of every affordable item.
-
-**Second pass:** Scale up quantities proportionally.
-- `daysMultiplier = floor(days / 7)` (minimum 1)
-- Tier 1 items scale up to `max(8, daysMultiplier × 4)`
-- Tier 2 items scale up to `max(4, daysMultiplier × 2)`
-- Prioritizes highest calorie-per-dollar items
-- Keeps scaling until budget is exhausted
-
-**Goal:** Spend the full budget. Remainder < $1 shows as "for tax or extras."
+All in the engine (see *The meal-planning engine* above): 83 foods with package sizes, USDA nutrition and
+regional price estimates (`engine/food-db.js`); 208 recipes; the planner (`engine/meals.js`). No budget
+gatekeeping: every food is available at every budget. Tier badges (Essential / Stretch) are display only.
 
 ### Price Flow
 
 ```
-Server fetches BLS live prices
-    → mapped to food item IDs via mapBLSToFoodIds()
-    → returned as blsPrices object
-Frontend merges: { ...FALLBACK_PRICES[region], ...blsPrices }
-    → only ~15 BLS items override fallback; rest use fallback
-Store adjustments applied (corner store = +15–30% on perishables)
+Server fetches BLS live prices (lib/prices.js: checked series, package sizes, sanity bounds)
+    → returned as blsPrices { foodId: package price }
+Browser: engine resolvePrices(region, blsPrices) = engine estimates ← live BLS
+Store adjustments in the engine (corner store costs more, dollar store less)
 ```
 
 ### Solidarity Strip (Census)
@@ -210,14 +227,14 @@ State bills loaded async from OpenStates API.
 | Decision | Reason |
 |---|---|
 | **No Claude API key anywhere** | Security. All meal logic is rule-based only. |
-| **No budget gatekeeping** | All 80+ foods available regardless of budget. Budget controls quantity, not access. |
+| **No budget gatekeeping** | All 83 foods available regardless of budget. Budget controls quantity, not access. |
+| **Leftover money is shown, not spent** | The engine's rule 9 (owner decision, Nov 2026): never piles of one food. |
 | **Single-page scroll, no tabs** | Reduces cognitive load for stressed users. |
 | **Solidarity framing for Census data** | "You're not alone" not "here are your statistics." |
 | **Cheapest brand always shown first** | Always. "CHEAPEST" badge on first item. |
 | **Live BLS prices preferred** | Fetched from backend, merged over fallback. Falls back silently. |
 | **Dark header matching follow-the-money** | Platform consistency. Exact same CSS. |
 | **Warm cream body (#f7f3eb)** | Not white, not dark — warm and less clinical. |
-| **Protein rotation across weeks** | Week 1: chicken/eggs → Week 2: tuna/lentils → Week 3: beans/chickpeas → Week 4: beef/pork |
 | **No ads, no tracking** | Platform promise. Never violate. |
 
 ---
@@ -284,3 +301,12 @@ Expected behavior:
 ---
 
 *Last updated: May 2026 · Get Dealt In · getdealtin.com*
+
+## Dashboard (/dash)
+
+Password: `STATS_KEY`. Laid out like the Austin build's admin: summary tiles, then Activity (7 / 30 / 90 days /
+1 year: visits per day, where people stop in the intake, budget pressure at the SNAP and Thrifty Food Plan lines,
+shortfall routing, top zips, where people shop, dietary needs and food style, engagement, events), recent
+sessions, reported shelf prices, live BLS prices, the engine (copy vs Austin, plans that broke a rule) and
+Annual updates. The date ranges need `data/supabase_dashboard_range.sql` run once in Supabase (read-only
+function; until then /dash shows the all-time view). "Don't count this browser" keeps your own test visits out.

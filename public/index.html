@@ -1938,6 +1938,42 @@ footer a:hover { color: var(--gold); }
   .week-body { display: block !important; }
   .summary-card { border: none !important; box-shadow: none !important; }
 }
+
+/* ── Added with the Austin engine (Nov 2026) ── */
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.step-hint-sm { font-size: 12px; margin: -2px 0 8px; }
+.plan-note { display:block; margin-top:10px; padding:10px 14px; background:var(--gold-dim, #fdf0e4); border-left:3px solid var(--gold); border-radius:0 6px 6px 0; color:var(--ink); font-size:13px; line-height:1.6; }
+.plan-note[hidden] { display:none; }
+.diet-notes { margin:10px 0 0; padding:10px 14px 10px 30px; background:var(--green-bg); border:1px solid var(--green-border); border-radius:6px; font-size:13px; line-height:1.6; color:var(--ink2); }
+.diet-notes li + li { margin-top:6px; }
+.free-food-btn { display:inline-block; margin-top:12px; background:var(--ink); color:#fff; border:none; border-radius:6px; padding:9px 16px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.free-food-btn:hover { background:#244a30; }
+.rules-line { display:block; margin-top:12px; font-size:12px; color:var(--ink3); }
+.rules-line a { color:var(--blue); font-weight:600; text-decoration:none; }
+.rules-line a:hover { text-decoration:underline; }
+.day-row-uncovered { background:var(--red-dim); }
+.uncovered-row { font-size:13px; font-weight:600; color:var(--red); padding:8px 14px; background:#fff; border-radius:6px; box-shadow:0 0 0 1px var(--red-border); display:inline-flex; }
+.week-empty { padding:20px; color:var(--ink2); background:var(--bg2); border-radius:8px; font-size:14px; }
+.ideas-pill { font-family:'Plus Jakarta Sans',sans-serif; font-size:9px; font-weight:700; letter-spacing:.06em; background:var(--gold-dim, #fdf0e4); color:#9a5512; border:1px solid var(--amber-border, #f0c898); padding:2px 6px; border-radius:4px; margin-left:6px; cursor:pointer; }
+.ideas-pill:hover { background:#fbe3c8; }
+.list-nudge { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; padding:12px 14px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; font-size:13px; color:var(--ink2); }
+.list-nudge p { margin:0; flex:1 1 240px; }
+.list-nudge .btn-back { margin:0; border:1px solid var(--border2); border-radius:6px; padding:7px 14px; background:#fff; font-weight:600; font-size:13px; }
+.have-note { font-size:13px; color:var(--ink2); margin-bottom:12px; }
+.week-list-head { display:flex; justify-content:space-between; align-items:baseline; margin:18px 0 6px; padding-bottom:6px; border-bottom:2px solid var(--gold); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+.week-list-head:first-of-type { margin-top:4px; }
+.list-left { font-size:13px; color:#3a7a50; font-weight:600; margin-top:8px; }
+.drawer-serves { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink3); margin-bottom:12px; }
+.nih-lines .ing-head { list-style:none; margin:10px 0 2px -16px; font-weight:700; color:var(--ink); }
+.need-tag { font-size:10px; font-weight:700; letter-spacing:.04em; color:#4A5D50; background:var(--green-bg); border:1px solid var(--green-border); border-radius:4px; padding:1px 6px; margin-left:4px; white-space:nowrap; }
+.nih-steps { padding-left:20px; margin:0 0 12px; }
+.nih-steps li { font-family:'Lora',serif; font-size:14px; line-height:1.7; color:var(--ink2); margin-bottom:8px; }
+.recipe-credit { margin-top:18px; padding-top:12px; border-top:1px solid var(--border); font-size:11px; line-height:1.6; color:var(--ink3); font-style:italic; }
+.drawer-twists { margin-top:20px; padding:14px 16px; background:var(--gold-dim, #fdf0e4); border-radius:8px; border:1px solid var(--amber-border, #f0c898); }
+.drawer-twists ul { padding-left:18px; margin:6px 0 0; }
+.drawer-twists li { font-size:14px; line-height:1.6; color:var(--ink); margin-bottom:4px; }
+.twists-hint { font-size:12px; color:var(--ink3); margin:0; }
+.drawer-twists .drawer-section-label { margin-top:0; }
 </style>
 <script src="https://js.stripe.com/v3/" defer></script>
 </head>
@@ -2067,7 +2103,17 @@ footer a:hover { color: var(--gold); }
           <button class="tag-btn tag-avoid" id="avoid-eggs" onclick="toggleMulti('avoid','eggs')">No eggs</button>
           <button class="tag-btn tag-avoid" id="avoid-peanuts" onclick="toggleMulti('avoid','peanuts')">No peanuts</button>
           <button class="tag-btn tag-avoid" id="avoid-fish" onclick="toggleMulti('avoid','fish')">No fish</button>
+          <button class="tag-btn tag-avoid" id="avoid-pork" onclick="toggleMulti('avoid','pork')" data-t="avoid_pork">No pork</button>
           <button class="tag-btn tag-avoid" id="avoid-nothing" onclick="toggleMulti('avoid','nothing')">No restrictions</button>
+        </div>
+
+        <span class="step-label" data-t="pref_diet">Do you follow any of these diets?</span>
+        <p class="step-hint step-hint-sm" data-t="diet_hint">We change the meals to fit. Your plan says what we changed.</p>
+        <div class="tag-grid">
+          <button class="tag-btn tag-avoid" id="diet-halal" onclick="toggleMulti('diet','halal')" data-t="diet_halal">Halal</button>
+          <button class="tag-btn tag-avoid" id="diet-kosher" onclick="toggleMulti('diet','kosher')" data-t="diet_kosher">Kosher</button>
+          <button class="tag-btn tag-avoid" id="diet-diabetic" onclick="toggleMulti('diet','diabetic')" data-t="diet_diabetic">Less sugar (diabetes)</button>
+          <button class="tag-btn tag-avoid" id="diet-low_sodium" onclick="toggleMulti('diet','low_sodium')" data-t="diet_low_sodium">Low sodium</button>
         </div>
 
         <span class="step-label">What do you already have?</span>
@@ -2139,7 +2185,8 @@ footer a:hover { color: var(--gold); }
     <!-- ── GAME PLAN (Anchor #2: High Engagement) ── -->
     <div class="section-hdr">
       <h2>Your Meal Game Plan</h2>
-      <p>Tap any meal to confirm it. One "Try something new" option per slot introduces a dish from outside your preference — same budget, new flavors.</p>
+      <p id="meals-intro">Each meal has one swap that keeps the plan in budget. Tap it and your shopping list changes to match. Tap 📖 for the recipe.</p>
+      <p class="sr-only" id="plan-announce" aria-live="polite"></p>
     </div>
     <div class="weeks-wrap" id="weeks-wrap"></div>
     <div class="tips-list" id="tips-list"></div>
@@ -2166,7 +2213,7 @@ footer a:hover { color: var(--gold); }
       <div class="accordion-hdr" onclick="toggleAccordion('acc-shopping')">
         <div class="accordion-hdr-left">
           <div class="accordion-title">Shopping List</div>
-          <div class="accordion-subtitle">Everything your plan needs — sorted cheapest first. Check off as you shop.</div>
+          <div class="accordion-subtitle" id="list-subtitle">Everything your meals need, in the amounts they use. Check off as you shop.</div>
         </div>
         <span class="accordion-chevron">▾</span>
       </div>
@@ -2308,9 +2355,17 @@ footer a:hover { color: var(--gold); }
 <footer>
   <a href="https://getdealtin.com">getdealtin.com</a> &nbsp;·&nbsp;
   <a href="/about">About & Data Sources</a> &nbsp;·&nbsp;
+  <a href="/how-plans-work">How your plan is made</a> &nbsp;·&nbsp;
   <a href="https://getdealtin.com/privacy">Privacy Policy</a>
 </footer>
 
+<script src="/i18n/strings.js"></script>
+<script type="module">
+  // The meal-planning engine: the same files the server uses (engine/, copied from the Austin build).
+  import * as E from '/engine/index.js';
+  window.MIS_ENGINE = E;
+  window.dispatchEvent(new Event('mis-engine'));
+</script>
 <script>
 // ━━ EVENT LOGGING ━━
 // Session token: random 12-char string, generated once per page load.
@@ -2319,7 +2374,10 @@ const SESSION_ID = Math.random().toString(36).slice(2,8) +
                    Math.random().toString(36).slice(2,8);
 
 // Core logger — fire and forget, never blocks UI
+// "Don't count this browser" (set from /dash): the operator's own test visits are never sent.
+const TESTING = (() => { try { return localStorage.getItem('mis:test') === '1'; } catch(e) { return false; } })();
 function logEvent(event, extras = {}) {
+  if (TESTING) return;
   try {
     fetch('/api/event', {
       method: 'POST',
@@ -2361,7 +2419,7 @@ const answers = {
   otherHave:'', cuisine:[], leftover:'sometimes'
 };
 const paydayState = { key:null, days:null };
-const multiSelections = { store:[], avoid:[], have:[] };
+const multiSelections = { store:[], avoid:[], diet:[], have:[] };
 let cart = [];
 let activePrices = {};
 let livePrices = null;
@@ -2374,89 +2432,7 @@ let mealPlan = {};
 const ZIP_MAP={"005":"VT|northeast","010":"MA|northeast","011":"MA|northeast","012":"MA|northeast","013":"MA|northeast","014":"MA|northeast","015":"MA|northeast","016":"MA|northeast","017":"MA|northeast","018":"MA|northeast","019":"MA|northeast","020":"MA|northeast","021":"MA|northeast","022":"MA|northeast","023":"MA|northeast","024":"MA|northeast","025":"MA|northeast","026":"MA|northeast","027":"MA|northeast","028":"RI|northeast","029":"RI|northeast","030":"NH|northeast","031":"NH|northeast","032":"NH|northeast","033":"NH|northeast","034":"NH|northeast","035":"NH|northeast","036":"NH|northeast","037":"NH|northeast","038":"NH|northeast","039":"NH|northeast","040":"ME|northeast","041":"ME|northeast","042":"ME|northeast","043":"ME|northeast","044":"ME|northeast","045":"ME|northeast","046":"ME|northeast","047":"ME|northeast","048":"ME|northeast","049":"ME|northeast","050":"VT|northeast","051":"VT|northeast","052":"VT|northeast","053":"VT|northeast","054":"VT|northeast","055":"VT|northeast","056":"VT|northeast","057":"VT|northeast","058":"VT|northeast","059":"VT|northeast","060":"CT|northeast","061":"CT|northeast","062":"CT|northeast","063":"CT|northeast","064":"CT|northeast","065":"CT|northeast","066":"CT|northeast","067":"CT|northeast","068":"CT|northeast","069":"CT|northeast","070":"NJ|northeast","071":"NJ|northeast","072":"NJ|northeast","073":"NJ|northeast","074":"NJ|northeast","075":"NJ|northeast","076":"NJ|northeast","077":"NJ|northeast","078":"NJ|northeast","079":"NJ|northeast","080":"NJ|northeast","081":"NJ|northeast","082":"NJ|northeast","083":"NJ|northeast","084":"NJ|northeast","085":"NJ|northeast","086":"NJ|northeast","087":"NJ|northeast","088":"NJ|northeast","089":"NJ|northeast","090":"NY|northeast","091":"NY|northeast","092":"NY|northeast","093":"NY|northeast","094":"NY|northeast","095":"NY|northeast","096":"NY|northeast","097":"NY|northeast","098":"NY|northeast","099":"NY|northeast","100":"NY|northeast","101":"NY|northeast","102":"NY|northeast","103":"NY|northeast","104":"NY|northeast","105":"NY|northeast","106":"NY|northeast","107":"NY|northeast","108":"NY|northeast","109":"NY|northeast","110":"NY|northeast","111":"NY|northeast","112":"NY|northeast","113":"NY|northeast","114":"NY|northeast","115":"NY|northeast","116":"NY|northeast","117":"NY|northeast","118":"NY|northeast","119":"NY|northeast","120":"NY|northeast","121":"NY|northeast","122":"NY|northeast","123":"NY|northeast","124":"NY|northeast","125":"NY|northeast","126":"NY|northeast","127":"NY|northeast","128":"NY|northeast","129":"NY|northeast","130":"NY|northeast","131":"NY|northeast","132":"NY|northeast","133":"NY|northeast","134":"NY|northeast","135":"NY|northeast","136":"NY|northeast","137":"NY|northeast","138":"NY|northeast","139":"NY|northeast","140":"NY|northeast","141":"NY|northeast","142":"NY|northeast","143":"NY|northeast","144":"NY|northeast","145":"NY|northeast","146":"NY|northeast","147":"NY|northeast","148":"NY|northeast","149":"NY|northeast","150":"PA|northeast","151":"PA|northeast","152":"PA|northeast","153":"PA|northeast","154":"PA|northeast","155":"PA|northeast","156":"PA|northeast","157":"PA|northeast","158":"PA|northeast","159":"PA|northeast","160":"PA|northeast","161":"PA|northeast","162":"PA|northeast","163":"PA|northeast","164":"PA|northeast","165":"PA|northeast","166":"PA|northeast","167":"PA|northeast","168":"PA|northeast","169":"PA|northeast","170":"PA|northeast","171":"PA|northeast","172":"PA|northeast","173":"PA|northeast","174":"PA|northeast","175":"PA|northeast","176":"PA|northeast","177":"PA|northeast","178":"PA|northeast","179":"PA|northeast","180":"PA|northeast","181":"PA|northeast","182":"PA|northeast","183":"PA|northeast","184":"PA|northeast","185":"PA|northeast","186":"PA|northeast","187":"PA|northeast","188":"PA|northeast","189":"PA|northeast","190":"PA|northeast","191":"PA|northeast","192":"PA|northeast","193":"PA|northeast","194":"PA|northeast","195":"PA|northeast","196":"PA|northeast","197":"DE|south","198":"DE|south","199":"DE|south","200":"DC|south","201":"VA|south","202":"DC|south","203":"DC|south","204":"DC|south","205":"DC|south","206":"MD|south","207":"MD|south","208":"MD|south","209":"MD|south","210":"MD|south","211":"MD|south","212":"MD|south","214":"MD|south","215":"MD|south","216":"MD|south","217":"MD|south","218":"MD|south","219":"MD|south","220":"VA|south","221":"VA|south","222":"VA|south","223":"VA|south","224":"VA|south","225":"VA|south","226":"VA|south","227":"VA|south","228":"VA|south","229":"VA|south","230":"VA|south","231":"VA|south","232":"VA|south","233":"VA|south","234":"VA|south","235":"VA|south","236":"VA|south","237":"VA|south","238":"VA|south","239":"VA|south","240":"VA|south","241":"VA|south","242":"VA|south","243":"VA|south","244":"VA|south","245":"VA|south","246":"VA|south","247":"WV|south","248":"WV|south","249":"WV|south","250":"WV|south","251":"WV|south","252":"WV|south","253":"WV|south","254":"WV|south","255":"WV|south","256":"WV|south","257":"WV|south","258":"WV|south","259":"WV|south","260":"WV|south","261":"WV|south","262":"WV|south","263":"WV|south","264":"WV|south","265":"WV|south","266":"WV|south","267":"WV|south","268":"WV|south","270":"NC|south","271":"NC|south","272":"NC|south","273":"NC|south","274":"NC|south","275":"NC|south","276":"NC|south","277":"NC|south","278":"NC|south","279":"NC|south","280":"NC|south","281":"NC|south","282":"NC|south","283":"NC|south","284":"NC|south","285":"NC|south","286":"NC|south","287":"NC|south","288":"NC|south","289":"NC|south","290":"SC|south","291":"SC|south","292":"SC|south","293":"SC|south","294":"SC|south","295":"SC|south","296":"SC|south","297":"SC|south","298":"SC|south","299":"SC|south","300":"GA|south","301":"GA|south","302":"GA|south","303":"GA|south","304":"GA|south","305":"GA|south","306":"GA|south","307":"GA|south","308":"GA|south","309":"GA|south","310":"GA|south","311":"GA|south","312":"GA|south","313":"GA|south","314":"GA|south","315":"GA|south","316":"GA|south","317":"GA|south","318":"GA|south","319":"GA|south","320":"FL|south","321":"FL|south","322":"FL|south","323":"FL|south","324":"FL|south","325":"FL|south","326":"FL|south","327":"FL|south","328":"FL|south","329":"FL|south","330":"FL|south","331":"FL|south","332":"FL|south","333":"FL|south","334":"FL|south","335":"FL|south","336":"FL|south","337":"FL|south","338":"FL|south","339":"FL|south","340":"FL|south","341":"FL|south","342":"FL|south","344":"FL|south","346":"FL|south","347":"FL|south","349":"FL|south","350":"AL|south","351":"AL|south","352":"AL|south","354":"AL|south","355":"AL|south","356":"AL|south","357":"AL|south","358":"AL|south","359":"AL|south","360":"AL|south","361":"AL|south","362":"AL|south","363":"AL|south","364":"AL|south","365":"AL|south","366":"AL|south","367":"AL|south","368":"AL|south","369":"AL|south","370":"TN|south","371":"TN|south","372":"TN|south","373":"TN|south","374":"TN|south","375":"TN|south","376":"TN|south","377":"TN|south","378":"TN|south","379":"TN|south","380":"TN|south","381":"TN|south","382":"TN|south","383":"TN|south","384":"TN|south","385":"TN|south","386":"MS|south","387":"MS|south","388":"MS|south","389":"MS|south","390":"MS|south","391":"MS|south","392":"MS|south","393":"MS|south","394":"MS|south","395":"MS|south","396":"MS|south","397":"MS|south","400":"KY|south","401":"KY|south","402":"KY|south","403":"KY|south","404":"KY|south","405":"KY|south","406":"KY|south","407":"KY|south","408":"KY|south","409":"KY|south","410":"KY|south","411":"KY|south","412":"KY|south","413":"KY|south","414":"KY|south","415":"KY|south","416":"KY|south","417":"KY|south","418":"KY|south","420":"KY|south","421":"KY|south","422":"KY|south","423":"KY|south","424":"KY|south","425":"KY|south","426":"KY|south","427":"KY|south","430":"OH|midwest","431":"OH|midwest","432":"OH|midwest","433":"OH|midwest","434":"OH|midwest","435":"OH|midwest","436":"OH|midwest","437":"OH|midwest","438":"OH|midwest","439":"OH|midwest","440":"OH|midwest","441":"OH|midwest","442":"OH|midwest","443":"OH|midwest","444":"OH|midwest","445":"OH|midwest","446":"OH|midwest","447":"OH|midwest","448":"OH|midwest","449":"OH|midwest","450":"OH|midwest","451":"OH|midwest","452":"OH|midwest","453":"OH|midwest","454":"OH|midwest","455":"OH|midwest","456":"OH|midwest","457":"OH|midwest","458":"OH|midwest","460":"IN|midwest","461":"IN|midwest","462":"IN|midwest","463":"IN|midwest","464":"IN|midwest","465":"IN|midwest","466":"IN|midwest","467":"IN|midwest","468":"IN|midwest","469":"IN|midwest","470":"IN|midwest","471":"IN|midwest","472":"IN|midwest","473":"IN|midwest","474":"IN|midwest","475":"IN|midwest","476":"IN|midwest","477":"IN|midwest","478":"IN|midwest","479":"IN|midwest","480":"MI|midwest","481":"MI|midwest","482":"MI|midwest","483":"MI|midwest","484":"MI|midwest","485":"MI|midwest","486":"MI|midwest","487":"MI|midwest","488":"MI|midwest","489":"MI|midwest","490":"MI|midwest","491":"MI|midwest","492":"MI|midwest","493":"MI|midwest","494":"MI|midwest","495":"MI|midwest","496":"MI|midwest","497":"MI|midwest","498":"MI|midwest","499":"MI|midwest","500":"IA|midwest","501":"IA|midwest","502":"IA|midwest","503":"IA|midwest","504":"IA|midwest","505":"IA|midwest","506":"IA|midwest","507":"IA|midwest","508":"IA|midwest","510":"IA|midwest","511":"IA|midwest","512":"IA|midwest","513":"IA|midwest","514":"IA|midwest","515":"IA|midwest","516":"IA|midwest","520":"IA|midwest","521":"IA|midwest","522":"IA|midwest","523":"IA|midwest","524":"IA|midwest","525":"IA|midwest","526":"IA|midwest","527":"IA|midwest","528":"IA|midwest","530":"WI|midwest","531":"WI|midwest","532":"WI|midwest","534":"WI|midwest","535":"WI|midwest","537":"WI|midwest","538":"WI|midwest","539":"WI|midwest","540":"WI|midwest","541":"WI|midwest","542":"WI|midwest","543":"WI|midwest","544":"WI|midwest","545":"WI|midwest","546":"WI|midwest","547":"WI|midwest","548":"WI|midwest","549":"WI|midwest","550":"MN|midwest","551":"MN|midwest","553":"MN|midwest","554":"MN|midwest","555":"MN|midwest","556":"MN|midwest","557":"MN|midwest","558":"MN|midwest","559":"MN|midwest","560":"MN|midwest","561":"MN|midwest","562":"MN|midwest","563":"MN|midwest","564":"MN|midwest","565":"MN|midwest","566":"MN|midwest","567":"MN|midwest","570":"SD|midwest","571":"SD|midwest","572":"SD|midwest","573":"SD|midwest","574":"SD|midwest","575":"SD|midwest","576":"SD|midwest","577":"SD|midwest","580":"ND|midwest","581":"ND|midwest","582":"ND|midwest","583":"ND|midwest","584":"ND|midwest","585":"ND|midwest","586":"ND|midwest","587":"ND|midwest","588":"ND|midwest","590":"MT|west","591":"MT|west","592":"MT|west","593":"MT|west","594":"MT|west","595":"MT|west","596":"MT|west","597":"MT|west","598":"MT|west","599":"MT|west","600":"IL|midwest","601":"IL|midwest","602":"IL|midwest","603":"IL|midwest","604":"IL|midwest","605":"IL|midwest","606":"IL|midwest","607":"IL|midwest","608":"IL|midwest","609":"IL|midwest","610":"IL|midwest","611":"IL|midwest","612":"IL|midwest","613":"IL|midwest","614":"IL|midwest","615":"IL|midwest","616":"IL|midwest","617":"IL|midwest","618":"IL|midwest","619":"IL|midwest","620":"IL|midwest","622":"IL|midwest","623":"IL|midwest","624":"IL|midwest","625":"IL|midwest","626":"IL|midwest","627":"IL|midwest","628":"IL|midwest","629":"IL|midwest","630":"MO|midwest","631":"MO|midwest","633":"MO|midwest","634":"MO|midwest","635":"MO|midwest","636":"MO|midwest","637":"MO|midwest","638":"MO|midwest","639":"MO|midwest","640":"MO|midwest","641":"MO|midwest","644":"MO|midwest","645":"MO|midwest","646":"MO|midwest","647":"MO|midwest","648":"MO|midwest","649":"MO|midwest","650":"MO|midwest","651":"MO|midwest","652":"MO|midwest","653":"MO|midwest","654":"MO|midwest","655":"MO|midwest","656":"MO|midwest","657":"MO|midwest","658":"MO|midwest","660":"KS|midwest","661":"KS|midwest","662":"KS|midwest","664":"KS|midwest","665":"KS|midwest","666":"KS|midwest","667":"KS|midwest","668":"KS|midwest","669":"KS|midwest","670":"KS|midwest","671":"KS|midwest","672":"KS|midwest","673":"KS|midwest","674":"KS|midwest","675":"KS|midwest","676":"KS|midwest","677":"KS|midwest","678":"KS|midwest","679":"KS|midwest","680":"NE|midwest","681":"NE|midwest","683":"NE|midwest","684":"NE|midwest","685":"NE|midwest","686":"NE|midwest","687":"NE|midwest","688":"NE|midwest","689":"NE|midwest","690":"NE|midwest","691":"NE|midwest","692":"NE|midwest","693":"NE|midwest","700":"LA|south","701":"LA|south","703":"LA|south","704":"LA|south","705":"LA|south","706":"LA|south","707":"LA|south","708":"LA|south","710":"LA|south","711":"LA|south","712":"LA|south","713":"LA|south","714":"LA|south","716":"AR|south","717":"AR|south","718":"AR|south","719":"AR|south","720":"AR|south","721":"AR|south","722":"AR|south","723":"AR|south","724":"AR|south","725":"AR|south","726":"AR|south","727":"AR|south","728":"AR|south","729":"AR|south","730":"OK|south","731":"OK|south","733":"OK|south","734":"OK|south","735":"OK|south","736":"OK|south","737":"OK|south","738":"OK|south","739":"OK|south","740":"OK|south","741":"OK|south","743":"OK|south","744":"OK|south","745":"OK|south","746":"OK|south","747":"OK|south","748":"OK|south","749":"OK|south","750":"TX|south","751":"TX|south","752":"TX|south","753":"TX|south","754":"TX|south","755":"TX|south","756":"TX|south","757":"TX|south","758":"TX|south","759":"TX|south","760":"TX|south","761":"TX|south","762":"TX|south","763":"TX|south","764":"TX|south","765":"TX|south","766":"TX|south","767":"TX|south","768":"TX|south","769":"TX|south","770":"TX|south","771":"TX|south","772":"TX|south","773":"TX|south","774":"TX|south","775":"TX|south","776":"TX|south","777":"TX|south","778":"TX|south","779":"TX|south","780":"TX|south","781":"TX|south","782":"TX|south","783":"TX|south","784":"TX|south","785":"TX|south","786":"TX|south","787":"TX|south","788":"TX|south","789":"TX|south","790":"TX|south","791":"TX|south","792":"TX|south","793":"TX|south","794":"TX|south","795":"TX|south","796":"TX|south","797":"TX|south","798":"TX|south","799":"TX|south","800":"CO|west","801":"CO|west","802":"CO|west","803":"CO|west","804":"CO|west","805":"CO|west","806":"CO|west","807":"CO|west","808":"CO|west","809":"CO|west","810":"CO|west","811":"CO|west","812":"CO|west","813":"CO|west","814":"CO|west","815":"CO|west","816":"CO|west","820":"WY|west","821":"WY|west","822":"WY|west","823":"WY|west","824":"WY|west","825":"WY|west","826":"WY|west","827":"WY|west","828":"WY|west","829":"WY|west","830":"WY|west","831":"WY|west","832":"ID|west","833":"ID|west","834":"ID|west","835":"ID|west","836":"ID|west","837":"ID|west","838":"ID|west","840":"UT|west","841":"UT|west","842":"UT|west","843":"UT|west","844":"UT|west","845":"UT|west","846":"UT|west","847":"UT|west","850":"AZ|west","851":"AZ|west","852":"AZ|west","853":"AZ|west","855":"AZ|west","856":"AZ|west","857":"AZ|west","859":"AZ|west","860":"AZ|west","863":"AZ|west","864":"AZ|west","865":"AZ|west","870":"NM|west","871":"NM|west","872":"NM|west","873":"NM|west","874":"NM|west","875":"NM|west","876":"NM|west","877":"NM|west","878":"NM|west","879":"NM|west","880":"NM|west","881":"NM|west","882":"NM|west","883":"NM|west","884":"NM|west","889":"NV|west","890":"NV|west","891":"NV|west","893":"NV|west","894":"NV|west","895":"NV|west","896":"NV|west","897":"NV|west","898":"NV|west","900":"CA|west","901":"CA|west","902":"CA|west","903":"CA|west","904":"CA|west","905":"CA|west","906":"CA|west","907":"CA|west","908":"CA|west","909":"CA|west","910":"CA|west","911":"CA|west","912":"CA|west","913":"CA|west","914":"CA|west","915":"CA|west","916":"CA|west","917":"CA|west","918":"CA|west","919":"CA|west","920":"CA|west","921":"CA|west","922":"CA|west","923":"CA|west","924":"CA|west","925":"CA|west","926":"CA|west","927":"CA|west","928":"CA|west","930":"CA|west","931":"CA|west","932":"CA|west","933":"CA|west","934":"CA|west","935":"CA|west","936":"CA|west","937":"CA|west","938":"CA|west","939":"CA|west","940":"CA|west","941":"CA|west","942":"CA|west","943":"CA|west","944":"CA|west","945":"CA|west","946":"CA|west","947":"CA|west","948":"CA|west","949":"CA|west","950":"CA|west","951":"CA|west","952":"CA|west","953":"CA|west","954":"CA|west","955":"CA|west","956":"CA|west","957":"CA|west","958":"CA|west","959":"CA|west","960":"CA|west","961":"CA|west","962":"HI|west","963":"HI|west","964":"HI|west","965":"HI|west","966":"HI|west","967":"HI|west","968":"HI|west","970":"OR|west","971":"OR|west","972":"OR|west","973":"OR|west","974":"OR|west","975":"OR|west","976":"OR|west","977":"OR|west","978":"OR|west","979":"OR|west","980":"WA|west","981":"WA|west","982":"WA|west","983":"WA|west","984":"WA|west","985":"WA|west","986":"WA|west","987":"WA|west","988":"WA|west","989":"WA|west","990":"WA|west","991":"WA|west","992":"WA|west","993":"WA|west","994":"WA|west","995":"AK|west","996":"AK|west","997":"AK|west","998":"AK|west","999":"AK|west"};
 function zipToInfo(zip){if(!zip||zip.length<3)return null;const p=zip.substring(0,3);if(ZIP_MAP[p]){const[s,r]=ZIP_MAP[p].split('|');return{state:s,region:r};}return null;}
 
-// ━━ EXPANDED FOOD DATABASE (80+ items, no gatekeeping) ━━
-const FOOD_DB = [
-  // GRAINS & STARCHES
-  {id:'rice',      name:'White Rice (2 lb)',       cal:3280,srv:16,cat:'grain',  tier:1,note:'The backbone. Pairs with everything.',          avoid:[],hasProp:'rice'},
-  {id:'drybeans',  name:'Dry Pinto Beans (1 lb)',  cal:1560,srv:10,cat:'protein',tier:1,note:'Cheapest protein per dollar anywhere.',          avoid:[],hasProp:'beans'},
-  {id:'oats',      name:'Rolled Oats (42 oz)',      cal:4200,srv:28,cat:'grain',  tier:1,note:'Best breakfast value. Keeps you full for hours.',avoid:['gluten'],hasProp:'oats'},
-  {id:'bread',     name:'Bread (loaf)',              cal:1200,srv:20,cat:'grain',  tier:1,note:'Quick meals, sandwiches, sides.',               avoid:['gluten'],hasProp:'bread'},
-  {id:'pasta',     name:'Pasta (1 lb)',              cal:1600,srv:8, cat:'grain',  tier:1,note:'Fast meals. 15 minutes start to finish.',        avoid:['gluten'],hasProp:'pasta'},
-  {id:'cornmeal',  name:'Cornmeal (2 lb)',           cal:3200,srv:20,cat:'grain',  tier:1,note:'Grits, polenta, cornbread. Southern staple.',   avoid:['gluten'],hasProp:null},
-  {id:'flour',     name:'All-Purpose Flour (5 lb)', cal:7700,srv:50,cat:'grain',  tier:1,note:'Pancakes, dumplings, thicken soups.',            avoid:['gluten'],hasProp:null},
-  {id:'tortillas', name:'Tortillas (pkg of 10)',     cal:1800,srv:10,cat:'grain',  tier:1,note:'Wraps, tacos, quesadillas — faster than bread.',avoid:['gluten'],hasProp:null},
-  {id:'barley',    name:'Barley (1 lb)',              cal:1520,srv:8, cat:'grain',  tier:2,note:'Nutty flavor. Great in soups and stews.',        avoid:['gluten'],hasProp:null},
-  {id:'lentils',   name:'Dry Lentils (1 lb)',        cal:1560,srv:10,cat:'protein',tier:1,note:'Cook in 20 min, no soaking. Protein powerhouse.',avoid:[],hasProp:null},
-  {id:'splitpeas', name:'Split Peas (1 lb)',         cal:1480,srv:10,cat:'protein',tier:1,note:'Makes the most filling, cheapest soup you can build.',avoid:[],hasProp:null},
-  {id:'chickpeas', name:'Canned Chickpeas (15 oz)',  cal:360, srv:3, cat:'protein',tier:1,note:'Ready to eat. Salads, stews, roasted as a snack.',avoid:[],hasProp:null},
-
-  // PROTEINS
-  {id:'eggs',      name:'Eggs, Grade A (dozen)',     cal:840, srv:12,cat:'protein',tier:1,note:'Most versatile protein — any meal, any time.',   avoid:['eggs'],hasProp:'eggs'},
-  {id:'chicken',   name:'Chicken Leg Quarters (2 lb)',cal:1100,srv:4,cat:'protein',tier:2,note:'Best value meat. Bone-in cooks the longest.',     avoid:['meat'],hasProp:null},
-  {id:'tuna',      name:'Canned Tuna (5 oz)',         cal:150, srv:2, cat:'protein',tier:1,note:'Quick protein over rice or in a sandwich.',       avoid:['fish','meat'],hasProp:null},
-  {id:'sardines',  name:'Canned Sardines (3.75 oz)', cal:190, srv:2, cat:'protein',tier:1,note:'Most omega-3 per dollar of any food. No cooking.', avoid:['fish','meat'],hasProp:null},
-  {id:'peanutbutter',name:'Peanut Butter (16 oz)',   cal:2688,srv:16,cat:'protein',tier:1,note:'Dense calories. Lasts months. Emergency fuel.',   avoid:['peanuts'],hasProp:null},
-  {id:'groundbeef',name:'Ground Beef (1 lb)',         cal:1200,srv:4, cat:'protein',tier:2,note:'Stretches across 2–3 meals with rice or pasta.',  avoid:['meat'],hasProp:null},
-  {id:'porkchops', name:'Pork Chops (1 lb)',          cal:780, srv:3, cat:'protein',tier:2,note:'Value cut. Braise low and slow for best results.', avoid:['meat'],hasProp:null},
-
-  // VEGETABLES
-  {id:'potatoes',  name:'Potatoes (5 lb)',            cal:3500,srv:14,cat:'vegetable',tier:1,note:'Filling, nutritious, stores for weeks.',        avoid:[],hasProp:'potatoes'},
-  {id:'onions',    name:'Onions (3 lb)',               cal:480, srv:12,cat:'vegetable',tier:1,note:'Flavor base for almost every savory meal.',     avoid:[],hasProp:null},
-  {id:'cabbage',   name:'Cabbage (1 head)',            cal:440, srv:8, cat:'vegetable',tier:1,note:'Lasts 2–3 weeks in the fridge. Very versatile.',avoid:[],hasProp:null},
-  {id:'carrots',   name:'Carrots (2 lb)',              cal:328, srv:8, cat:'vegetable',tier:1,note:'Cheapest nutritious vegetable. Stores for weeks.',avoid:[],hasProp:null},
-  {id:'cannedtomatoes',name:'Canned Tomatoes (28 oz)',cal:140, srv:6, cat:'vegetable',tier:1,note:'Turns rice and beans into a real meal.',         avoid:[],hasProp:null},
-  {id:'garlic',    name:'Garlic (1 head)',             cal:45,  srv:8, cat:'vegetable',tier:1,note:'Costs almost nothing. Makes every dish better.', avoid:[],hasProp:null},
-  {id:'sweetpotatoes',name:'Sweet Potatoes (3 lb)',   cal:1080,srv:6, cat:'vegetable',tier:1,note:'More nutrition than white potatoes. Bake whole.',avoid:[],hasProp:null},
-  {id:'frozenvegs',name:'Frozen Mixed Veg (1 lb)',    cal:280, srv:4, cat:'vegetable',tier:2,note:'Same nutrition as fresh. No waste, no prep.',    avoid:[],hasProp:null},
-  {id:'frozencorn',name:'Frozen Corn (1 lb)',          cal:360, srv:4, cat:'vegetable',tier:2,note:'Works in soups, sides, quesadillas.',           avoid:[],hasProp:null},
-  {id:'corn',      name:'Canned Corn (15 oz)',         cal:210, srv:3, cat:'vegetable',tier:1,note:'Quick side or add to soups and rice dishes.',   avoid:[],hasProp:null},
-  {id:'greenbeans',name:'Canned Green Beans (14 oz)', cal:80,  srv:3, cat:'vegetable',tier:1,note:'Cheap, quick vegetable. No cooking needed.',    avoid:[],hasProp:null},
-  {id:'cannedpeas',name:'Canned Peas (15 oz)',         cal:180, srv:3, cat:'vegetable',tier:1,note:'Add to rice, pasta, or eat as a side.',         avoid:[],hasProp:null},
-  {id:'spinach',   name:'Frozen Spinach (10 oz)',      cal:120, srv:5, cat:'vegetable',tier:2,note:'Cheap iron and vitamins. Add to eggs or soup.',  avoid:[],hasProp:null},
-  {id:'bellpepper',name:'Bell Peppers (3 count)',      cal:150, srv:6, cat:'vegetable',tier:2,note:'Color and crunch. Good raw or cooked.',          avoid:[],hasProp:null},
-  {id:'celery',    name:'Celery (1 bunch)',            cal:80,  srv:8, cat:'vegetable',tier:2,note:'Flavor base for soups and stews.',              avoid:[],hasProp:null},
-  {id:'cucumber',  name:'Cucumbers (2 count)',         cal:60,  srv:4, cat:'vegetable',tier:2,note:'No cooking needed. Refreshing cheap snack.',    avoid:[],hasProp:null},
-
-  // FRUIT
-  {id:'bananas',   name:'Bananas (~6 count)',          cal:420, srv:6, cat:'fruit',tier:1,note:'Cheapest fruit. Quick energy, no cooking.',       avoid:[],hasProp:null},
-  {id:'applesauce',name:'Applesauce (46 oz)',          cal:700, srv:10,cat:'fruit',tier:2,note:'Sweet, filling, shelf-stable.',                   avoid:[],hasProp:null},
-  {id:'apples',    name:'Apples (3 lb)',               cal:480, srv:8, cat:'fruit',tier:2,note:'Keep for weeks. Best fresh snack per dollar.',     avoid:[],hasProp:null},
-  {id:'oranges',   name:'Oranges (4 count)',           cal:280, srv:4, cat:'fruit',tier:2,note:'Vitamin C. Peel and eat — no prep needed.',       avoid:[],hasProp:null},
-  {id:'driedmango',name:'Dried Mango (3.5 oz)',        cal:320, srv:4, cat:'fruit',tier:2,note:'Long shelf life. Natural sweetener for oatmeal.', avoid:[],hasProp:null},
-  {id:'cannedpeaches',name:'Canned Peaches (15 oz)',   cal:200, srv:3, cat:'fruit',tier:2,note:'No refrigeration. Add to oatmeal or eat plain.',  avoid:[],hasProp:null},
-
-  // DAIRY & ALTERNATIVES
-  {id:'milk',      name:'Whole Milk (1 gallon)',       cal:2400,srv:16,cat:'dairy',tier:1,note:'Adds protein and calories. Good in oatmeal.',     avoid:['dairy'],hasProp:null},
-  {id:'butter',    name:'Butter (1 lb)',               cal:3248,srv:32,cat:'dairy',tier:2,note:'Flavor multiplier. A little goes a long way.',    avoid:['dairy'],hasProp:null},
-  {id:'cheese',    name:'Shredded Cheese (8 oz)',      cal:800, srv:8, cat:'dairy',tier:2,note:'Turns plain rice or beans into a full meal.',     avoid:['dairy'],hasProp:null},
-  {id:'yogurt',    name:'Yogurt (32 oz)',              cal:640, srv:8, cat:'dairy',tier:2,note:'Breakfast protein. Also works as a sauce base.',  avoid:['dairy'],hasProp:null},
-  {id:'coconutmilk',name:'Coconut Milk (13.5 oz can)',cal:440, srv:4, cat:'dairy',tier:2,note:'Dairy-free. Rich base for curries and rice.',     avoid:[],hasProp:null},
-  {id:'evaporatedmilk',name:'Evaporated Milk (12 oz)',cal:480, srv:6, cat:'dairy',tier:2,note:'Shelf-stable milk. Works in soups and desserts.', avoid:['dairy'],hasProp:null},
-
-  // FATS & OILS
-  {id:'oil',       name:'Vegetable Oil (48 oz)',       cal:3840,srv:48,cat:'fat',  tier:1,note:'Essential. Needed to cook almost everything else.',avoid:[],hasProp:'oil'},
-  {id:'oliveoil',  name:'Olive Oil (16 oz)',           cal:1920,srv:24,cat:'fat',  tier:2,note:'Better flavor than veggie oil for finishing dishes.',avoid:[],hasProp:null},
-
-  // PANTRY STAPLES
-  {id:'soy',       name:'Soy Sauce (10 oz)',           cal:60,  srv:20,cat:'pantry',tier:2,note:'Transforms any rice or noodle dish instantly.', avoid:[],hasProp:null},
-  {id:'hotsauce',  name:'Hot Sauce (5 oz)',            cal:20,  srv:20,cat:'pantry',tier:2,note:'Free flavor. Makes any plain dish interesting.', avoid:[],hasProp:null},
-  {id:'cannedbroth',name:'Chicken Broth (32 oz)',      cal:60,  srv:8, cat:'pantry',tier:2,note:'Better than water for rice and soups.',          avoid:['meat'],hasProp:null},
-  {id:'vegbroth',  name:'Vegetable Broth (32 oz)',     cal:40,  srv:8, cat:'pantry',tier:2,note:'Stock base for soups and rice. Vegetarian.',     avoid:[],hasProp:null},
-  {id:'blackbeans',name:'Canned Black Beans (15 oz)',  cal:360, srv:3, cat:'protein',tier:1,note:'No cooking. Open and eat or add to rice.',      avoid:[],hasProp:null},
-  {id:'kidneybean',name:'Canned Kidney Beans (15 oz)', cal:360, srv:3, cat:'protein',tier:1,note:'Chili, soups, rice dishes. Ready to use.',      avoid:[],hasProp:null},
-  {id:'cannedchili',name:'Canned Chili (15 oz)',       cal:420, srv:3, cat:'protein',tier:2,note:'Complete meal straight from the can.',          avoid:['meat'],hasProp:null},
-  {id:'cannedsoups',name:'Canned Soup (10.5 oz)',      cal:200, srv:2, cat:'pantry',tier:2,note:'Emergency meal. Add crackers or bread.',          avoid:[],hasProp:null},
-  {id:'salsa',     name:'Salsa (16 oz)',               cal:80,  srv:8, cat:'pantry',tier:2,note:'Latin flavor base. Also works as a pasta sauce.', avoid:[],hasProp:null},
-];
-
-// ━━ REGIONAL PRICES (fallback — server provides live BLS data) ━━
-const FALLBACK_PRICES = {
-  northeast:{rice:2.99,drybeans:1.99,oats:3.89,eggs:3.79,potatoes:4.49,bread:2.19,cabbage:1.59,onions:2.39,bananas:0.89,milk:4.39,cannedtomatoes:1.29,peanutbutter:3.19,chicken:5.89,pasta:1.49,lentils:2.29,oil:4.89,carrots:1.79,flour:3.49,frozenvegs:2.49,tuna:1.49,garlic:0.79,sweetpotatoes:3.29,applesauce:3.89,chickpeas:1.89,corn:1.09,greenbeans:1.19,sardines:1.99,cornmeal:2.49,barley:2.29,splitpeas:1.79,driedmango:3.49,tortillas:2.99,coconutmilk:1.99,groundbeef:5.99,porkchops:3.99,butter:4.99,cheese:3.49,yogurt:4.99,oliveoil:5.99,soy:1.99,hotsauce:1.99,cannedbroth:2.49,vegbroth:2.29,blackbeans:0.99,kidneybean:0.99,cannedchili:1.69,cannedsoups:1.29,salsa:2.99,cannedpeaches:1.49,oranges:2.99,apples:3.99,frozencorn:1.29,cannedpeas:0.89,spinach:1.99,bellpepper:2.99,celery:1.99,cucumber:1.49,barley:2.29,evaporatedmilk:1.49,cannedpeas:0.89},
-  midwest:{rice:2.59,drybeans:1.59,oats:3.49,eggs:3.19,potatoes:3.89,bread:1.79,cabbage:1.29,onions:1.99,bananas:0.79,milk:3.79,cannedtomatoes:1.09,peanutbutter:2.99,chicken:4.99,pasta:1.19,lentils:1.89,oil:4.29,carrots:1.39,flour:2.79,frozenvegs:2.09,tuna:1.19,garlic:0.65,sweetpotatoes:2.79,applesauce:3.29,chickpeas:1.59,corn:0.89,greenbeans:0.99,sardines:1.79,cornmeal:2.09,barley:1.99,splitpeas:1.49,driedmango:2.99,tortillas:2.49,coconutmilk:1.79,groundbeef:4.99,porkchops:3.29,butter:3.99,cheese:2.99,yogurt:3.99,oliveoil:4.99,soy:1.79,hotsauce:1.79,cannedbroth:1.99,vegbroth:1.89,blackbeans:0.79,kidneybean:0.79,cannedchili:1.39,cannedsoups:0.99,salsa:2.49,cannedpeaches:1.19,oranges:2.49,apples:3.29,frozencorn:1.09,cannedpeas:0.75,spinach:1.69,bellpepper:2.49,celery:1.69,cucumber:1.19,evaporatedmilk:1.19},
-  south:{rice:2.49,drybeans:1.59,oats:3.39,eggs:3.09,potatoes:3.99,bread:1.79,cabbage:1.29,onions:1.89,bananas:0.75,milk:3.89,cannedtomatoes:1.09,peanutbutter:2.99,chicken:4.89,pasta:1.19,lentils:1.89,oil:4.19,carrots:1.39,flour:2.79,frozenvegs:2.09,tuna:1.19,garlic:0.65,sweetpotatoes:2.79,applesauce:3.29,chickpeas:1.59,corn:0.89,greenbeans:0.99,sardines:1.79,cornmeal:1.99,barley:1.99,splitpeas:1.49,driedmango:2.99,tortillas:2.29,coconutmilk:1.79,groundbeef:4.89,porkchops:3.19,butter:3.89,cheese:2.89,yogurt:3.79,oliveoil:4.79,soy:1.69,hotsauce:1.69,cannedbroth:1.89,vegbroth:1.79,blackbeans:0.79,kidneybean:0.79,cannedchili:1.29,cannedsoups:0.89,salsa:2.29,cannedpeaches:1.09,oranges:2.29,apples:3.19,frozencorn:1.09,cannedpeas:0.69,spinach:1.59,bellpepper:2.29,celery:1.49,cucumber:1.09,evaporatedmilk:1.09},
-  west:{rice:2.89,drybeans:2.09,oats:3.99,eggs:3.69,potatoes:4.59,bread:2.09,cabbage:1.49,onions:2.29,bananas:0.85,milk:4.19,cannedtomatoes:1.19,peanutbutter:3.09,chicken:5.99,pasta:1.49,lentils:2.39,oil:5.09,carrots:1.79,flour:3.49,frozenvegs:2.59,tuna:1.49,garlic:0.79,sweetpotatoes:3.29,applesauce:3.79,chickpeas:1.89,corn:1.09,greenbeans:1.19,sardines:1.99,cornmeal:2.49,barley:2.29,splitpeas:1.79,driedmango:3.29,tortillas:2.79,coconutmilk:1.99,groundbeef:5.89,porkchops:3.89,butter:4.79,cheese:3.29,yogurt:4.79,oliveoil:5.79,soy:1.99,hotsauce:1.99,cannedbroth:2.29,vegbroth:2.09,blackbeans:0.99,kidneybean:0.99,cannedchili:1.59,cannedsoups:1.19,salsa:2.79,cannedpeaches:1.39,oranges:2.79,apples:3.79,frozencorn:1.29,cannedpeas:0.89,spinach:1.89,bellpepper:2.79,celery:1.79,cucumber:1.29,evaporatedmilk:1.39},
-  national:{rice:2.69,drybeans:1.79,oats:3.69,eggs:3.39,potatoes:4.09,bread:1.89,cabbage:1.39,onions:2.09,bananas:0.82,milk:3.99,cannedtomatoes:1.19,peanutbutter:3.09,chicken:5.39,pasta:1.29,lentils:2.09,oil:4.49,carrots:1.49,flour:2.99,frozenvegs:2.29,tuna:1.29,garlic:0.69,sweetpotatoes:2.99,applesauce:3.49,chickpeas:1.69,corn:0.99,greenbeans:1.09,sardines:1.89,cornmeal:2.19,barley:2.09,splitpeas:1.59,driedmango:3.19,tortillas:2.59,coconutmilk:1.89,groundbeef:5.19,porkchops:3.59,butter:4.39,cheese:3.09,yogurt:4.39,oliveoil:5.39,soy:1.89,hotsauce:1.79,cannedbroth:2.09,vegbroth:1.89,blackbeans:0.89,kidneybean:0.89,cannedchili:1.49,cannedsoups:1.09,salsa:2.59,cannedpeaches:1.29,oranges:2.59,apples:3.49,frozencorn:1.19,cannedpeas:0.79,spinach:1.79,bellpepper:2.59,celery:1.69,cucumber:1.19,evaporatedmilk:1.19}
-};
+// Foods, package sizes and regional price estimates come from the engine (engine/food-db.js).
 
 // ━━ MEAL LIBRARY BY CUISINE ━━
 
@@ -2546,35 +2522,6 @@ const ALL_TIPS=[
 // ━━ RECIPE LOOKUP MAP — populated when meal plan builds ━━
 const recipeMap = {};
 
-// ━━ MEAL CHIP SELECTION ━━
-function chooseMeal(btn){
-  const key = btn.dataset.mealKey;
-  const recipeId = parseInt(btn.dataset.recipeId);
-  if(!key) return;
-  // Capture state BEFORE modifying mealChoices
-  const prevChoice   = mealChoices[key];
-  const isDiscover   = btn.classList.contains('discover');
-  mealChoices[key]   = recipeId;
-  document.querySelectorAll(`[data-meal-key="${key}"]`).forEach(chip => {
-    chip.classList.toggle('chosen', parseInt(chip.dataset.recipeId) === recipeId);
-  });
-  // Only log actual user swaps, not the initial auto-selection on page load
-  if(prevChoice !== undefined && prevChoice !== recipeId) {
-    logEvent('meal_swapped', {
-      zip:  answers.zip,
-      item: isDiscover ? 'discover' : 'default',
-    });
-  }
-}
-
-// ━━ RECIPE DRAWER — open by element data attribute ━━
-function openRecipeByEl(btn){
-  const recipeId = parseInt(btn.dataset.recipeId || btn.closest('[data-recipe-id]')?.dataset.recipeId);
-  const r = recipeMap[recipeId];
-  if(!r) return;
-  openRecipeDrawer(r.title, (r.instructions||'').slice(0,80), r.cuisine||'', r.ingredients||[], r.instructions||'');
-}
-
 // ━━ WEEK ACCORDION ━━
 function toggleWeek(wi){
   const card = document.getElementById(`week-${wi}`);
@@ -2584,6 +2531,7 @@ function toggleWeek(wi){
   if(!body) return;
   const isOpen = body.style.display !== 'none';
   body.style.display = isOpen ? 'none' : 'block';
+  isOpen ? openWeeks.delete(wi) : openWeeks.add(wi);
   if(toggle) toggle.textContent = isOpen ? '▼' : '▲';
   if(!isOpen) logEvent('week_opened', {zip:answers.zip, item:`week_${wi}`});
 }
@@ -2622,10 +2570,10 @@ function toggleMulti(g,v){const arr=multiSelections[g];if(v==='none'||v==='nothi
 function nextStep(cur){
   const err=document.getElementById('err-'+cur);
   if(err)err.style.display='none';
-  if(cur===1){const v=parseFloat(document.getElementById('inp-budget').value);if(!v||v<1){err.style.display='block';return;}answers.budget=v;showStep(2);setProgress(40);return;}
-  if(cur===2){if(!paydayState.key){err.style.display='block';return;}answers.days=paydayState.days;showStep('2b');setProgress(60);return;}
-  if(cur==='2b'){const p=parseInt(document.getElementById('inp-people').value);if(!p||p<1){document.getElementById('err-2b').style.display='block';return;}answers.people=p;showStep(3);setProgress(80);return;}
-  if(cur===3){const z=document.getElementById('inp-zip').value.trim();if(z.length!==5){err.style.display='block';return;}const info=zipToInfoFn(z);answers.zip=z;answers.state=info?info.state:null;answers.region=info?info.region:'national';showStep(4);setProgress(100);return;}
+  if(cur===1){const v=parseFloat(document.getElementById('inp-budget').value);if(!v||v<1){err.style.display='block';return;}answers.budget=v;logEvent('step_completed',{item:'step_budget'});showStep(2);setProgress(40);return;}
+  if(cur===2){if(!paydayState.key){err.style.display='block';return;}answers.days=paydayState.days;logEvent('step_completed',{item:'step_days'});showStep('2b');setProgress(60);return;}
+  if(cur==='2b'){const p=parseInt(document.getElementById('inp-people').value);if(!p||p<1){document.getElementById('err-2b').style.display='block';return;}answers.people=p;logEvent('step_completed',{item:'step_people'});showStep(3);setProgress(80);return;}
+  if(cur===3){const z=document.getElementById('inp-zip').value.trim();if(z.length!==5){err.style.display='block';return;}const info=zipToInfoFn(z);answers.zip=z;answers.state=info?info.state:null;answers.region=info?info.region:'national';logEvent('step_completed',{item:'step_zip',zip:z});showStep(4);setProgress(100);return;}
 }
 function prevStep(cur){if(cur==='2b'){showStep(2);setProgress(40);return;}if(cur===3){showStep('2b');setProgress(60);return;}if(cur===4){showStep(3);setProgress(80);return;}showStep(cur-1);setProgress(20);}
 function showStep(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));const el=document.getElementById('step-'+n);if(el){el.classList.add('active');el.scrollIntoView({behavior:'smooth',block:'start'});}}
@@ -2642,6 +2590,43 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 // ━━ MAIN CALCULATION ━━
+// The plan comes from the meal-planning engine (engine/, a copy of the Austin build's; see
+// engine/SOURCE.json). It plans meals first and buys only what they use; money left over is shown,
+// never spent on piles of one food (engine/principles.js, owner decision Nov 11 2026).
+const T = (k, v) => window.MIS_I18N.t(k, v);
+const TH = (k, v) => window.MIS_I18N.tHtml(k, v);
+const escH = s => window.MIS_I18N.esc(s);
+const money2 = n => '$' + (+n || 0).toFixed(2);
+const engineReady = () => window.MIS_ENGINE ? Promise.resolve(window.MIS_ENGINE)
+  : new Promise(res => window.addEventListener('mis-engine', () => res(window.MIS_ENGINE), { once: true }));
+let recipesP = null;
+const getRecipes = () => (recipesP ||= fetch('/api/recipes').then(r => r.json()));
+
+let RECIPES = [];        // every recipe the engine can use (208)
+let planInput = null;    // what the engine was asked
+let PLAN = null;         // the engine's plan (meals, list, state for swaps)
+let SUM = null;          // the plan after swaps (list, totals)
+let LIST_INFO = null;    // "Show a shorter list" offer
+let listMode = 'full';   // plans open on full variety
+let choice = {};         // "w-d-slot" → 1 when the swap is chosen
+const openWeeks = new Set([0]);
+
+function computePlan() {
+  const E = window.MIS_ENGINE;
+  const input = { ...planInput, menu: listMode };
+  const r = E.planMeals(input, activePrices, RECIPES);
+  const other = E.planMeals({ ...input, menu: listMode === 'short' ? 'full' : 'short' }, activePrices, RECIPES);
+  const [full, short] = listMode === 'short' ? [other, r] : [r, other];
+  LIST_INFO = short.state && short.cart.length < full.cart.length ? { mode: listMode, short: short.cart.length, full: full.cart.length } : null;
+  PLAN = r; SUM = r; choice = {};
+  cart = SUM.cart;
+  // Every plan is checked against the engine's rules; a broken rule is a bug to fix (counted on /dash).
+  if (r.principles && !r.principles.ok) {
+    console.warn('[principles]', r.principles.failed);
+    [...new Set(r.principles.failed.map(f => f.id))].forEach(id => logEvent('principle_failed', { item: id }));
+  }
+}
+
 async function runCalculation(){
   // Log anonymously — usage details (budget, household, days, zip, behavior); no name/email/phone/IP, nothing that identifies a person
   const pppd = answers.budget && answers.people && answers.days
@@ -2651,11 +2636,12 @@ async function runCalculation(){
   const days_tier    = answers.days <= 7 ? 'short' : answers.days <= 14 ? 'medium' : 'long';
   // Populate answers from multiSelections BEFORE logging so all fields are available
   answers.stores=multiSelections.store;
-  answers.avoid=multiSelections.avoid;
+  answers.avoid=[...multiSelections.avoid, ...multiSelections.diet];
   answers.have=multiSelections.have;
   const cuisine      = (answers.cuisine||[]).join(',') || 'any';
   // Round pppd to nearest $0.25 — meaningful for research, not personally identifying
   const pppd_rounded = Math.round(pppd * 4) / 4;
+  logEvent('step_completed', { item: 'step_prefs' });
   logEvent('budget_entered', {
     zip:          answers.zip,
     budget_tier,
@@ -2675,209 +2661,55 @@ async function runCalculation(){
   if(!answers.leftover)answers.leftover='sometimes';
   showStep('calc');
 
-  const msgs=['Fetching live BLS food prices...','Building your cart...','Generating your week plan...','Looking up your representatives...','Pulling Census data for your area...'];
+  const msgs=['Fetching live BLS food prices...',T('calc_meals'),T('calc_list'),'Looking up your representatives...','Pulling Census data for your area...'];
   let mi=0;
   const msgInterval=setInterval(()=>{if(mi<msgs.length){document.getElementById('calc-msg').textContent=msgs[mi++];}},700);
 
-  // Fetch live prices
-  let prices=FALLBACK_PRICES[answers.region]||FALLBACK_PRICES.national;
+  try{
+  // Prices: the engine's regional estimates, with live BLS prices on top where BLS has them.
+  let live={};
   try{
     const r=await fetch('/api/food-prices?region='+(answers.region||'national'));
     const d=await r.json();
-    if(d.blsPrices&&!d.fallback){
-      prices={...prices,...Object.fromEntries(Object.entries(d.blsPrices).filter(([k,v])=>v&&v>0))};
-      livePrices=d.blsPrices;
-    }
+    if(d.blsPrices&&!d.fallback){ live=d.blsPrices; livePrices=d.blsPrices; }
   }catch(e){}
+  const E = await engineReady();
+  RECIPES = await getRecipes();
+  activePrices = E.resolvePrices(answers.region||'national', live);
+  planInput = {
+    budget: answers.budget, days: answers.days, people: answers.people,
+    cuisine: answers.cuisine, avoid: answers.avoid, have: answers.have,
+    // Store types change prices: corner stores cost more, dollar stores less (engine/pricing.js).
+    stores: answers.stores.filter(s => s === 'dollar' || s === 'corner'),
+    leftover: answers.leftover,
+  };
+  listMode = 'full';
+  openWeeks.clear(); openWeeks.add(0);
+  computePlan();
 
   try{
-  // Store price adjustments
-  const CORNER_ADJ={bread:1.2,eggs:1.3,milk:1.25,bananas:1.15};
-  const DOLLAR_ADJ={rice:.9,bread:.85,pasta:.8,cannedtomatoes:.9};
-  const hasCorner=answers.stores.includes('corner');
-  const hasDollar=answers.stores.includes('dollar');
-  if(hasCorner)Object.keys(CORNER_ADJ).forEach(k=>{if(prices[k])prices[k]=+(prices[k]*CORNER_ADJ[k]).toFixed(2);});
-  if(hasDollar)Object.keys(DOLLAR_ADJ).forEach(k=>{if(prices[k])prices[k]=+(prices[k]*DOLLAR_ADJ[k]).toFixed(2);});
-
-  // Make prices available to swapMealIngredients for re-adding foods
-  activePrices=prices;
-
-  const avoidItems=answers.avoid;
-  const haveItems=answers.have;
-
-  // Filter and price foods
-  const foods=FOOD_DB.filter(f=>{
-    if(!prices[f.id])return false;
-    if(f.avoid.some(a=>avoidItems.includes(a)))return false;
-    if(f.hasProp&&haveItems.includes(f.hasProp))return false;
-    return true;
-  }).map(f=>({...f,price:prices[f.id]||0,cpd:prices[f.id]?Math.round(f.cal/prices[f.id]):0}));
-
-  // ── USDA Thrifty Food Plan category weights ──
-  // Mirrors real market-basket proportions for a balanced, credible cart
-  const USDA_WEIGHTS={
-    grain:    0.20,
-    protein:  0.23,
-    vegetable:0.14,
-    fruit:    0.10,
-    dairy:    0.16,
-    fat:      0.07,
-    pantry:   0.10,
-  };
-
-  // ── Cuisine boost packages ──
-  // Ensures a culturally coherent flavor base before general staple scaling
-  const CUISINE_BOOSTS={
-    american:      ['eggs','bread','potatoes','butter','milk'],
-    latin:         ['tortillas','onions','garlic','cannedtomatoes','salsa'],
-    asian:         ['soy','garlic','onions','cabbage','rice'],
-    southern:      ['cornmeal','sweetpotatoes','onions','garlic','cannedtomatoes'],
-    mediterranean: ['oliveoil','lentils','onions','garlic','cannedtomatoes'],
-    any:           ['onions','garlic','cannedtomatoes'],
-  };
-
-  // ── Survival floor items — always secured first ──
-  // These four guarantee a calorie-safe baseline regardless of cuisine or budget
-  const FLOOR_IDS=['rice','drybeans','oil','oats'];
-
-  const cuisine=answers.cuisine||[];
-  let totalCals=0;
-  let remaining=answers.budget;
-  cart=[];
-
-  const addToCart=(food)=>{
-    if(!food||food.price<=0) return false;
-    if(remaining<food.price) return false;
-    const existing=cart.find(c=>c.id===food.id);
-    if(existing){
-      existing.qty++;
-      existing.subtotal=+(existing.price*existing.qty).toFixed(2);
-    } else {
-      cart.push({...food,qty:1,subtotal:+food.price.toFixed(2)});
-    }
-    remaining=+(remaining-food.price).toFixed(2);
-    totalCals+=food.cal;
-    return true;
-  };
-
-  const getFood=(id)=>foods.find(f=>f.id===id);
-
-  // ── PHASE 1: Nutritional floor (40% of budget max, core survival staples) ──
-  // getFood() returns undefined for foods excluded by avoidItems — dietary restrictions
-  // are automatically respected without any additional filtering needed here
-  const floorBudget=answers.budget*0.40;
-  let floorSpent=0;
-  for(const id of FLOOR_IDS){
-    const f=getFood(id);
-    if(f&&floorSpent+f.price<=floorBudget){
-      if(addToCart(f)) floorSpent+=f.price;
-    }
-  }
-
-  // ── PHASE 2: Cuisine boost package (10% of budget max) ──
-  // Skip entirely if Phase 1 consumed the budget (tiny budget survival mode)
-  if(remaining>0.50){
-    const boostBudget=answers.budget*0.10;
-    let boostSpent=0;
-    // Merge boost IDs from all selected cuisines (deduplicated)
-    const boostSet=new Set();
-    const selectedCuisines=cuisine.length>0?cuisine:['any'];
-    selectedCuisines.forEach(c=>{
-      (CUISINE_BOOSTS[c]||CUISINE_BOOSTS.any).forEach(id=>boostSet.add(id));
-    });
-    for(const id of boostSet){
-      const f=getFood(id);
-      if(f&&!cart.find(c=>c.id===id)&&boostSpent+f.price<=boostBudget){
-        if(addToCart(f)) boostSpent+=f.price;
-      }
-    }
-  }
-
-  // ── PHASE 3: USDA-weighted category fill (remaining budget) ──
-  // Skip if tiny budget already consumed by Phases 1+2
-  if(remaining>0.50){
-    const remainingForFill=remaining;
-    const categoryBudgets={};
-    Object.entries(USDA_WEIGHTS).forEach(([cat,weight])=>{
-      categoryBudgets[cat]=+(remainingForFill*weight).toFixed(2);
-    });
-    // foods array already filtered by avoidItems — restrictions fully respected here
-    const catSpent={};
-    const sortedFoods=[...foods].sort((a,b)=>a.tier-b.tier||b.cpd-a.cpd);
-    for(const f of sortedFoods){
-      if(cart.find(c=>c.id===f.id)) continue; // already in cart from Phase 1 or 2
-      const catLimit=categoryBudgets[f.cat]||0;
-      const spent=catSpent[f.cat]||0;
-      if(spent+f.price<=catLimit&&remaining>=f.price){
-        if(addToCart(f)) catSpent[f.cat]=(catSpent[f.cat]||0)+f.price;
-      }
-    }
-  }
-
-  // ── PHASE 4: Scale up staples with any remaining budget ──
-  // Spend every remaining dollar on tier-1 staples scaled to timeline
-  const daysMultiplier=Math.max(1,Math.floor(answers.days/7));
-  let iter=0;
-  while(remaining>=0.50&&iter<200){
-    iter++;
-    const scalables=cart.filter(c=>c.tier===1).sort((a,b)=>b.cpd-a.cpd);
-    const tier2=cart.filter(c=>c.tier===2).sort((a,b)=>b.cpd-a.cpd);
-    let bought=false;
-    for(const item of [...scalables,...tier2]){
-      const maxQty=item.tier===1?Math.max(8,daysMultiplier*4):Math.max(4,daysMultiplier*2);
-      if(item.qty<maxQty&&remaining>=item.price){
-        item.qty++;
-        item.subtotal=+(item.price*item.qty).toFixed(2);
-        remaining=+(remaining-item.price).toFixed(2);
-        totalCals+=item.cal;
-        bought=true;
-        break;
-      }
-    }
-    if(!bought)break;
-  }
-
-  const spent=+(answers.budget-remaining).toFixed(2);
-  const pppd=+(spent/answers.days/answers.people).toFixed(2);
-  const ppmeal=+(pppd/3).toFixed(2);
-  const cppd=Math.round(totalCals/answers.people/answers.days);
-  const calPct=Math.round((cppd/2000)*100);
-  const dayWord=answers.days===1?'day':'days';
-  const plural=n=>n===1?'1 person':n+' people';
-
-  try{
-  // ── SUMMARY CARD
-  document.getElementById('summary-title').innerHTML='Your <span>'+answers.days+'-Day</span> Game Plan';
-  document.getElementById('stats-row').innerHTML=
-    '<div class="stat"><div class="stat-val">$'+answers.budget.toFixed(0)+'</div><div class="stat-label">Budget</div></div>'+
-    '<div class="stat"><div class="stat-val">'+answers.days+'</div><div class="stat-label">'+dayWord+'</div></div>'+
-    '<div class="stat"><div class="stat-val">'+answers.people+'</div><div class="stat-label">'+(answers.people===1?'Person':'People')+'</div></div>'+
-    '<div class="stat"><div class="stat-val">$'+pppd+'</div><div class="stat-label">Per Person / Day</div></div>'+
-    '<div class="stat"><div class="stat-val">$'+ppmeal+'</div><div class="stat-label">Per Meal</div></div>';
-  document.getElementById('summary-desc').innerHTML=
-    'Your <strong>$'+answers.budget.toFixed(0)+'</strong> feeds <strong>'+plural(answers.people)+'</strong> for <strong>'+answers.days+' '+dayWord+'</strong> — <strong>$'+pppd+'/person/day</strong>, about <strong>$'+ppmeal+' per meal</strong>. The plan puts <strong>$'+spent.toFixed(2)+'</strong> of your budget to work'+(remaining>1?', leaving <strong>$'+remaining.toFixed(2)+'</strong> for tax or extras.':'.')+
-    (calPct>=80?' ✓ Meets daily caloric needs.':calPct>=60?' ⚠ Slightly below 2,000 cal/day — see Get Help for free supplements.':' ⚠ Tight budget — the Get Help section has free food programs near you.');
+  renderSummary();
 
   // ── SOLIDARITY (Census)
-  loadCensusData(answers.zip,answers.state,answers.people,pppd);
+  loadCensusData(answers.zip,answers.state,answers.people,SUM.pppd);
 
   // ── GAME PLAN
-  await buildWeekCards(cart,avoidItems);
+  buildWeekCards();
 
   // ── SHOPPING LIST
-  buildShoppingList(cart,spent,remaining,answers.region);
+  buildShoppingList();
 
   // ── BRAND PILLS
   setTimeout(()=>renderBrandPills(cart),200);
 
   // ── CIVIC
-  buildCivic(answers.state,spent,answers.days,answers.people,answers.budget,answers.region);
+  buildCivic(answers.state,SUM.spent,answers.days,answers.people,answers.budget,answers.region);
 
   // ── HELP
   loadResources(answers.zip,answers.state);
 
   // ── SYSTEM PULSE (sidebar + mobile card)
-  populateSystemPulse(answers.state,pppd,answers.people,answers.days,null);
+  populateSystemPulse(answers.state,SUM.pppd,answers.people,answers.days,null);
 
   // ── Open shopping list accordion by default
   const shoppingAcc=document.getElementById('acc-shopping');
@@ -2896,6 +2728,224 @@ async function runCalculation(){
     initDonation();
     setTimeout(()=>document.getElementById('dashboard').scrollIntoView({behavior:'smooth',block:'start'}),100);
   }
+}
+
+// ━━ SUMMARY CARD ━━
+function renderSummary(){
+  const s = SUM, days = answers.days, people = answers.people;
+  const dayWord = days === 1 ? 'day' : 'days';
+  document.getElementById('summary-title').innerHTML='Your <span>'+days+'-Day</span> Game Plan';
+  document.getElementById('stats-row').innerHTML=
+    '<div class="stat"><div class="stat-val">$'+answers.budget.toFixed(0)+'</div><div class="stat-label">Budget</div></div>'+
+    '<div class="stat"><div class="stat-val">'+days+'</div><div class="stat-label">'+dayWord+'</div></div>'+
+    '<div class="stat"><div class="stat-val">'+people+'</div><div class="stat-label">'+(people===1?'Person':'People')+'</div></div>'+
+    '<div class="stat"><div class="stat-val">$'+(+s.pppd).toFixed(2)+'</div><div class="stat-label">Per Person / Day</div></div>'+
+    '<div class="stat"><div class="stat-val">$'+(+s.ppmeal).toFixed(2)+'</div><div class="stat-label">Per Meal</div></div>';
+  // Under 2,000 calories, say about how many the plan reaches (rounded to the nearest 50).
+  const kcal = (Math.round(s.cppd / 50) * 50).toLocaleString('en-US');
+  const cal = s.calPct >= 100 ? T('cal_ok') : s.calPct >= 80 ? T('cal_low', { kcal }) : T('cal_tight', { kcal });
+  const desc = TH('res_desc', {
+    budget: '$' + answers.budget.toFixed(0), people: people === 1 ? T('person_1') : T('people_n', { n: people }),
+    days: days === 1 ? T('day_1') : T('days_n', { n: days }), pppd: money2(s.pppd), ppmeal: money2(s.ppmeal), spent: money2(s.spent),
+  }) + ' ' + escH(cal) + (s.remaining > 1 ? ' ' + TH('left_over', { remaining: money2(s.remaining) }) : '');
+  const dietNotes = (window.MIS_ENGINE.DIETS || []).filter(d => answers.avoid.includes(d)).map(d => 'diet_note_' + d);
+  const short = s.coveredDays < days || s.repeats || s.calPct < 80;
+  document.getElementById('summary-desc').innerHTML = desc +
+    (s.coveredDays < days ? `<span class="plan-note">${escH(T('cover_note', { n: s.coveredDays, days }))}</span>` : '') +
+    (s.repeats ? `<span class="plan-note">${escH(T('repeat_note'))}</span>` : '') +
+    `<span class="plan-note" id="over-note"${s.overBudget > 0 ? '' : ' hidden'}>${s.overBudget > 0 ? escH(T('over_note', { amount: money2(s.overBudget) })) : ''}</span>` +
+    (dietNotes.length ? `<ul class="diet-notes">${dietNotes.map(k => `<li>${escH(T(k))}</li>`).join('')}</ul>` : '') +
+    (short ? `<button class="free-food-btn" onclick="openHelp()">${escH(T('find_free_food'))} →</button>` : '') +
+    `<span class="rules-line">${escH(T('rules_line'))} <a href="/how-plans-work" data-event="rules_opened">${escH(T('rules_link'))}</a></span>`;
+}
+function openHelp(){
+  const acc=document.getElementById('acc-help');
+  if(!acc) return;
+  if(!acc.classList.contains('open')) acc.classList.add('open');
+  logEvent('accordion_opened', {zip:answers.zip, item:'acc-help'});
+  setTimeout(()=>acc.scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+
+// ━━ WEEK CARDS ━━
+const SLOTS = ['breakfast','lunch','dinner'];
+const chosenOf = (wi, di, sl) => { const opts = PLAN.weeks[wi][di][sl] || []; return opts[choice[`${wi}-${di}-${sl}`] || 0]; };
+/** How many times a recipe is on the menu, counting meals swapped in. */
+function timesChosen(id){
+  let n = 0;
+  PLAN.weeks.forEach((w, wi) => w.forEach((d, di) => { if (!d.leftover && !d.uncovered) SLOTS.forEach(sl => { if (chosenOf(wi, di, sl)?.id === id) n++; }); }));
+  return n;
+}
+const onListIds = () => [...SUM.cart.map(i => i.id), ...(SUM.have || [])];
+const foodsOfRecipe = (r, onList) => r.uses ? r.uses.map(u => u.id)
+  : (r.ingredients || []).flatMap(w => (window.MIS_ENGINE.INGREDIENT_FOODS[w] || []).filter(id => onList.includes(id)).slice(0, 1));
+/** "Ways to change it up": for a meal that comes up 3+ times, ideas using only foods already on the list. */
+function twistsOf(r){
+  const E = window.MIS_ENGINE, times = timesChosen(r.id);
+  if (times < E.TWIST_REPEATS) return null;
+  const onList = onListIds();
+  const tws = E.twistsFor(foodsOfRecipe(r, onList), onList);
+  return tws.length ? { times, tws } : null;
+}
+
+function buildWeekCards(){
+  const wrap = document.getElementById('weeks-wrap');
+  if(!wrap) return;
+  document.getElementById('meals-intro').textContent = T('meals_intro');
+  if(!PLAN.state){
+    wrap.innerHTML = `<div class="week-empty">${escH(T('cover_note', { n: 0, days: answers.days }))}</div>`;
+    return;
+  }
+  const cuisine = answers.cuisine || [];
+  const cuisineLabel = cuisine.length === 0 ? 'Mixed cuisine'
+    : cuisine.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ') + ' style';
+  Object.keys(recipeMap).forEach(k => delete recipeMap[k]);
+  let html = '';
+  PLAN.weeks.forEach((weekDays, wi) => {
+    const isOpen = openWeeks.has(wi);
+    const weekStart = weekDays[0]?.dayName || 'Mon';
+    const weekEnd = weekDays[weekDays.length-1]?.dayName || 'Sun';
+    html += `<div class="week-card" id="week-${wi}">
+      <div class="week-header" onclick="toggleWeek(${wi})">
+        <div>
+          <div class="week-label">WEEK ${wi+1}</div>
+          <div class="week-title">${weekStart} – ${weekEnd}</div>
+          <div class="week-subtitle">${escH(T('week_days', { n: weekDays.length }))} · ${cuisineLabel}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="week-day-count" style="color:var(--gold);font-size:13px;font-weight:600">${weekDays.length} day${weekDays.length===1?'':'s'}</span>
+          <span class="week-toggle">${isOpen ? '▲' : '▼'}</span>
+        </div>
+      </div>
+      <div class="week-body" style="display:${isOpen?'block':'none'}">`;
+    weekDays.forEach((day, di) => {
+      if(day.uncovered){
+        html += `<div class="day-row day-row-uncovered"><div class="day-label">${day.dayName}</div>
+          <div class="uncovered-row">${escH(T('day_uncovered'))}</div></div>`;
+        return;
+      }
+      if(day.leftover){
+        html += `<div class="day-row day-row-leftover"><div class="day-label">${day.dayName}</div>
+          <div class="leftover-row">↻ Leftovers from yesterday — reheat and save time</div></div>`;
+        return;
+      }
+      html += `<div class="day-row"><div class="day-label">${day.dayName}</div><div class="day-slots">`;
+      SLOTS.forEach(slot => {
+        const opts = day[slot] || [];
+        if(!opts.length) return;
+        const key = `${wi}-${di}-${slot}`;
+        const ci = choice[key] || 0;
+        html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
+        // The meal on the plan first, then its one swap (keeps the plan within budget).
+        [ci, 1 - ci].forEach(i => {
+          const r = opts[i];
+          if(!r) return;
+          recipeMap[r.id] = r;
+          const isChosen = i === ci;
+          const tw = isChosen && twistsOf(r);
+          html += `<div class="meal-chip-wrap">
+            <button class="meal-chip${isChosen ? ' chosen' : ' discover'}" data-meal-key="${key}" data-opt="${i}"
+              onclick="chooseMeal(this)" title="${escH(isChosen ? r.title : T('swap_title', { title: r.title }))}">
+              ${isChosen ? '' : `<span class="discover-pill">${escH(T('swap_pill'))}</span>`}<span class="meal-chip-name">${escH(r.title)}</span>${tw ? `<span class="ideas-pill" data-recipe-id="${r.id}" onclick="event.stopPropagation();openRecipeByEl(this,true)">${escH(T('ideas_pill'))}</span>` : ''}<span class="meal-chip-recipe-btn"
+              data-recipe-id="${r.id}" onclick="event.stopPropagation();openRecipeByEl(this)">📖</span>
+            </button>
+          </div>`;
+        });
+        html += `</div></div>`;
+      });
+      html += `</div></div>`;
+    });
+    html += `</div></div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+// ━━ MEAL SWAP ━━
+// Each meal has one alternative. Swapping rebuilds the list from the meals chosen (engine rebuildList).
+function chooseMeal(btn){
+  const key = btn.dataset.mealKey, opt = +btn.dataset.opt;
+  if(!key || (choice[key] || 0) === opt) return;
+  choice[key] = opt;
+  const [w, d, sl] = key.split('-');
+  const r = PLAN.weeks[w][d][sl][opt];
+  logEvent('meal_swapped', { zip: answers.zip, item: opt === 1 ? 'discover' : 'default' });
+  refreshList();
+  buildWeekCards();
+  const a = document.getElementById('plan-announce');
+  if (a) a.textContent = T('swapped_list', { title: r.title });
+}
+function refreshList(){
+  if(!PLAN.state) return;
+  SUM = { ...SUM, ...window.MIS_ENGINE.rebuildList(PLAN.state, Object.keys(choice).filter(k => choice[k] === 1)) };
+  cart = SUM.cart;
+  renderSummary();
+  buildShoppingList();
+  renderBrandPills(cart);
+}
+function switchList(){
+  listMode = LIST_INFO.mode === 'short' ? 'full' : 'short';
+  logEvent('list_switched', { zip: answers.zip, retailer: listMode });
+  computePlan();
+  renderSummary(); buildWeekCards(); buildShoppingList(); renderBrandPills(cart);
+}
+
+// ━━ SHOPPING LIST ━━
+function buildShoppingList(){
+  const s = SUM;
+  const cats={grain:'Grains & Bread',protein:'Protein',vegetable:'Vegetables',fruit:'Fruit',dairy:'Dairy',fat:'Oils & Fats',pantry:'Pantry'};
+  const tC={1:'tb-1',2:'tb-2',3:'tb-3'};
+  const tL={1:'Essential',2:'Stretch',3:'Quality'};
+  document.getElementById('list-subtitle').textContent = T('list_subtitle');
+
+  // Build item→tip lookup from ALL_TIPS
+  const tipMap={};
+  ALL_TIPS.forEach(t=>{
+    t.needs.forEach(id=>{
+      if(!tipMap[id]) tipMap[id]=t.text;
+    });
+  });
+  const rows = (items, wk) => {
+    let html='';
+    Object.entries(cats).forEach(([cat,label])=>{
+      const list=items.filter(i=>i.cat===cat).sort((a,b)=>a.price-b.price);
+      if(!list.length)return;
+      html+=`<div class="shop-section"><div class="shop-cat-label">${label}</div>`;
+      list.forEach(item=>{
+        const tip=tipMap[item.id];
+        const key = wk > 1 ? `${item.id}-w${wk}` : item.id;
+        // Split emoji from tip text for styled rendering
+        const tipMatch=tip?tip.match(/^(\S+)\s+(.+)$/):null;
+        html+=`<div class="shop-row" id="shopr-${key}" data-sub="${item.subtotal}">
+          <div class="shop-check" id="shopck-${key}" onclick="toggleCheck('${key}')" data-event="item_checked" data-item="${item.id}"></div>
+          <div class="shop-info">
+            <div class="shop-name">${escH(item.name)} ×${item.qty}<span class="tier-badge ${tC[item.tier]}">${tL[item.tier]}</span></div>
+            <div class="shop-note">${escH(item.note)}</div>
+            ${tipMatch?`<div class="shop-tip"><span class="shop-tip-icon">${tipMatch[1]}</span><span>${tipMatch[2]}</span></div>`:''}
+          </div>
+          <div class="shop-price">$${item.subtotal.toFixed(2)}</div>
+        </div>`;
+      });
+      html+='</div>';
+    });
+    return html;
+  };
+
+  let html='';
+  if(LIST_INFO) html += `<div class="list-nudge"><p>${escH(LIST_INFO.mode === 'short' ? T('list_short_note', { n: LIST_INFO.short, total: LIST_INFO.full }) : T('list_full_note', { n: LIST_INFO.full }))}</p>
+    <button class="btn-back" onclick="switchList()">${escH(T(LIST_INFO.mode === 'short' ? 'list_show_full' : 'list_show_short'))}</button></div>`;
+  if(s.have?.length) html += `<p class="have-note">${escH(T('have_note', { items: s.have.map(id => (window.MIS_ENGINE.FOOD_DB.find(f => f.id === id)?.name || id).replace(/\s*\(.*\)\s*$/, '')).join(', ') }))}</p>`;
+  // One list per week for plans longer than a week (each week buys what its meals need beyond what's left).
+  if(s.byWeek?.length > 1) s.byWeek.forEach(w => { html += `<div class="week-list-head"><span>${escH(T('list_week', { n: w.week }))}</span><span>$${w.spent.toFixed(2)}</span></div>${rows(w.cart, w.week)}`; });
+  else html += rows(s.cart, 1);
+  html+=`<div class="shop-total">
+    <span class="shop-total-label">Total</span>
+    <div style="text-align:right">
+      <span class="shop-total-val" id="shop-total-val">$${s.spent.toFixed(2)}</span>
+      <div id="shop-total-sub" style="font-size:12px;color:var(--ink3);margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif;display:none"></div>
+    </div>
+  </div>`;
+  if(s.remaining>1)html+=`<div class="list-left">${escH(T('list_left', { remaining: money2(s.remaining) }))}</div>`;
+  document.getElementById('shop-wrap').innerHTML=html;
+  document.getElementById('price-note').innerHTML='BLS regional averages for <strong>'+(answers.state?answers.state+' ('+answers.region+' region)':'national average')+'</strong>'+(livePrices?' — live data loaded':'— using built-in estimates')+'. Your local store may vary. <a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank">About BLS price data →</a>';
 }
 
 // ━━ CENSUS SOLIDARITY ━━
@@ -2949,306 +2999,6 @@ async function loadCensusData(zip,state,people,pppd){
   }
 }
 
-// ━━ WEEK CARDS ━━
-async function buildWeekCards(cart, avoidItems){
-  const wrap = document.getElementById('weeks-wrap');
-  if(!wrap) return;
-  wrap.innerHTML = '<div style="padding:20px;color:var(--ink3);text-align:center">Building your meal plan...</div>';
-
-  const cuisine = Array.isArray(answers.cuisine) ? answers.cuisine : [];
-  const cartIds = cart.map(c => c.id).join(',');
-  const avoidStr = avoidItems.join(',');
-  const cuisineStr = cuisine.join(',');
-
-  let bySlot = { breakfast:[], lunch:[], dinner:[], any:[] };
-
-  try {
-    const url = `/api/recipes-for-cart?ingredients=${encodeURIComponent(cartIds)}&cuisine=${encodeURIComponent(cuisineStr)}&avoid=${encodeURIComponent(avoidStr)}`;
-    const res = await fetch(url);
-    const text = await res.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch(parseErr) {
-      console.error('Server returned non-JSON:', text.slice(0, 200));
-      wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Server error — check console.</div>';
-      return;
-    }
-    if(data.found) {
-      bySlot = data.bySlot;
-      // Client-side cuisine guard: strip recipes that don't match selected cuisines
-      if(cuisine.length > 0 && !cuisine.includes('any')) {
-        const filterByCuisine = (arr) => (arr||[]).filter(r => {
-          const rc = (r.cuisine||'').toLowerCase();
-          return cuisine.includes(rc) || rc === 'any';
-        });
-        bySlot = {
-          breakfast: filterByCuisine(bySlot.breakfast),
-          lunch:     filterByCuisine(bySlot.lunch),
-          dinner:    filterByCuisine(bySlot.dinner),
-          any:       filterByCuisine(bySlot.any),
-        };
-      }
-      // Build recipe lookup map so chip clicks can find full recipe data
-      [...(bySlot.breakfast||[]), ...(bySlot.lunch||[]), ...(bySlot.dinner||[]), ...(bySlot.any||[])].forEach(r => {
-        recipeMap[r.id] = r;
-      });
-    }
-  } catch(e) {
-    console.error('Recipe fetch error:', e);
-    wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Could not load recipes. Please try again.</div>';
-    return;
-  }
-
-  // Merge 'any' slot recipes into slots — but split by appropriateness
-  // Breakfast-appropriate 'any' dishes: oatmeal, eggs, porridge
-  // Dinner-appropriate 'any' dishes: stews, fries
-  const allAny = bySlot.any || [];
-  const BREAKFAST_ANY_KEYWORDS = ['oatmeal','oats','porridge','scramble','egg','banana','potato breakfast'];
-  const anyForBreakfast = allAny.filter(r => 
-    BREAKFAST_ANY_KEYWORDS.some(kw => (r.title||'').toLowerCase().includes(kw))
-  );
-  const anyForDinnerLunch = allAny.filter(r => 
-    !BREAKFAST_ANY_KEYWORDS.some(kw => (r.title||'').toLowerCase().includes(kw))
-  );
-  const pools = {
-    breakfast: [...(bySlot.breakfast||[]), ...anyForBreakfast],
-    lunch:     [...(bySlot.lunch||[]),     ...anyForDinnerLunch],
-    dinner:    [...(bySlot.dinner||[]),    ...anyForDinnerLunch],
-  };
-
-  // Safety: if any pool is too thin, fill from other slots — but NEVER cross cuisines
-  // allRecipes only contains recipes that already passed the cuisine filter
-  const allRecipes = [...(bySlot.breakfast||[]),...(bySlot.lunch||[]),...(bySlot.dinner||[]),...allAny];
-  ['breakfast','lunch','dinner'].forEach(s => {
-    if(pools[s].length < 4) {
-      // Pull from same-cuisine recipes in other slots, not from the full universe
-      const extras = allRecipes.filter(r => !pools[s].find(p => p.id === r.id));
-      pools[s] = [...pools[s], ...extras];
-    }
-  });
-
-  if(!allRecipes.length){
-    wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">No recipes found for your cart. Try a different cuisine or budget.</div>';
-    return;
-  }
-
-  const numWeeks = Math.ceil(answers.days / 7);
-  const totalDays = answers.days;
-  const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  // 'yes' = insert leftover day every other day (d%2===1)
-  // 'sometimes' = insert leftover day every 3rd day (d%3===2) 
-  // 'no' = no leftover days
-  const leftoverMode = answers.leftover || 'sometimes';
-  const mealUse = {};
-
-  // Track what's been used this week to prevent same-week repeats
-  const weeklyUsed = {};
-
-  const pickTwo = (slot, globalDay, weekIdx) => {
-    const pool = pools[slot] || allRecipes;
-    if(!pool.length) return { opts:[], discover:null };
-
-    const weekKey = weekIdx || 0;
-    if(!weeklyUsed[weekKey]) weeklyUsed[weekKey] = new Set();
-    const usedThisWeek = weeklyUsed[weekKey];
-
-    const PRIME = 13;
-    const scored = pool.map((r, idx) => {
-      const globalUse = (mealUse[r.id]||0);
-      const weekUse = usedThisWeek.has(r.id) ? 1 : 0;
-      // Also penalize dishes whose base ingredient is already used this week
-      // e.g. "Congee" and "Congee with Toppings" share the word "Congee"
-      const titleWords = (r.title||'').toLowerCase().split(' ').slice(0,2).join(' ');
-      const similarUsed = [...usedThisWeek].some(usedId => {
-        const usedR = pool.find(p => p.id === usedId);
-        if(!usedR) return false;
-        const usedWords = (usedR.title||'').toLowerCase().split(' ').slice(0,2).join(' ');
-        return titleWords === usedWords && usedR.id !== r.id;
-      });
-      const similarPenalty = similarUsed ? 8000 : 0;
-      // Within same week: 10000 penalty. Across weeks: 5000 per use.
-      return {
-        r,
-        score: weekUse * 10000 + similarPenalty + globalUse * 5000 + ((idx + globalDay * PRIME) % Math.max(pool.length, 1))
-      };
-    });
-    scored.sort((a,b) => a.score - b.score);
-
-    const picked = [];
-    for(const {r} of scored){
-      if(picked.length >= 2) break;
-      if(!picked.find(x => x.id === r.id)) picked.push(r);
-    }
-    picked.forEach(r => {
-      mealUse[r.id] = (mealUse[r.id]||0) + 1;
-      usedThisWeek.add(r.id);
-    });
-    return { opts: picked };
-  };
-
-  // Store meal options globally for swap and recipe drawer
-  Object.keys(mealOptions).forEach(k => delete mealOptions[k]);
-  Object.keys(mealChoices).forEach(k => delete mealChoices[k]);
-
-  const weeks = [];
-  let dayCount = 0;
-
-  for(let w = 0; w < numWeeks; w++){
-    const weekDays = [];
-    for(let d = 0; d < 7 && dayCount < totalDays; d++, dayCount++){
-      const dayName = dayNames[d];
-      const isLeftover = dayCount > 0 && (
-        (leftoverMode === 'yes' && d % 2 === 1) ||
-        (leftoverMode === 'sometimes' && d % 3 === 2)
-      );
-      if(isLeftover){
-        weekDays.push({ dayName, leftover:true });
-        continue;
-      }
-      const globalDay = dayCount;
-      const bfOpts = pickTwo('breakfast', globalDay, w);
-      const luOpts = pickTwo('lunch', globalDay + 100, w);
-      const diOpts = pickTwo('dinner', globalDay + 200, w);
-      weekDays.push({ dayName, leftover:false,
-        breakfast: bfOpts.opts, lunch: luOpts.opts, dinner: diOpts.opts });
-
-      // Store in mealOptions for swap system
-      ['breakfast','lunch','dinner'].forEach((slot, si) => {
-        const opts = [bfOpts, luOpts, diOpts][si].opts;
-        const key = `${w}-${d}-${slot}`;
-        mealOptions[key] = opts;
-        if(opts.length) mealChoices[key] = opts[0].id;
-      });
-    }
-    weeks.push(weekDays);
-  }
-
-  // Build HTML
-  const cuisineLabel = cuisine.length === 0 ? 'Mixed cuisine'
-    : cuisine.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ') + ' style';
-
-  let html = '';
-  weeks.forEach((weekDays, wi) => {
-    const activeDays = weekDays.filter(d => !d.leftover);
-    const weekStart = weekDays[0]?.dayName || 'Mon';
-    const weekEnd = activeDays[activeDays.length-1]?.dayName || weekDays[weekDays.length-1]?.dayName || 'Sun';
-    const isOpen = wi === 0;
-
-    html += `<div class="week-card" id="week-${wi}">
-      <div class="week-header" onclick="toggleWeek(${wi})">
-        <div>
-          <div class="week-label">WEEK ${wi+1}</div>
-          <div class="week-title">${weekStart} – ${weekEnd}</div>
-          <div class="week-subtitle">${weekDays.length} days · ${cuisineLabel}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <span class="week-day-count" style="color:var(--gold);font-size:13px;font-weight:600">${weekDays.length} day${weekDays.length===1?'':'s'}</span>
-          <span class="week-toggle">▲</span>
-        </div>
-      </div>
-      <div class="week-body" style="display:${isOpen?'block':'none'}">`;
-
-    weekDays.forEach(day => {
-      if(day.leftover){
-        html += `<div class="day-row day-row-leftover"><div class="day-label">${day.dayName}</div>
-          <div class="leftover-row">↻ Leftovers from yesterday — reheat and save time</div></div>`;
-        return;
-      }
-      html += `<div class="day-row"><div class="day-label">${day.dayName}</div><div class="day-slots">`;
-      ['breakfast','lunch','dinner'].forEach(slot => {
-        const opts = day[slot] || [];
-        const key = `${wi}-${weekDays.indexOf(day)}-${slot}`;
-        html += `<div class="slot-row"><div class="slot-label">${slot.toUpperCase()}</div><div class="meal-chips">`;
-        opts.forEach((r, i) => {
-          const isSelected = i === 0;
-          const isDiscover = i === 1;
-          const cuisineTag = isDiscover && r.cuisine && r.cuisine !== 'any'
-            ? `<span class="meal-chip-cuisine">${r.cuisine.charAt(0).toUpperCase()+r.cuisine.slice(1)}</span>`
-            : '';
-          const newPill = isDiscover
-            ? `<span class="discover-pill">NEW</span>`
-            : '';
-          html += `<div class="meal-chip-wrap">
-            <button class="meal-chip${isSelected?' chosen':''}${isDiscover?' discover':''}"
-              data-meal-key="${key}"
-              data-recipe-id="${r.id}"
-              data-slot="${slot}"
-              onclick="chooseMeal(this)"
-              title="${(r.title||'').replace(/"/g,'&quot;')}">
-              ${newPill}<span class="meal-chip-name">${r.title||''}</span>${cuisineTag}<span class="meal-chip-recipe-btn"
-              data-recipe-id="${r.id}"
-              data-event="recipe_opened"
-              onclick="event.stopPropagation();openRecipeByEl(this)">📖</span>
-            </button>
-          </div>`;
-        });
-                html += `</div></div>`;
-      });
-      html += `</div></div>`;
-    });
-
-    html += `</div></div>`;
-  });
-
-  try {
-  wrap.innerHTML = html;
-  } catch(renderErr) {
-    console.error('Render error:', renderErr);
-    wrap.innerHTML = '<div style="padding:20px;color:var(--ink3)">Error building meal plan. See console.</div>';
-  }
-
-  // Trigger shopping list rebuild with current choices
-  // Shopping list is already built by runCalculation - no need to rebuild here
-}
-
-
-function buildShoppingList(cart,spent,remaining,region){
-  const cats={grain:'Grains & Bread',protein:'Protein',vegetable:'Vegetables',fruit:'Fruit',dairy:'Dairy',fat:'Oils & Fats',pantry:'Pantry'};
-  const tC={1:'tb-1',2:'tb-2',3:'tb-3'};
-  const tL={1:'Essential',2:'Stretch',3:'Quality'};
-
-  // Build item→tip lookup from ALL_TIPS
-  const tipMap={};
-  ALL_TIPS.forEach(t=>{
-    t.needs.forEach(id=>{
-      if(!tipMap[id]) tipMap[id]=t.text;
-    });
-  });
-
-  let html='';
-  Object.entries(cats).forEach(([cat,label])=>{
-    const items=cart.filter(i=>i.cat===cat).sort((a,b)=>a.price-b.price);
-    if(!items.length)return;
-    html+=`<div class="shop-section"><div class="shop-cat-label">${label}</div>`;
-    items.forEach(item=>{
-      const tip=tipMap[item.id];
-      // Split emoji from tip text for styled rendering
-      const tipMatch=tip?tip.match(/^(\S+)\s+(.+)$/):null;
-      html+=`<div class="shop-row" id="shopr-${item.id}">
-        <div class="shop-check" id="shopck-${item.id}" onclick="toggleCheck('${item.id}')" data-event="item_checked" data-item="${item.id}"></div>
-        <div class="shop-info">
-          <div class="shop-name">${item.name} ×${item.qty}<span class="tier-badge ${tC[item.tier]}">${tL[item.tier]}</span></div>
-          <div class="shop-note">${item.note}</div>
-          ${tipMatch?`<div class="shop-tip"><span class="shop-tip-icon">${tipMatch[1]}</span><span>${tipMatch[2]}</span></div>`:''}
-        </div>
-        <div class="shop-price">$${item.subtotal.toFixed(2)}</div>
-      </div>`;
-    });
-    html+='</div>';
-  });
-  html+=`<div class="shop-total">
-    <span class="shop-total-label">Total</span>
-    <div style="text-align:right">
-      <span class="shop-total-val" id="shop-total-val">$${spent.toFixed(2)}</span>
-      <div id="shop-total-sub" style="font-size:12px;color:var(--ink3);margin-top:2px;font-family:'Plus Jakarta Sans',sans-serif;display:none"></div>
-    </div>
-  </div>`;
-  if(remaining>1)html+=`<div style="font-size:13px;color:var(--ink2);margin-top:6px">$${remaining.toFixed(2)} remaining for tax or extras</div>`;
-  document.getElementById('shop-wrap').innerHTML=html;
-  document.getElementById('price-note').innerHTML='BLS regional averages for <strong>'+(answers.state?answers.state+' ('+answers.region+' region)':'national average')+'</strong>'+(livePrices?' — live data loaded':'— using May 2025 estimates')+'. Your local store may vary. <a href="https://www.bls.gov/cpi/factsheets/average-prices.htm" target="_blank">About BLS price data →</a>';
-}
-
 function toggleCheck(id){
   const ck=document.getElementById('shopck-'+id);
   const row=document.getElementById('shopr-'+id);
@@ -3258,10 +3008,10 @@ function toggleCheck(id){
   if(row)row.classList.toggle('checked',ck.classList.contains('checked'));
 
 
-  // Recalculate live totals
-  const total=cart.reduce((s,i)=>s+i.subtotal,0);
-  const inCart=cart.filter(i=>document.getElementById('shopck-'+i.id)?.classList.contains('checked'))
-                   .reduce((s,i)=>s+i.subtotal,0);
+  // Recalculate live totals (every row, across weekly lists)
+  const rows=[...document.querySelectorAll('#shop-wrap .shop-row')];
+  const total=rows.reduce((s,r)=>s+(+r.dataset.sub||0),0);
+  const inCart=rows.filter(r=>r.classList.contains('checked')).reduce((s,r)=>s+(+r.dataset.sub||0),0);
   const remaining=total-inCart;
   const valEl=document.getElementById('shop-total-val');
   const subEl=document.getElementById('shop-total-sub');
@@ -3512,7 +3262,39 @@ async function loadResources(zip,state){
 }
 
 // ━━ RECIPE DRAWER ━━
-function openRecipeDrawer(mealName, mealDesc, cuisine, ingredients, instructions){
+// ━━ RECIPE DRAWER — open by element data attribute ━━
+function openRecipeByEl(btn, toTwists){
+  const recipeId = parseInt(btn.dataset.recipeId || btn.closest('[data-recipe-id]')?.dataset.recipeId);
+  const r = recipeMap[recipeId];
+  if(!r) return;
+  logEvent('recipe_opened', { zip: answers.zip });
+  if(toTwists) logEvent('twists_opened', { zip: answers.zip });
+  openRecipeDrawer(r.title, (r.instructions||'').slice(0,80), r.cuisine||'', r.ingredients||[], r.instructions||'', r);
+  if(toTwists) setTimeout(() => document.getElementById('drawer-twists')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
+}
+
+const NIH_BOOK = { latino: 'nih_book_latino', aa: 'nih_book_aa' };
+/** An NHLBI main dish as printed: its own amounts, notes and steps, kitchen basics tagged, and the credit. */
+function nihRecipeHtml(r){
+  const credit = r.source && NIH_BOOK[r.source.book] ? T('nih_credit', { book: T(NIH_BOOK[r.source.book]), page: r.source.page }) : '';
+  return `${r.srv ? `<p class="drawer-serves">${escH(T('serves', { n: r.srv }))}</p>` : ''}
+    ${r.note ? `<p class="drawer-instructions"><em>${escH(r.note)}</em></p>` : ''}
+    <span class="drawer-section-label">Ingredients</span>
+    <ul class="drawer-ingredients nih-lines">${r.lines.map(l => l.h ? `<li class="ing-head">${escH(l.t)}</li>`
+      : `<li>${escH(l.t)}${l.p ? ` <span class="need-tag">${escH(T('need_tag'))}</span>` : ''}</li>`).join('')}</ul>
+    <span class="drawer-section-label">Instructions</span>
+    <ol class="nih-steps">${(r.steps || []).map(st => `<li>${escH(st)}</li>`).join('')}</ol>
+    ${(r.extra || []).map(x => `<p class="drawer-instructions">${x.h ? `<b>${escH(x.h)}</b> ` : ''}${escH(x.t)}</p>`).join('')}
+    <p class="recipe-credit">${escH(credit)}</p>`;
+}
+function twistsHtml(r){
+  const tw = r && r.id != null && PLAN?.state ? twistsOf(r) : null;
+  return tw ? `<div class="drawer-twists" id="drawer-twists"><span class="drawer-section-label">${escH(T('twists_title'))}</span>
+    <p class="twists-hint">${escH(T('twists_hint', { n: tw.times }))}</p>
+    <ul>${tw.tws.map(x => `<li>${escH(x.text)}</li>`).join('')}</ul></div>` : '';
+}
+
+function openRecipeDrawer(mealName, mealDesc, cuisine, ingredients, instructions, recipe){
   const drawer=document.getElementById('recipe-drawer');
   const overlay=document.getElementById('drawer-overlay');
   const titleEl=document.getElementById('drawer-title');
@@ -3525,15 +3307,21 @@ function openRecipeDrawer(mealName, mealDesc, cuisine, ingredients, instructions
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
+  // NHLBI main dishes: printed amounts and credit (word for word from the books).
+  if(recipe && Array.isArray(recipe.lines)){
+    bodyEl.innerHTML = nihRecipeHtml(recipe) + twistsHtml(recipe);
+    return;
+  }
   // Recipe data is passed directly from the meal chip — no API call needed
   if(instructions && instructions.length > 10){
     const ings = Array.isArray(ingredients) ? ingredients : (ingredients ? JSON.parse(ingredients) : []);
-    const ingHTML = ings.map(i => `<li>${i}</li>`).join('');
-    const steps = instructions.replace(/\.\s+/g, '.</p><p class="drawer-instructions">');
+    const ingHTML = ings.map(i => `<li>${escH(i)}</li>`).join('');
+    const steps = escH(instructions).replace(/\.\s+/g, '.</p><p class="drawer-instructions">');
     bodyEl.innerHTML = `
       ${ingHTML ? `<span class="drawer-section-label">Ingredients</span><ul class="drawer-ingredients">${ingHTML}</ul>` : ''}
       <span class="drawer-section-label">Instructions</span>
       <p class="drawer-instructions">${steps}</p>
+      ${twistsHtml(recipe)}
       <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
         <a class="drawer-source-link" href="https://www.budgetbytes.com/?s=${encodeURIComponent(mealName)}" target="_blank"
            style="padding:8px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;color:var(--ink)">
@@ -3594,16 +3382,19 @@ function buildListText(){
   if(!cart||!cart.length) return '';
   const lines=['Make It Stretch — Shopping List',''];
   const cats={grain:'Grains & Bread',protein:'Protein',vegetable:'Vegetables',fruit:'Fruit',dairy:'Dairy',fat:'Oils & Fats',pantry:'Pantry'};
-  Object.entries(cats).forEach(([cat,label])=>{
-    const items=cart.filter(i=>i.cat===cat).sort((a,b)=>a.price-b.price);
-    if(!items.length) return;
+  const section=items=>Object.entries(cats).forEach(([cat,label])=>{
+    const list=items.filter(i=>i.cat===cat).sort((a,b)=>a.price-b.price);
+    if(!list.length) return;
     lines.push('── '+label+' ──');
-    items.forEach(i=>lines.push(`  ${i.name} ×${i.qty}  $${i.subtotal.toFixed(2)}`));
+    list.forEach(i=>lines.push(`  ${i.name} ×${i.qty}  $${i.subtotal.toFixed(2)}`));
     lines.push('');
   });
-  const total=cart.reduce((s,i)=>s+i.subtotal,0);
+  if(SUM?.byWeek?.length>1) SUM.byWeek.forEach(w=>{lines.push('== '+T('list_week',{n:w.week})+' ($'+w.spent.toFixed(2)+') ==');section(w.cart);});
+  else section(cart);
+  const total=SUM?SUM.spent:cart.reduce((s,i)=>s+i.subtotal,0);
   lines.push('──────────────────');
   lines.push(`TOTAL  $${total.toFixed(2)}`);
+  if(SUM&&SUM.remaining>1) lines.push(T('list_left',{remaining:money2(SUM.remaining)}));
   if(answers.state) lines.push(`Budget: $${answers.budget} · ${answers.people} people · ${answers.days} days · ${answers.state}`);
   lines.push('');
   lines.push('Built with Make It Stretch — getdealtin.com');
@@ -3805,7 +3596,8 @@ function restart(){
   Object.keys(mealOptions).forEach(k=>delete mealOptions[k]);
   Object.assign(answers,{budget:null,people:null,days:null,zip:null,state:null,region:null,stores:[],avoid:[],have:[],otherHave:'',cuisine:[],leftover:'sometimes'});
   Object.assign(paydayState,{key:null,days:null});
-  multiSelections.store=[];multiSelections.avoid=[];multiSelections.have=[];
+  multiSelections.store=[];multiSelections.avoid=[];multiSelections.diet=[];multiSelections.have=[];
+  PLAN=null;SUM=null;LIST_INFO=null;choice={};
   cart=[];activePrices={};livePrices=null;
   _stripe=null;
   const dc=document.getElementById('donation-card');
