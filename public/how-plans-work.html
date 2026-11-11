@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How your plan is made · Make It Stretch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:     #1B3624;
+  --ink2:    #3E4A42;
+  --ink3:    #6b7a70;
+  --ink4:    #9aaa9f;
+  --bg:      #FAF8F5;
+  --bg2:     #F3F0EB;
+  --bg3:     #EAE6DF;
+  --border:  #DDD9D1;
+  --border2: #C8C4BC;
+  --gold:    #D9822B;
+  --green:   #1B3624;
+  --green-bg:#EEF3EE;
+  --red:     #b83c2b;
+  --blue:    #2a5c8a;
+  --gold-dim:#fdf0e4;
+  --amber-border: #f0c898;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── HEADER — exact match to index.html ── */
+header {
+  background: #f5f0e8;
+  border-bottom: 2px solid #1a3a2a;
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+}
+.header-ben {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  width: 680px;
+  flex-shrink: 0;
+}
+.header-ben img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  mask-image: linear-gradient(to right, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 40%, transparent 100%);
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  filter: sepia(20%) contrast(1.1);
+}
+.header-content {
+  position: relative;
+  z-index: 2;
+  padding: 40px 48px 40px 600px;
+  flex: 1;
+}
+.header-eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: #1B3624; margin-bottom: 12px;
+}
+.header-eyebrow a { color: #1B3624; text-decoration: none; opacity: .7; transition: opacity .15s; }
+.header-eyebrow a:hover { opacity: 1; }
+.header-nav {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 12px;
+}
+.header-donate-btn {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: #1B3624; background: rgba(255,255,255,.18);
+  border: 1px solid rgba(27,54,36,.25); border-radius: 20px;
+  padding: 5px 14px; cursor: pointer; transition: all .15s;
+  text-decoration: none; white-space: nowrap;
+}
+.header-donate-btn:hover { background: rgba(255,255,255,.32); border-color: rgba(27,54,36,.5); }
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 100px; font-weight: 900;
+  color: #1a3a2a; letter-spacing: -1px;
+  line-height: 1; margin-bottom: 14px;
+}
+header h1 em { font-style: italic; color: #8a6a00; }
+.header-quote {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px; font-style: italic;
+  color: #4a4a3a; border-left: 3px solid #3d7a55;
+  padding-left: 14px; line-height: 1.6; max-width: 480px;
+}
+.header-quote cite {
+  display: block; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-style: normal; font-size: 15px;
+  letter-spacing: 2px; color: #8a8a7a;
+  margin-top: 6px; text-transform: uppercase;
+}
+
+/* ── MAIN ── */
+.main { max-width: 760px; margin: 0 auto; padding: 56px 24px 100px; }
+
+/* ── PAGE TITLE ── */
+.page-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink3);
+  margin-bottom: 10px;
+}
+h1.page-title {
+  font-family: 'Lora', serif;
+  font-size: 36px; font-weight: 700;
+  color: var(--ink); letter-spacing: -.5px;
+  line-height: 1.2; margin-bottom: 16px;
+}
+.page-lead {
+  font-family: 'Lora', serif;
+  font-size: 16px; color: var(--ink2);
+  line-height: 1.8; margin-bottom: 48px;
+  border-left: 3px solid var(--gold);
+  padding-left: 18px;
+}
+
+/* ── SECTION HEADINGS ── */
+h2 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); margin: 48px 0 20px;
+}
+h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--ink); margin-bottom: 8px;
+  letter-spacing: -.1px;
+}
+
+/* ── BODY TEXT ── */
+p { color: var(--ink2); font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+a { color: var(--blue); text-underline-offset: 3px; }
+a:hover { color: var(--ink); }
+strong { color: var(--ink); font-weight: 700; }
+
+/* ── SOURCE CARDS ── */
+.source-card {
+  border: 1px solid var(--border2);
+  border-radius: 10px; padding: 20px 24px;
+  margin-bottom: 16px; background: var(--bg2);
+  box-shadow: 0 1px 4px rgba(27,54,36,.04);
+}
+.source-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 8px;
+}
+.source-note {
+  font-size: 13px; color: var(--ink3);
+  margin-top: 10px; margin-bottom: 0;
+}
+.source-note a { color: var(--ink3); }
+.source-note a:hover { color: var(--gold); }
+
+/* ── CALLOUT BOXES ── */
+.callout-warning {
+  background: var(--gold-dim);
+  border: 1px solid var(--amber-border);
+  border-radius: 8px; padding: 16px 20px; margin: 20px 0;
+}
+.callout-warning p { color: #7a4a1a; font-size: 14px; margin: 0; }
+
+.callout-info {
+  background: var(--green-bg);
+  border: 1px solid #B8CDB8;
+  border-radius: 8px; padding: 16px 20px; margin: 20px 0;
+}
+.callout-info p { color: #2d5a3d; font-size: 14px; margin: 0; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border2); margin: 48px 0; }
+
+/* ── FOOTER — exact match to index.html ── */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 24px 40px; text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; letter-spacing: 1px;
+  color: var(--ink4);
+}
+footer a { color: var(--ink3); text-decoration: none; }
+footer a:hover { color: var(--gold); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px) {
+  header { min-height: auto; flex-direction: column; }
+  .header-content { padding: 28px 24px; }
+  .header-ben { display: none; }
+  header h1 { font-size: 52px; }
+  .main { padding: 36px 16px 80px; }
+  h1.page-title { font-size: 28px; }
+}
+
+/* ── How your plan is made ── */
+.lang-switch { display:flex; gap:6px; justify-content:flex-end; margin-bottom:18px; }
+.lang-switch button { font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; background:none; border:1px solid var(--border2); color:var(--ink3); border-radius:20px; padding:5px 12px; cursor:pointer; }
+.lang-switch button[aria-pressed="true"] { background:var(--ink); color:#fff; border-color:var(--ink); }
+.promises { list-style:none; padding:0; margin:0 0 8px; display:grid; gap:10px; }
+.promises li { background:var(--bg2); border:1px solid var(--border2); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; padding:14px 18px; font-family:'Lora',serif; font-size:16px; color:var(--ink); line-height:1.5; }
+.rules { list-style:none; padding:0; margin:0; counter-reset:rule; }
+.rules li { counter-increment:rule; position:relative; padding:0 0 22px 52px; margin-bottom:22px; border-bottom:1px solid var(--border); }
+.rules li:last-child { border-bottom:none; }
+.rules li::before { content:counter(rule); position:absolute; left:0; top:0; width:34px; height:34px; border-radius:50%; background:var(--gold-dim); border:1px solid var(--amber-border); color:#9a5512; font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+.rules h3 { margin-top:5px; }
+.rules p { margin:0; }
+.build-btn { display:inline-block; margin-top:32px; background:var(--gold); color:#fff; text-decoration:none; font-weight:700; font-size:15px; padding:13px 26px; border-radius:8px; }
+.build-btn:hover { background:#c47225; color:#fff; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-ben">
+    <img src="https://follow-the-money.onrender.com/ben.png" alt="Benjamin Franklin">
+  </div>
+  <div class="header-content">
+    <div class="header-nav">
+      <div class="header-eyebrow">◆ Civic Budget Tool &nbsp;·&nbsp; <a href="https://getdealtin.com">Get Dealt In</a></div>
+      <a class="header-donate-btn" href="https://buy.stripe.com/28EcN7giU7JS6LM53kfQI00" target="_blank">Support This Tool</a>
+    </div>
+    <h1>Make It <em>Stretch</em></h1>
+    <div class="header-quote">
+      "A penny saved is a penny earned."
+      <cite>— Benjamin Franklin</cite>
+    </div>
+  </div>
+</header>
+
+<div class="main" id="main">
+  <nav class="lang-switch" id="lang-switch" aria-label="Language · Idioma">
+    <button type="button" lang="en" data-lang="en">English</button>
+    <button type="button" lang="es" data-lang="es">Español</button>
+  </nav>
+  <p class="page-eyebrow" id="eyebrow">Make It Stretch · Our rules</p>
+  <h1 class="page-title" id="title">How your plan is made</h1>
+  <p class="page-lead" id="intro"></p>
+
+  <h2 id="promises-h">Our five promises</h2>
+  <ul class="promises" id="promises"></ul>
+
+  <h2 id="rules-h">Every rule, in order</h2>
+  <ol class="rules" id="rules"></ol>
+
+  <a class="build-btn" id="build" href="/">Build my game plan →</a>
+</div>
+
+<script src="/i18n/strings.js"></script>
+<script type="module">
+  // The engine's rules in plain words (public/i18n/principles/, copied from the Austin build with the
+  // engine, in the engine's order and keyed by its rule ids; test/pages.test.js keeps them in step).
+  const { t, esc } = window.MIS_I18N;
+  const LANGS = ['en', 'es'];
+  let saved = null;
+  try { saved = localStorage.getItem('mis:lang'); } catch { /* private window */ }
+  const first = LANGS.includes(saved) ? saved : (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en';
+  async function render(lang) {
+    const P = (await import(`/i18n/principles/${lang}.js`)).default;
+    document.documentElement.lang = lang;
+    document.title = `${P.title} · Make It Stretch`;
+    document.getElementById('eyebrow').textContent = t('rules_eyebrow', {}, lang);
+    document.getElementById('title').textContent = P.title;
+    document.getElementById('intro').textContent = P.intro;
+    document.getElementById('promises-h').textContent = t('promises_h', {}, lang);
+    document.getElementById('promises').innerHTML = [1, 2, 3, 4, 5].map(n => `<li>${esc(t('plan_p' + n, {}, lang))}</li>`).join('');
+    document.getElementById('rules-h').textContent = t('rules_h', {}, lang);
+    document.getElementById('rules').innerHTML = P.items.map(i => `<li id="${esc(i.id)}"><h3>${esc(i.h)}</h3><p>${esc(i.p)}</p></li>`).join('');
+    document.getElementById('build').textContent = t('rules_build', {}, lang);
+    document.querySelectorAll('#lang-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  }
+  document.querySelectorAll('#lang-switch button').forEach(b => b.addEventListener('click', () => {
+    try { localStorage.setItem('mis:lang', b.dataset.lang); } catch { /* fine */ }
+    render(b.dataset.lang);
+  }));
+  render(first);
+</script>
+
+<footer>
+  <a href="/">Make It Stretch</a> &nbsp;·&nbsp;
+  <a href="/about">About & Data Sources</a> &nbsp;·&nbsp;
+  <a href="https://getdealtin.com">getdealtin.com</a> &nbsp;·&nbsp;
+  Data: BLS · Census Bureau · Congress.gov · USDA · OpenStates
+</footer>
+
+</body>
+</html>

@@ -1,47 +1,83 @@
 name: Weekly database backup
 
-# Supabase's free tier keeps no backups. This dumps the database once a week
-# to a compressed GitHub Actions artifact (retained 90 days, then auto-deleted).
-# The dump lives on GitHub, not in Supabase, so it uses none of your Supabase
-# storage. The whole DB is a few MB, so each backup is tiny.
+# Supabase's free tier keeps no backups. This dumps the database once a week, ENCRYPTS it, and keeps it
+# as a GitHub Actions artifact (retained 90 days, then auto-deleted). The repo is public and anyone with
+# a GitHub account can download a public repo's artifacts, so a backup is never uploaded unencrypted.
 #
-# SETUP (one time): add a repository secret named SUPABASE_DB_URL with your
-# Supabase connection string (Supabase dashboard -> Project Settings ->
-# Database -> Connection string -> URI, including the password). Use the
-# direct connection or the Session pooler string, not the Transaction pooler.
+# SETUP (one time), as repository secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_DB_URL     Supabase connection string (Project Settings → Database → Connection string →
+#                       URI, with the password). Use the Session pooler string, not the Transaction pooler.
+#   BACKUP_PASSPHRASE   A long passphrase. Keep a copy somewhere safe: without it a backup can't be restored.
+#
+# RESTORE: download the artifact, unzip it, then
+#   gpg --decrypt backup-YYYYMMDD.sql.gz.gpg | gunzip | psql "<connection string>"
+#
+# History (Nov 2026): the first three runs uploaded empty files. The runner's default pg_dump (16) refused
+# the version 17 server, and without pipefail the step still passed. Fixed below: pg_dump 17 by full path,
+# pipefail, and a size and decrypt check. The first step deletes those three old, unencrypted uploads.
 
 on:
   schedule:
     - cron: "23 8 * * 0"   # Sundays ~03:23 US Central
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+  actions: write   # only to delete the old unencrypted backups
+
 jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
+      - name: Delete old unencrypted backups
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const arts = await github.paginate(github.rest.actions.listArtifactsForRepo,
+              { owner: context.repo.owner, repo: context.repo.repo, per_page: 100 });
+            // Old backups were named supabase-backup-<run id>; encrypted ones are supabase-backup-encrypted-<run id>.
+            for (const a of arts.filter(a => /^supabase-backup-\d+$/.test(a.name))) {
+              await github.rest.actions.deleteArtifact({ owner: context.repo.owner, repo: context.repo.repo, artifact_id: a.id });
+              core.info(`Deleted ${a.name} (${a.size_in_bytes} bytes, ${a.created_at})`);
+            }
+
+      - name: Check secrets
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          [ -n "$DB_URL" ] || { echo "SUPABASE_DB_URL secret is not set — see the setup note in this file." >&2; exit 1; }
+          [ -n "$PASS" ] || { echo "BACKUP_PASSPHRASE secret is not set — see the setup note in this file. Nothing was uploaded." >&2; exit 1; }
+
       - name: Install PostgreSQL 17 client
         run: |
           sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
           sudo apt-get update
           sudo apt-get install -y postgresql-client-17
+          /usr/lib/postgresql/17/bin/pg_dump --version
 
-      - name: Dump database
+      - name: Dump and encrypt
         env:
           DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
-          if [ -z "$DB_URL" ]; then
-            echo "SUPABASE_DB_URL secret is not set — see the setup note in this file." >&2
-            exit 1
-          fi
-          STAMP=$(date -u +%Y%m%d)
-          pg_dump "$DB_URL" --no-owner --no-privileges | gzip -9 > "backup-$STAMP.sql.gz"
-          ls -lh "backup-$STAMP.sql.gz"
+          set -euo pipefail
+          OUT="backup-$(date -u +%Y%m%d).sql.gz.gpg"
+          /usr/lib/postgresql/17/bin/pg_dump "$DB_URL" --no-owner --no-privileges \
+            | gzip -9 \
+            | gpg --batch --yes --pinentry-mode loopback --symmetric --cipher-algo AES256 --passphrase-fd 3 -o "$OUT" 3<<<"$PASS"
+          # Check it: decrypts with the passphrase, is a real dump, and holds the events table.
+          gpg --batch --pinentry-mode loopback --decrypt --passphrase-fd 3 "$OUT" 3<<<"$PASS" 2>/dev/null | gunzip > /tmp/check.sql
+          grep -q "PostgreSQL database dump" /tmp/check.sql || { echo "Backup doesn't decrypt to a database dump." >&2; exit 1; }
+          grep -q "CREATE TABLE public.events" /tmp/check.sql || { echo "Backup has no events table." >&2; exit 1; }
+          echo "Dump: $(wc -c < /tmp/check.sql) bytes, $(grep -c '^COPY ' /tmp/check.sql) tables with data. Encrypted: $(wc -c < "$OUT") bytes."
+          rm -f /tmp/check.sql
 
-      - name: Upload backup artifact
+      - name: Upload encrypted backup
         uses: actions/upload-artifact@v4
         with:
-          name: supabase-backup-${{ github.run_id }}
-          path: backup-*.sql.gz
+          name: supabase-backup-encrypted-${{ github.run_id }}
+          path: backup-*.sql.gz.gpg
           retention-days: 90
           if-no-files-found: error

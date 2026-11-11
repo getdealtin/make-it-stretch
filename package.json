@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "node --test test/*.test.js",
+    "engine:update": "node scripts/update-engine.mjs",
+    "engine:check": "node scripts/update-engine.mjs --check"
   },
   "dependencies": {
     "express": "^4.18.2",

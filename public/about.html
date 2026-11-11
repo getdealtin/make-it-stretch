@@ -215,6 +215,8 @@ footer a:hover { color: var(--gold); }
   .main { padding: 36px 16px 80px; }
   h1.page-title { font-size: 28px; }
 }
+.about-promises { list-style:none; padding:0; margin:0 0 14px; }
+.about-promises li { border-left:3px solid var(--gold); background:var(--bg2); border-radius:0 8px 8px 0; padding:10px 16px; margin-bottom:8px; font-family:'Lora',serif; font-size:15px; color:var(--ink); }
 </style>
 </head>
 <body>
@@ -258,12 +260,22 @@ footer a:hover { color: var(--gold); }
   <h2>Meal Plan & Recipes</h2>
 
   <div class="source-card">
-    <div class="source-meta">USDA Center for Nutrition Policy and Promotion · Internal Database · 161 Recipes</div>
-    <h3>Curated recipe database</h3>
-    <p>The ingredients and food categories in every shopping list are grounded in the USDA's Thrifty Food Plan — the federal government's evidence-based model for what a nutritionally adequate diet looks like on a constrained budget. The tool uses the same food group proportions (grains, protein, vegetables, fruit, dairy, fats) that the USDA uses to calculate SNAP benefit amounts, allocating your budget across those categories accordingly.</p>
-    <p>Recipes are drawn from a curated database of 161 budget-friendly dishes across six cuisine traditions: American, Latin, Asian, Southern, Mediterranean, and universal staples. Every recipe uses only ingredients the shopping list has already budgeted for, and is designed for minimal equipment and cooking time. <strong>No AI is used</strong> — recipe matching is rule-based and deterministic.</p>
-    <p class="source-note">Source: <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-reports" target="_blank">USDA Thrifty Food Plan →</a> &nbsp;·&nbsp; Cuisines: American · Latin · Asian · Southern · Mediterranean · Any</p>
+    <div class="source-meta" data-t="about_meta">USDA · NHLBI · 208 Recipes · Same engine as the Austin build</div>
+    <h3 data-t="about_card_h">Meals first, then the shopping list</h3>
+    <p data-t="about_card_p1">The planner picks meals first, then buys only what those meals use, in the amounts they use. It aims for about 2,000 calories a day per person (USDA’s reference), then more filling meals, and federal nutrition guidance when the budget allows. If money is left over, the plan shows it instead of spending it on piles of one food.</p>
+    <p data-t="about_card_p2">Recipes: 161 budget dishes across American, Latin, Asian, Southern and Mediterranean cooking; 22 simple everyday meals from the cheapest staples; and 25 main dishes printed word for word from two public-domain NHLBI cookbooks, with their own amounts and credit. No AI is used: the same answers always give the same plan.</p>
+    <p class="source-note"><a href="/how-plans-work" data-t="about_card_link">How your plan is made: every rule we follow →</a> &nbsp;·&nbsp; <a href="https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-reports" target="_blank">USDA Thrifty Food Plan →</a></p>
   </div>
+
+  <h2 data-t="plan_h">How your plan is made</h2>
+  <ul class="about-promises">
+    <li data-t="plan_p1">Enough food first: about 2,000 calories a day for each person</li>
+    <li data-t="plan_p2">Filling, healthy meals that follow federal nutrition guidance when the budget allows</li>
+    <li data-t="plan_p3">Every meal comes from your list, and nothing you leave out</li>
+    <li data-t="plan_p4">Different meals from the same groceries, never piles of one food</li>
+    <li data-t="plan_p5">Honest when money is short, with free food nearby</li>
+  </ul>
+  <p><a href="/how-plans-work" data-t="plan_link">See every rule we follow</a> →</p>
 
   <h2>Community Data</h2>
 
@@ -366,6 +378,7 @@ footer a:hover { color: var(--gold); }
 
 <footer>
   <a href="/">Make It Stretch</a> &nbsp;·&nbsp;
+  <a href="/how-plans-work">How your plan is made</a> &nbsp;·&nbsp;
   <a href="https://getdealtin.com">getdealtin.com</a> &nbsp;·&nbsp;
   Data: BLS · Census Bureau · Congress.gov · USDA · OpenStates
 </footer>

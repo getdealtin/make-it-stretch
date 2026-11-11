@@ -1,0 +1,31 @@
+name: Engine tests + is it behind Austin?
+
+# This site keeps its own copy of the meal-planning engine from getdealtin/makeitstretch-civic
+# (owner decision, Nov 2026: separate sites, separate deploys). This runs the tests on every push, and
+# once a week checks whether Austin's engine has changes not copied here yet. When it has, this run
+# fails (GitHub emails the repo owner) and the log says what changed. To catch up:
+#   node scripts/update-engine.mjs && npm test     then look at a few plans and commit.
+# No secrets needed: both repos are public.
+
+on:
+  push:
+  schedule:
+    # Mondays 14:23 UTC. Off the hour on purpose: GitHub's scheduled runners are congested at :00.
+    - cron: "23 14 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - name: Tests (the copy wasn't edited here; the engine's rules hold for this site's plans)
+        run: npm test
+        env:
+          ENGINE_CHECK: "off"
+      - name: Is the engine behind Austin's?
+        run: node scripts/update-engine.mjs --check
